@@ -8,6 +8,8 @@ function App() {
   const [showVideo, setShowVideo] = useState(false)
   const [videoEnded, setVideoEnded] = useState(false)
   const [showThreeCards, setShowThreeCards] = useState(false)
+  const [currentCardIndex, setCurrentCardIndex] = useState(0)
+  const [rotation, setRotation] = useState(0) // 첫 번째 카드(index 0)를 정면으로
 
   useEffect(() => {
     // Step 1: Make the card visible after a short delay
@@ -167,50 +169,98 @@ function App() {
           <div className="three-cards-container">
             <div className="cards-header">
               <h2>ARCHIVE RECORDS</h2>
-              <p>3개의 기록을 선택하세요</p>
             </div>
             
-            <div className="cards-grid">
-              <div className="archive-card" onClick={() => console.log('Record 1 selected')}>
-                <div className="card-number">01</div>
-                <div className="card-title">CITIZEN ALPHA</div>
-                <div className="card-description">기록 분석 대상 #1</div>
-                <div className="card-status">
-                  <span className="status-dot"></span>
-                  <span>READY</span>
-                </div>
-              </div>
-
-              <div className="archive-card" onClick={() => console.log('Record 2 selected')}>
-                <div className="card-number">02</div>
-                <div className="card-title">CITIZEN BETA</div>
-                <div className="card-description">기록 분석 대상 #2</div>
-                <div className="card-status">
-                  <span className="status-dot"></span>
-                  <span>READY</span>
-                </div>
-              </div>
-
-              <div className="archive-card" onClick={() => console.log('Record 3 selected')}>
-                <div className="card-number">03</div>
-                <div className="card-title">CITIZEN GAMMA</div>
-                <div className="card-description">기록 분석 대상 #3</div>
-                <div className="card-status">
-                  <span className="status-dot"></span>
-                  <span>READY</span>
-                </div>
+            <div className="carousel-wrapper">
+              <div 
+                className="carousel-track"
+                style={{ transform: `rotateY(${rotation}deg)` }}
+              >
+                {[
+                  { id: 1, number: "01", title: "CITIZEN ALPHA", description: "데이터 아키텍트 - 시스템 접근 기록 분석" },
+                  { id: 2, number: "02", title: "CITIZEN BETA", description: "보안 전문가 - 이상 행동 탐지 및 모니터링" },
+                  { id: 3, number: "03", title: "CITIZEN GAMMA", description: "연구원 - 오메가 프로토콜 연구 진행" }
+                ].map((card, index) => {
+                  const isCenter = index === currentCardIndex
+                  
+                  // 현재 중앙 카드에 따라 위치 계산
+                  let offset = 0
+                  if (currentCardIndex === 0) { // 1번이 중앙
+                    if (index === 0) offset = 0 // 1번 중앙
+                    else if (index === 1) offset = 400 // 2번 오른쪽
+                    else if (index === 2) offset = -400 // 3번 왼쪽
+                  } else if (currentCardIndex === 1) { // 2번이 중앙
+                    if (index === 0) offset = -400 // 1번 왼쪽
+                    else if (index === 1) offset = 0 // 2번 중앙
+                    else if (index === 2) offset = 400 // 3번 오른쪽
+                  } else if (currentCardIndex === 2) { // 3번이 중앙
+                    if (index === 0) offset = 400 // 1번 오른쪽
+                    else if (index === 1) offset = -400 // 2번 왼쪽
+                    else if (index === 2) offset = 0 // 3번 중앙
+                  }
+                  
+                  return (
+                    <div
+                      key={card.id}
+                      className={`archive-card ${isCenter ? 'active' : ''}`}
+                      style={{
+                        transform: `translateX(${offset}px)`,
+                        zIndex: isCenter ? 10 : 5
+                      }}
+                      onClick={() => {
+                        if (isCenter) {
+                          console.log('Card selected:', card.title)
+                        } else {
+                          setCurrentCardIndex(index)
+                        }
+                      }}
+                    >
+                      <div className="card-number">{card.number}</div>
+                      <div className="card-title">{card.title}</div>
+                      <div className="card-description">{card.description}</div>
+                      {isCenter && (
+                        <button className="card-select-button">
+                          SELECT
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
-            <div className="cards-footer">
+            <div className="carousel-controls">
               <button 
-                className="cyber-button back-button"
-                onClick={() => setShowThreeCards(false)}
+                className="carousel-nav-btn"
+                onClick={() => {
+                  setCurrentCardIndex((prev) => (prev - 1 + 3) % 3)
+                }}
               >
-                <span>BACK</span>
-                <div className="button-glow"></div>
+                ←
+              </button>
+              
+              <div className="carousel-dots">
+                {[0, 1, 2].map((index) => (
+                  <div 
+                    key={index}
+                    className={`carousel-dot ${index === currentCardIndex ? 'active' : ''}`}
+                    onClick={() => {
+                      setCurrentCardIndex(index)
+                    }}
+                  />
+                ))}
+              </div>
+              
+              <button 
+                className="carousel-nav-btn"
+                onClick={() => {
+                  setCurrentCardIndex((prev) => (prev + 1) % 3)
+                }}
+              >
+                →
               </button>
             </div>
+
           </div>
         </div>
       )}

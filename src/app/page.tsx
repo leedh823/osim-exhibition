@@ -6,6 +6,52 @@ export default function ExhibitionHome() {
   const [currentStep, setCurrentStep] = useState('intro'); // intro, code, questions, result
   const [enteredCode, setEnteredCode] = useState('');
   const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [answers, setAnswers] = useState<number[]>([]);
+
+  // 8개 질문 데이터
+  const questions = [
+    {
+      id: 1,
+      question: "당신이 가장 중요하게 생각하는 것은?",
+      options: ["자유", "안정", "성취", "관계"]
+    },
+    {
+      id: 2,
+      question: "새로운 도전을 할 때 느끼는 감정은?",
+      options: ["흥미진진함", "불안함", "기대감", "조심스러움"]
+    },
+    {
+      id: 3,
+      question: "휴식을 취할 때 선호하는 방식은?",
+      options: ["혼자만의 시간", "가족과 함께", "친구들과", "새로운 경험"]
+    },
+    {
+      id: 4,
+      question: "문제를 해결할 때 주로 사용하는 방법은?",
+      options: ["논리적 분석", "직감적 판단", "다른 사람 의견", "경험 활용"]
+    },
+    {
+      id: 5,
+      question: "성공의 기준은 무엇인가요?",
+      options: ["개인적 만족", "사회적 인정", "물질적 성과", "인간관계"]
+    },
+    {
+      id: 6,
+      question: "스트레스를 받을 때 어떻게 대처하나요?",
+      options: ["운동이나 활동", "휴식과 명상", "사람들과 대화", "새로운 도전"]
+    },
+    {
+      id: 7,
+      question: "미래에 대한 생각은?",
+      options: ["계획적으로 준비", "유연하게 대응", "현재에 집중", "다른 사람과 함께"]
+    },
+    {
+      id: 8,
+      question: "가장 행복한 순간은?",
+      options: ["목표 달성", "사랑하는 사람과", "새로운 발견", "평화로운 시간"]
+    }
+  ];
 
   // 42인치 세로형 터치스크린 최적화
   return (
@@ -86,34 +132,68 @@ export default function ExhibitionHome() {
       {/* 질문 화면 */}
       {currentStep === 'questions' && (
         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15] p-8">
-          <div className="text-center space-y-8 max-w-4xl">
-            <div className="text-4xl font-bold mb-8 text-[#FFE805]">
+          <div className="text-center space-y-8 max-w-4xl w-full">
+            {/* 진행률 표시 */}
+            <div className="text-4xl font-bold mb-4 text-[#FFE805]">
               질문 {currentQuestion}/8
             </div>
-            <h3 className="text-5xl font-bold mb-12 leading-relaxed text-[#FFFFFF]">
-              당신이 가장 중요하게 생각하는 것은?
+            
+            {/* 이미지 영역 (네모 블럭) */}
+            <div className="w-full h-48 bg-[#593B15] rounded-2xl border-4 border-[#FFE805] flex items-center justify-center mb-8">
+              <div className="text-2xl text-[#FFFFFF] opacity-70">
+                이미지 영역
+              </div>
+            </div>
+            
+            {/* 질문 */}
+            <h3 className="text-4xl font-bold mb-12 leading-relaxed text-[#FFFFFF]">
+              {questions[currentQuestion - 1]?.question}
             </h3>
             
-            <div className="grid grid-cols-1 gap-6 w-full">
-              {['자유', '안정', '성취', '관계'].map((option, index) => (
+            {/* 답변 옵션 */}
+            <div className="grid grid-cols-1 gap-6 w-full mb-8">
+              {questions[currentQuestion - 1]?.options.map((option, index) => (
                 <button
                   key={index}
-                  onClick={() => {
-                    if (currentQuestion < 8) {
-                      setCurrentQuestion(prev => prev + 1);
-                    } else {
-                      setCurrentStep('result');
-                    }
-                  }}
-                  className="bg-[#FFFFFF] text-[#593B15] text-3xl font-semibold py-8 px-12 rounded-2xl hover:bg-[#FFE805] hover:text-[#593B15] transition-colors touch-manipulation shadow-lg"
+                  onClick={() => setSelectedAnswer(index)}
+                  className={`text-3xl font-semibold py-6 px-8 rounded-2xl transition-colors touch-manipulation shadow-lg ${
+                    selectedAnswer === index
+                      ? 'bg-[#FFE805] text-[#593B15]'
+                      : 'bg-[#FFFFFF] text-[#593B15] hover:bg-[#FFE805] hover:text-[#593B15]'
+                  }`}
                 >
                   {option}
                 </button>
               ))}
             </div>
             
-            {/* 진행률 표시 */}
-            <div className="w-full bg-[#593B15] rounded-full h-4 mt-12">
+            {/* 확인 버튼 */}
+            <button
+              onClick={() => {
+                if (selectedAnswer !== null) {
+                  const newAnswers = [...answers, selectedAnswer];
+                  setAnswers(newAnswers);
+                  
+                  if (currentQuestion < 8) {
+                    setCurrentQuestion(prev => prev + 1);
+                    setSelectedAnswer(null);
+                  } else {
+                    setCurrentStep('result');
+                  }
+                }
+              }}
+              className={`px-16 py-6 text-2xl font-semibold rounded-full transition-colors shadow-lg ${
+                selectedAnswer !== null
+                  ? 'bg-[#FFE805] text-[#593B15] hover:bg-[#CE9C53] hover:text-white cursor-pointer'
+                  : 'bg-[#CE9C53] text-[#593B15] cursor-not-allowed opacity-50'
+              }`}
+              disabled={selectedAnswer === null}
+            >
+              {currentQuestion < 8 ? '다음 질문' : '결과 보기'}
+            </button>
+            
+            {/* 진행률 바 */}
+            <div className="w-full bg-[#593B15] rounded-full h-4 mt-8">
               <div 
                 className="bg-[#FFE805] h-4 rounded-full transition-all duration-500"
                 style={{ width: `${(currentQuestion / 8) * 100}%` }}
@@ -130,14 +210,19 @@ export default function ExhibitionHome() {
             <h2 className="text-6xl font-bold mb-8 text-[#FFE805]">
               결과
             </h2>
-            <p className="text-3xl mb-12 text-[#FFFFFF]">
+            <p className="text-3xl mb-8 text-[#FFFFFF]">
               당신의 추구미는...
             </p>
+            <div className="text-2xl text-[#FFFFFF] mb-8">
+              답변: {answers.join(', ')}
+            </div>
             <button
               onClick={() => {
                 setCurrentStep('intro');
                 setEnteredCode('');
                 setCurrentQuestion(1);
+                setSelectedAnswer(null);
+                setAnswers([]);
               }}
               className="bg-[#FFE805] text-[#593B15] px-16 py-6 text-2xl font-semibold rounded-full hover:bg-[#CE9C53] hover:text-white transition-colors shadow-lg"
             >

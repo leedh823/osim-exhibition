@@ -64,14 +64,21 @@ export default function ExhibitionHome() {
             </div>
             
             {/* 확인 버튼 */}
-            {enteredCode.length === 4 && (
-              <button
-                onClick={() => setCurrentStep('questions')}
-                className="bg-[#FFE805] text-[#593B15] px-16 py-6 text-2xl font-semibold rounded-full hover:bg-[#CE9C53] hover:text-white transition-colors mt-8 shadow-lg"
-              >
-                확인
-              </button>
-            )}
+            <button
+              onClick={() => {
+                if (enteredCode.length === 4) {
+                  setCurrentStep('questions');
+                }
+              }}
+              className={`px-16 py-6 text-2xl font-semibold rounded-full transition-colors mt-8 shadow-lg ${
+                enteredCode.length === 4
+                  ? 'bg-[#FFE805] text-[#593B15] hover:bg-[#CE9C53] hover:text-white cursor-pointer'
+                  : 'bg-[#CE9C53] text-[#593B15] cursor-not-allowed opacity-50'
+              }`}
+              disabled={enteredCode.length !== 4}
+            >
+              확인
+            </button>
           </div>
         </div>
       )}

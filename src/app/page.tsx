@@ -69,16 +69,101 @@ export default function ExhibitionHome() {
     <div className="w-full h-screen bg-[#593B15] text-white overflow-hidden touch-manipulation">
       {/* 인트로 화면 */}
       {currentStep === 'intro' && (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15] animate-fadeInScale">
-          <div className="text-center space-y-8">
-            <h1 className="text-8xl font-bold mb-8 tracking-wider text-[#FFE805] animate-slideInDown delay-200 animate-glow">
-              추구미 테스트
-            </h1>
-            <p className="text-3xl mb-12 text-[#FFFFFF] animate-slideInUp delay-400">
-              당신의 추구미를 찾아보세요
-            </p>
-            <div className="text-2xl text-[#FFFFFF] animate-pulse delay-600">
-              잠시만 기다려주세요...
+        <div className="w-full h-full flex flex-col items-center justify-center bg-[#F5F5F5] p-8">
+          {/* 상단 배너 */}
+          <div className="bg-black text-white px-8 py-4 rounded-full mb-8">
+            <span className="text-2xl font-bold">CHARACTER COLLECTION</span>
+          </div>
+          
+          {/* 메인 콘텐츠 */}
+          <div className="bg-white rounded-3xl p-12 max-w-5xl w-full shadow-2xl">
+            <div className="text-center space-y-8">
+              {/* 중앙 제목 */}
+              <h1 className="text-7xl font-bold text-[#4CAF50] mb-8" style={{ fontFamily: 'cursive' }}>
+                CONCEPTUAL SKETCH
+              </h1>
+              
+              {/* 캐릭터 컬렉션 그리드 */}
+              <div className="grid grid-cols-3 gap-8 mb-8">
+                {/* 태양 캐릭터 */}
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-24 h-24 bg-yellow-300 rounded-full flex items-center justify-center relative">
+                    <div className="w-16 h-16 bg-yellow-200 rounded-full flex items-center justify-center">
+                      <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                        <div className="w-4 h-4 bg-white rounded-full"></div>
+                      </div>
+                    </div>
+                    {/* 햇살 */}
+                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-1 h-6 bg-yellow-400"></div>
+                    <div className="absolute -top-1 -right-2 w-1 h-4 bg-yellow-400 transform rotate-45"></div>
+                    <div className="absolute -top-1 -left-2 w-1 h-4 bg-yellow-400 transform -rotate-45"></div>
+                  </div>
+                  <span className="text-sm text-gray-600">Sun</span>
+                </div>
+                
+                {/* 포옹 캐릭터 */}
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 h-16 bg-white border-4 border-black rounded-full flex items-center justify-center">
+                      <div className="w-8 h-8 bg-black rounded-full"></div>
+                    </div>
+                    <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-white rounded-full"></div>
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-600">Embrace</span>
+                </div>
+                
+                {/* 요가 캐릭터 */}
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-16 h-20 bg-white border-4 border-black rounded-full flex items-center justify-center relative">
+                    <div className="w-8 h-8 bg-black rounded-full"></div>
+                    <div className="absolute -top-2 w-1 h-8 bg-black"></div>
+                    <div className="absolute -top-1 -left-2 w-1 h-4 bg-black transform rotate-45"></div>
+                    <div className="absolute -top-1 -right-2 w-1 h-4 bg-black transform -rotate-45"></div>
+                  </div>
+                  <span className="text-sm text-gray-600">Yoga</span>
+                </div>
+                
+                {/* 생각하는 캐릭터 */}
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-16 h-16 bg-white border-4 border-black rounded-full flex items-center justify-center relative">
+                    <div className="w-8 h-8 bg-black rounded-full"></div>
+                    {/* 톱니바퀴 */}
+                    <div className="absolute -top-4 w-6 h-6 bg-black rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-white rounded-full"></div>
+                    </div>
+                  </div>
+                  <span className="text-sm text-gray-600">Think</span>
+                </div>
+                
+                {/* 하트 캐릭터 */}
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-16 h-16 bg-red-300 border-4 border-black rounded-full flex items-center justify-center relative">
+                    <div className="w-8 h-8 bg-black rounded-full"></div>
+                    <div className="absolute -bottom-2 w-1 h-4 bg-black"></div>
+                    <div className="absolute -bottom-2 -left-1 w-1 h-3 bg-black transform rotate-45"></div>
+                    <div className="absolute -bottom-2 -right-1 w-1 h-3 bg-black transform -rotate-45"></div>
+                  </div>
+                  <span className="text-sm text-gray-600">Heart</span>
+                </div>
+                
+                {/* 지구 캐릭터 */}
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-16 h-16 bg-blue-300 border-4 border-black rounded-full flex items-center justify-center relative">
+                    <div className="w-8 h-8 bg-black rounded-full"></div>
+                    <div className="absolute -bottom-2 w-1 h-4 bg-black"></div>
+                    <div className="absolute -bottom-2 -left-1 w-1 h-3 bg-black transform rotate-45"></div>
+                    <div className="absolute -bottom-2 -right-1 w-1 h-3 bg-black transform -rotate-45"></div>
+                  </div>
+                  <span className="text-sm text-gray-600">Earth</span>
+                </div>
+              </div>
+              
+              {/* 하단 메시지 */}
+              <div className="text-2xl text-gray-700 font-semibold">
+                잠시만 기다려주세요...
+              </div>
             </div>
           </div>
         </div>

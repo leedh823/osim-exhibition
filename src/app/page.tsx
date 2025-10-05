@@ -132,34 +132,34 @@ export default function ExhibitionHome() {
       {/* 질문 화면 */}
       {currentStep === 'questions' && (
         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15] p-8">
-          <div className="text-center space-y-8 max-w-4xl w-full">
+          <div className="bg-white text-[#593B15] rounded-2xl p-12 max-w-4xl w-full flex flex-col items-center space-y-8">
             {/* 진행률 표시 */}
-            <div className="text-4xl font-bold mb-4 text-[#FFE805]">
+            <div className="text-4xl font-bold text-[#FFE805]">
               질문 {currentQuestion}/8
             </div>
             
-            {/* 이미지 영역 (네모 블럭) */}
-            <div className="w-full h-48 bg-[#593B15] rounded-2xl border-4 border-[#FFE805] flex items-center justify-center mb-8">
-              <div className="text-2xl text-[#FFFFFF] opacity-70">
+            {/* 이미지 영역 */}
+            <div className="w-full h-80 bg-gray-100 rounded-xl flex items-center justify-center">
+              <div className="text-3xl text-[#593B15] opacity-70">
                 이미지 영역
               </div>
             </div>
             
             {/* 질문 */}
-            <h3 className="text-4xl font-bold mb-12 leading-relaxed text-[#FFFFFF]">
+            <h3 className="text-4xl font-bold leading-relaxed text-[#593B15] text-center">
               {questions[currentQuestion - 1]?.question}
             </h3>
             
             {/* 답변 옵션 */}
-            <div className="grid grid-cols-1 gap-6 w-full mb-8">
+            <div className="grid grid-cols-1 gap-4 w-full">
               {questions[currentQuestion - 1]?.options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedAnswer(index)}
-                  className={`text-3xl font-semibold py-6 px-8 rounded-2xl transition-colors touch-manipulation shadow-lg ${
+                  className={`text-2xl font-semibold py-6 px-8 rounded-xl transition-all duration-200 touch-manipulation ${
                     selectedAnswer === index
-                      ? 'bg-[#FFE805] text-[#593B15]'
-                      : 'bg-[#FFFFFF] text-[#593B15] hover:bg-[#FFE805] hover:text-[#593B15]'
+                      ? 'bg-[#FFE805] text-[#593B15] scale-105'
+                      : 'bg-gray-100 text-[#593B15] hover:bg-[#CE9C53] hover:text-white'
                   }`}
                 >
                   {option}
@@ -182,10 +182,10 @@ export default function ExhibitionHome() {
                   }
                 }
               }}
-              className={`px-16 py-6 text-2xl font-semibold rounded-full transition-colors shadow-lg ${
+              className={`px-16 py-6 text-2xl font-semibold rounded-full transition-colors ${
                 selectedAnswer !== null
                   ? 'bg-[#FFE805] text-[#593B15] hover:bg-[#CE9C53] hover:text-white cursor-pointer'
-                  : 'bg-[#CE9C53] text-[#593B15] cursor-not-allowed opacity-50'
+                  : 'bg-gray-300 text-[#593B15] cursor-not-allowed opacity-50'
               }`}
               disabled={selectedAnswer === null}
             >
@@ -193,9 +193,9 @@ export default function ExhibitionHome() {
             </button>
             
             {/* 진행률 바 */}
-            <div className="w-full bg-[#593B15] rounded-full h-4 mt-8">
+            <div className="w-full bg-gray-200 rounded-full h-3 mt-4">
               <div 
-                className="bg-[#FFE805] h-4 rounded-full transition-all duration-500"
+                className="bg-[#FFE805] h-3 rounded-full transition-all duration-500"
                 style={{ width: `${(currentQuestion / 8) * 100}%` }}
               />
             </div>
@@ -205,15 +205,15 @@ export default function ExhibitionHome() {
 
       {/* 결과 화면 */}
       {currentStep === 'result' && (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15]">
-          <div className="text-center space-y-8">
-            <h2 className="text-6xl font-bold mb-8 text-[#FFE805]">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15] p-8">
+          <div className="bg-white text-[#593B15] rounded-2xl p-12 max-w-4xl w-full flex flex-col items-center space-y-8">
+            <h2 className="text-6xl font-bold text-[#FFE805]">
               결과
             </h2>
-            <p className="text-3xl mb-8 text-[#FFFFFF]">
+            <p className="text-3xl text-[#593B15] text-center">
               당신의 추구미는...
             </p>
-            <div className="text-2xl text-[#FFFFFF] mb-8">
+            <div className="text-xl text-[#593B15] text-center bg-gray-100 rounded-xl p-6 w-full">
               답변: {answers.join(', ')}
             </div>
             <button
@@ -224,7 +224,7 @@ export default function ExhibitionHome() {
                 setSelectedAnswer(null);
                 setAnswers([]);
               }}
-              className="bg-[#FFE805] text-[#593B15] px-16 py-6 text-2xl font-semibold rounded-full hover:bg-[#CE9C53] hover:text-white transition-colors shadow-lg"
+              className="bg-[#FFE805] text-[#593B15] px-16 py-6 text-2xl font-semibold rounded-full hover:bg-[#CE9C53] hover:text-white transition-colors"
             >
               다시 시작하기
             </button>

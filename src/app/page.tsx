@@ -42,23 +42,25 @@ export default function ExhibitionHome() {
             </div>
             
             {/* 터치 키패드 */}
-            <div className="grid grid-cols-3 gap-6 max-w-md">
-              {[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map((key) => (
-                <button
-                  key={key}
-                  onClick={() => {
-                    if (key === '⌫') {
-                      setEnteredCode(prev => prev.slice(0, -1));
-                    } else if (key !== '' && enteredCode.length < 4) {
-                      setEnteredCode(prev => prev + key);
-                    }
-                  }}
-                  className="bg-[#FFFFFF] text-[#593B15] text-4xl font-bold h-20 rounded-xl hover:bg-[#FFE805] hover:text-[#593B15] transition-colors touch-manipulation shadow-lg"
-                  disabled={key === ''}
-                >
-                  {key}
-                </button>
-              ))}
+            <div className="flex justify-center">
+              <div className="grid grid-cols-3 gap-6 max-w-md">
+                {[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map((key) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      if (key === '⌫') {
+                        setEnteredCode(prev => prev.slice(0, -1));
+                      } else if (key !== '' && enteredCode.length < 4) {
+                        setEnteredCode(prev => prev + key);
+                      }
+                    }}
+                    className="bg-[#FFFFFF] text-[#593B15] text-4xl font-bold h-20 rounded-xl hover:bg-[#FFE805] hover:text-[#593B15] transition-colors touch-manipulation shadow-lg"
+                    disabled={key === ''}
+                  >
+                    {key}
+                  </button>
+                ))}
+              </div>
             </div>
             
             {/* 확인 버튼 */}

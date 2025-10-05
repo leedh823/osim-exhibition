@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ExhibitionHome() {
   const [currentStep, setCurrentStep] = useState('intro'); // intro, code, questions, result
@@ -53,25 +53,33 @@ export default function ExhibitionHome() {
     }
   ];
 
+  // 5초 지연 후 자동으로 code 스텝으로 전환
+  useEffect(() => {
+    if (currentStep === 'intro') {
+      const timer = setTimeout(() => {
+        setCurrentStep('code');
+      }, 5000); // 5초 지연
+      
+      return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+    }
+  }, [currentStep]);
+
   // 42인치 세로형 터치스크린 최적화
   return (
     <div className="w-full h-screen bg-[#593B15] text-white overflow-hidden touch-manipulation">
       {/* 인트로 화면 */}
       {currentStep === 'intro' && (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15]">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15] animate-fadeInScale">
           <div className="text-center space-y-8">
-            <h1 className="text-8xl font-bold mb-8 tracking-wider text-[#FFE805]">
+            <h1 className="text-8xl font-bold mb-8 tracking-wider text-[#FFE805] animate-slideInDown delay-200 animate-glow">
               추구미 테스트
             </h1>
-            <p className="text-3xl mb-12 text-[#FFFFFF]">
+            <p className="text-3xl mb-12 text-[#FFFFFF] animate-slideInUp delay-400">
               당신의 추구미를 찾아보세요
             </p>
-            <button
-              onClick={() => setCurrentStep('code')}
-              className="bg-[#FFE805] text-[#593B15] px-16 py-6 text-2xl font-semibold rounded-full hover:bg-[#CE9C53] hover:text-white transition-colors touch-manipulation shadow-lg"
-            >
-              시작하기
-            </button>
+            <div className="text-2xl text-[#FFFFFF] animate-pulse delay-600">
+              잠시만 기다려주세요...
+            </div>
           </div>
         </div>
       )}

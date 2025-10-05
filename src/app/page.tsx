@@ -43,7 +43,7 @@ export default function ExhibitionHome() {
             
             {/* 터치 키패드 */}
             <div className="flex justify-center">
-              <div className="grid grid-cols-3 gap-6 max-w-md">
+              <div className="grid grid-cols-3 gap-8 max-w-lg">
                 {[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map((key) => (
                   <button
                     key={key}
@@ -54,7 +54,7 @@ export default function ExhibitionHome() {
                         setEnteredCode(prev => prev + key);
                       }
                     }}
-                    className="bg-[#FFFFFF] text-[#593B15] text-4xl font-bold h-20 rounded-xl hover:bg-[#FFE805] hover:text-[#593B15] transition-colors touch-manipulation shadow-lg"
+                    className="bg-[#FFFFFF] text-[#593B15] text-5xl font-bold h-24 w-24 rounded-xl hover:bg-[#FFE805] hover:text-[#593B15] transition-colors touch-manipulation shadow-lg"
                     disabled={key === ''}
                   >
                     {key}

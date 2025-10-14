@@ -161,7 +161,7 @@ export default function ExhibitionHome() {
                 ANALYSIS_READY
               </div>
               <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-gray-400 font-mono text-sm opacity-60 animate-pulse">
-                TAP TO INITIATE
+                CLICK TO START
               </div>
             </div>
             
@@ -173,20 +173,20 @@ export default function ExhibitionHome() {
           </div>
 
           {/* 하단 UI 아이콘들 */}
-          <div className="absolute bottom-10 left-10 text-white opacity-60">
+          <div className="absolute bottom-10 left-10 text-gray-400 opacity-40">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
           </div>
 
-          <div className="absolute bottom-10 right-10 text-white opacity-60">
+          <div className="absolute bottom-10 right-10 text-gray-400 opacity-40">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
             </svg>
           </div>
 
           {/* 메인 타이틀 (흑백 디지털 감시 시스템 스타일) */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+          <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
             <div className="relative">
               {/* 배경 박스 */}
               <div className="absolute inset-0 bg-black/20 border border-gray-600 rounded-lg -m-8 animate-pulse opacity-40"></div>
@@ -220,6 +220,16 @@ export default function ExhibitionHome() {
                 <line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#666666" strokeWidth="1" opacity="0.2" className="animate-pulse" />
                 <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#666666" strokeWidth="1" opacity="0.2" className="animate-pulse delay-700" />
               </svg>
+            </div>
+          </div>
+
+          {/* 클릭 안내 텍스트 */}
+          <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 text-center">
+            <div className="text-gray-400 font-mono text-xl opacity-60 animate-pulse">
+              CLICK ANYWHERE TO BEGIN
+            </div>
+            <div className="text-gray-500 font-mono text-sm opacity-50 animate-pulse delay-500 mt-2">
+              웹사이트 복구에 참여해주세요
             </div>
           </div>
         </div>
@@ -271,7 +281,7 @@ export default function ExhibitionHome() {
           </div>
 
           {/* AI 음성 대사 */}
-          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-green-400 p-6 rounded-lg max-w-2xl">
+          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-gray-400 p-6 rounded-lg max-w-2xl">
             <div className="font-mono text-lg animate-flicker">
               &ldquo;{aiDialogue}&rdquo;
             </div>
@@ -320,8 +330,8 @@ export default function ExhibitionHome() {
           <div className="absolute bottom-32 right-1/3 w-30 h-22 bg-gray-200 border-2 border-red-400 rotate-6 cursor-pointer hover:bg-green-100 transition-colors"
                onClick={() => handlePieceRepair(5)}>
             <div className="p-2 text-xs font-mono">IMG</div>
-          </div>
-          
+        </div>
+
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-28 bg-gray-200 border-2 border-red-400 cursor-pointer hover:bg-green-100 transition-colors"
                onClick={() => handlePieceRepair(6)}>
             <div className="p-2 text-xs font-mono">CORE</div>
@@ -329,13 +339,13 @@ export default function ExhibitionHome() {
 
           {/* 복구된 조각들 표시 */}
           {repairedPieces.map((pieceId) => (
-            <div key={pieceId} className="absolute bg-green-100 border-2 border-green-400 opacity-50 pointer-events-none">
-              <div className="p-2 text-xs font-mono text-green-600">✓ REPAIRED</div>
+            <div key={pieceId} className="absolute bg-gray-100 border-2 border-gray-400 opacity-50 pointer-events-none">
+              <div className="p-2 text-xs font-mono text-gray-600">✓ REPAIRED</div>
             </div>
           ))}
 
           {/* AI 대사 */}
-          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-green-400 p-6 rounded-lg max-w-2xl">
+          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-gray-400 p-6 rounded-lg max-w-2xl">
             <div className="font-mono text-lg animate-flicker">
               &ldquo;{aiDialogue}&rdquo;
             </div>
@@ -367,8 +377,8 @@ export default function ExhibitionHome() {
                 key={piece.id}
                 className={`p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer transition-all duration-300 ${
                   restoredData.includes(piece.content)
-                    ? 'bg-green-100 border-green-400 text-green-600'
-                    : 'hover:bg-blue-50 hover:border-blue-300'
+                    ? 'bg-gray-100 border-gray-400 text-gray-600'
+                    : 'hover:bg-gray-50 hover:border-gray-400'
                 }`}
                 onClick={() => handleDataRestore(piece.content)}
               >
@@ -433,8 +443,8 @@ export default function ExhibitionHome() {
                       <div>창의성과 정확성의 만남</div>
                     </div>
                   </div>
-                </div>
-              </main>
+        </div>
+      </main>
             </div>
           </div>
 

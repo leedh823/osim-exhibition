@@ -198,16 +198,41 @@ export default function ExhibitionHome() {
             </svg>
           </div>
 
-          {/* 메인 타이틀 (디지털 스타일) */}
-          <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-            <h1 className="text-7xl font-bold tracking-widest text-green-400 font-mono mb-4 animate-digitalGlow">
-              It&apos;s Just a Tool?
-            </h1>
-            <div className="text-4xl font-mono text-green-300 opacity-80 animate-digitalGlow delay-500">
-              ANALYSIS_SYSTEM
-            </div>
-            <div className="text-xl text-green-400 font-mono mt-4 animate-flicker">
-              INITIALIZING... PLEASE WAIT
+          {/* 메인 타이틀 (디지털 감시 시스템 스타일) */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+            <div className="relative">
+              {/* 배경 박스 */}
+              <div className="absolute inset-0 bg-black/30 border-2 border-green-400 rounded-lg -m-8 animate-trackingBox"></div>
+              
+              {/* 메인 타이틀 */}
+              <h1 className="text-8xl font-bold tracking-[0.2em] text-green-400 font-mono mb-6 animate-digitalGlow relative z-10">
+                It&apos;s Just a Tool?
+              </h1>
+              
+              {/* 서브텍스트들 */}
+              <div className="space-y-2 relative z-10">
+                <div className="text-2xl font-mono text-green-300 opacity-90 animate-digitalGlow delay-300">
+                  SYSTEM_INTERROGATION
+                </div>
+                <div className="text-lg font-mono text-green-400 animate-flicker delay-700">
+                  AI_HUMAN_RELATIONSHIP_ANALYSIS
+                </div>
+                <div className="text-sm font-mono text-green-500 opacity-70 animate-pulse delay-1000">
+                  STATUS: QUESTIONING...
+                </div>
+              </div>
+              
+              {/* 주변 디지털 요소들 */}
+              <div className="absolute -top-4 -left-4 w-8 h-8 border-2 border-green-400 animate-pulse"></div>
+              <div className="absolute -top-4 -right-4 w-8 h-8 border-2 border-green-400 animate-pulse delay-500"></div>
+              <div className="absolute -bottom-4 -left-4 w-8 h-8 border-2 border-green-400 animate-pulse delay-1000"></div>
+              <div className="absolute -bottom-4 -right-4 w-8 h-8 border-2 border-green-400 animate-pulse delay-1500"></div>
+              
+              {/* 연결선들 */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                <line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#00ff00" strokeWidth="1" opacity="0.4" className="animate-pulse" />
+                <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#00ff00" strokeWidth="1" opacity="0.4" className="animate-pulse delay-700" />
+              </svg>
             </div>
           </div>
         </div>

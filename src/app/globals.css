@@ -58,7 +58,7 @@ button:active {
   }
 }
 
-/* 애니메이션 키프레임 */
+/* 디지털 감시 시스템 애니메이션 키프레임 */
 @keyframes fadeInScale {
   0% {
     opacity: 0;
@@ -110,6 +110,86 @@ button:active {
   }
 }
 
+/* 디지털 시스템 전용 애니메이션 */
+@keyframes digitalGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+    opacity: 0.8;
+  }
+  50% {
+    text-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00, 0 0 35px #00ff00;
+    opacity: 1;
+  }
+}
+
+@keyframes scanLine {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes dataFlow {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  10%, 90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes trackingBox {
+  0%, 100% {
+    border-color: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+  }
+  50% {
+    border-color: #00ff88;
+    box-shadow: 0 0 20px #00ff88, 0 0 30px #00ff88;
+  }
+}
+
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  75% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes matrixRain {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
 /* 애니메이션 클래스 */
 .animate-fadeInScale {
   animation: fadeInScale 1s ease-out;
@@ -131,19 +211,69 @@ button:active {
   animation: glow 3s ease-in-out infinite;
 }
 
+/* 디지털 시스템 전용 애니메이션 클래스 */
+.animate-digitalGlow {
+  animation: digitalGlow 2s ease-in-out infinite;
+}
+
+.animate-scanLine {
+  animation: scanLine 3s linear infinite;
+}
+
+.animate-dataFlow {
+  animation: dataFlow 4s linear infinite;
+}
+
+.animate-trackingBox {
+  animation: trackingBox 1.5s ease-in-out infinite;
+}
+
+.animate-flicker {
+  animation: flicker 0.5s ease-in-out infinite;
+}
+
+.animate-matrixRain {
+  animation: matrixRain 2s linear infinite;
+}
+
 /* 지연 효과 */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
 .delay-200 {
   animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
 }
 
 .delay-400 {
   animation-delay: 0.4s;
 }
 
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
 .delay-600 {
   animation-delay: 0.6s;
 }
 
+.delay-700 {
+  animation-delay: 0.7s;
+}
+
 .delay-800 {
   animation-delay: 0.8s;
+}
+
+.delay-1000 {
+  animation-delay: 1s;
+}
+
+/* 터치 매니퓰레이션 */
+.touch-manipulation {
+  touch-action: manipulation;
 }

@@ -67,18 +67,113 @@ export default function ExhibitionHome() {
   // 42인치 세로형 터치스크린 최적화
   return (
     <div className="w-full h-screen bg-[#593B15] text-white overflow-hidden touch-manipulation">
-      {/* 인트로 화면 */}
+      {/* 디지털 감시 시스템 스타일 인트로 화면 */}
       {currentStep === 'intro' && (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15]">
-          <div className="text-center space-y-8">
-            <h1 className="text-8xl font-bold mb-8 tracking-wider text-[#FFE805]">
-              추구미 테스트
+        <div className="w-full h-full relative overflow-hidden bg-black">
+          {/* 배경 비디오 영역 (흑백 필터) */}
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-black to-gray-800">
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20"></div>
+          </div>
+
+          {/* 디지털 오버레이 텍스트들 */}
+          <div className="absolute top-10 left-10 text-green-400 font-mono text-sm opacity-60">
+            <div className="animate-pulse">TRACKING_SYSTEM v2.1.4</div>
+            <div className="animate-pulse delay-100">INITIALIZING...</div>
+            <div className="animate-pulse delay-200">SCANNING_PATTERNS</div>
+          </div>
+
+          <div className="absolute top-10 right-10 text-green-400 font-mono text-sm opacity-60">
+            <div>327548.0</div>
+            <div>565</div>
+            <div>7549.0</div>
+          </div>
+
+          <div className="absolute bottom-20 left-10 text-green-400 font-mono text-sm opacity-60">
+            <div>(loop (format t"~%*))</div>
+            <div>32/562.0</div>
+            <div>3.0</div>
+          </div>
+
+          {/* 바운딩 박스들 (초록색 추적 박스) */}
+          <div className="absolute top-1/4 left-1/4 w-32 h-40 border-2 border-green-400 animate-trackingBox">
+            <div className="absolute -top-6 left-0 text-green-400 text-xs font-mono animate-digitalGlow">SUBJECT_01</div>
+            <div className="absolute -bottom-6 right-0 text-green-400 text-xs font-mono animate-digitalGlow">CONF: 0.95</div>
+          </div>
+
+          <div className="absolute top-1/3 right-1/3 w-24 h-32 border-2 border-green-400 animate-trackingBox delay-300">
+            <div className="absolute -top-6 left-0 text-green-400 text-xs font-mono animate-digitalGlow">SUBJECT_02</div>
+            <div className="absolute -bottom-6 right-0 text-green-400 text-xs font-mono animate-digitalGlow">CONF: 0.87</div>
+          </div>
+
+          <div className="absolute bottom-1/4 right-1/4 w-28 h-36 border-2 border-green-400 animate-trackingBox delay-700">
+            <div className="absolute -top-6 left-0 text-green-400 text-xs font-mono animate-digitalGlow">SUBJECT_03</div>
+            <div className="absolute -bottom-6 right-0 text-green-400 text-xs font-mono animate-digitalGlow">CONF: 0.92</div>
+          </div>
+
+          {/* 스캔라인 효과 */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scanLine"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scanLine delay-1500"></div>
+          </div>
+
+          {/* 데이터 플로우 효과 */}
+          <div className="absolute top-20 left-0 w-32 h-1 bg-green-400 animate-dataFlow opacity-60"></div>
+          <div className="absolute top-32 right-0 w-24 h-1 bg-green-400 animate-dataFlow delay-1000 opacity-60"></div>
+          <div className="absolute bottom-32 left-0 w-40 h-1 bg-green-400 animate-dataFlow delay-2000 opacity-60"></div>
+
+          {/* 추적선들 */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none">
+            <line x1="25%" y1="25%" x2="35%" y2="35%" stroke="#00ff00" strokeWidth="1" opacity="0.6" className="animate-pulse" />
+            <line x1="65%" y1="33%" x2="75%" y2="25%" stroke="#00ff00" strokeWidth="1" opacity="0.6" className="animate-pulse delay-500" />
+            <line x1="75%" y1="25%" x2="75%" y2="75%" stroke="#00ff00" strokeWidth="1" opacity="0.6" className="animate-pulse delay-1000" />
+          </svg>
+
+          {/* 중앙 재생 버튼 */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative">
+              {/* 큰 원형 배경 */}
+              <div className="w-48 h-48 rounded-full border-4 border-green-400 bg-black/50 flex items-center justify-center animate-trackingBox shadow-2xl">
+                {/* 재생 버튼 */}
+                <div className="w-16 h-16 ml-2 animate-digitalGlow">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-green-400">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              </div>
+              
+              {/* 버튼 주변 텍스트 */}
+              <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 text-green-400 font-mono text-lg animate-digitalGlow">
+                ANALYSIS_READY
+              </div>
+              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-green-400 font-mono text-sm animate-flicker">
+                TAP TO INITIATE
+              </div>
+            </div>
+          </div>
+
+          {/* 하단 UI 아이콘들 */}
+          <div className="absolute bottom-10 left-10 text-white opacity-60">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+
+          <div className="absolute bottom-10 right-10 text-white opacity-60">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+          </div>
+
+          {/* 메인 타이틀 (디지털 스타일) */}
+          <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+            <h1 className="text-7xl font-bold tracking-widest text-green-400 font-mono mb-4 animate-digitalGlow">
+              추구미
             </h1>
-            <p className="text-3xl mb-12 text-[#FFFFFF]">
-              당신의 추구미를 찾아보세요
-            </p>
-            <div className="text-2xl text-[#FFFFFF]">
-              잠시만 기다려주세요...
+            <div className="text-4xl font-mono text-green-300 opacity-80 animate-digitalGlow delay-500">
+              ANALYSIS_SYSTEM
+            </div>
+            <div className="text-xl text-green-400 font-mono mt-4 animate-flicker">
+              INITIALIZING... PLEASE WAIT
             </div>
           </div>
         </div>

@@ -387,23 +387,40 @@ button:active {
 
 @keyframes collapseDown {
   0% { 
-    transform: translateY(0) scaleY(1);
+    transform: translateY(0) scaleY(1) rotateX(0deg);
     opacity: 1;
   }
-  70% {
-    transform: translateY(0) scaleY(1);
+  68% {
+    transform: translateY(0) scaleY(1) rotateX(0deg);
     opacity: 1;
   }
+  /* 주먹 맞는 순간 - 위로 튀김 */
+  72% {
+    transform: translateY(-30px) scaleY(1.1) scaleX(0.95) rotateX(-3deg);
+    opacity: 1;
+  }
+  /* 잠시 정지 */
+  74% {
+    transform: translateY(-25px) scaleY(1.08) scaleX(0.96) rotateX(-2deg);
+    opacity: 1;
+  }
+  /* 무너지기 시작 */
+  78% {
+    transform: translateY(10px) scaleY(0.9) scaleX(1.02) rotateX(5deg);
+    opacity: 0.95;
+  }
+  /* 빠르게 추락 */
   85% {
-    transform: translateY(20px) scaleY(0.95) rotateX(5deg);
-    opacity: 0.9;
+    transform: translateY(50vh) scaleY(0.6) scaleX(1.05) rotateX(25deg);
+    opacity: 0.7;
   }
-  95% {
-    transform: translateY(100vh) scaleY(0.3) rotateX(45deg);
+  92% {
+    transform: translateY(100vh) scaleY(0.3) scaleX(1.1) rotateX(60deg);
     opacity: 0.3;
   }
+  /* 완전히 사라짐 */
   100% { 
-    transform: translateY(150vh) scaleY(0.1) rotateX(90deg);
+    transform: translateY(150vh) scaleY(0.05) scaleX(1.2) rotateX(90deg);
     opacity: 0;
   }
 }
@@ -461,9 +478,11 @@ button:active {
 }
 
 .animate-collapseDown {
-  animation: collapseDown 7s ease-in forwards;
+  animation: collapseDown 7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   transform-style: preserve-3d;
   perspective: 1000px;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .animate-redPulse {

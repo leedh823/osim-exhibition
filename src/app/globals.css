@@ -273,6 +273,114 @@ button:active {
   animation-delay: 1s;
 }
 
+/* 시스템 오류 전환 애니메이션 */
+@keyframes systemCrash {
+  0% { 
+    filter: none;
+    transform: scale(1);
+  }
+  20% { 
+    filter: brightness(2) contrast(2);
+    transform: scale(1.02);
+  }
+  40% { 
+    filter: brightness(0.5) contrast(0.5) hue-rotate(90deg);
+    transform: scale(0.98) rotate(0.5deg);
+  }
+  60% { 
+    filter: brightness(1.5) contrast(1.5) saturate(0);
+    transform: scale(1.01) rotate(-0.5deg);
+  }
+  80% { 
+    filter: brightness(0.3) contrast(3) saturate(0);
+    transform: scale(0.99);
+  }
+  100% { 
+    filter: brightness(0) contrast(0);
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes glitchText {
+  0%, 100% { 
+    transform: translate(0);
+    opacity: 1;
+  }
+  10% { 
+    transform: translate(-2px, 2px);
+    opacity: 0.8;
+  }
+  20% { 
+    transform: translate(2px, -2px);
+    opacity: 0.9;
+  }
+  30% { 
+    transform: translate(-3px, 0px);
+    opacity: 0.7;
+  }
+  40% { 
+    transform: translate(3px, 3px);
+    opacity: 0.85;
+  }
+  50% { 
+    transform: translate(0px, -3px);
+    opacity: 0.6;
+  }
+  60% { 
+    transform: translate(-2px, -2px);
+    opacity: 0.75;
+  }
+  70% { 
+    transform: translate(2px, 0px);
+    opacity: 0.5;
+  }
+  80% { 
+    transform: translate(0px, 2px);
+    opacity: 0.3;
+  }
+  90% { 
+    transform: translate(-1px, -1px);
+    opacity: 0.2;
+  }
+}
+
+@keyframes errorFlash {
+  0%, 100% { background-color: transparent; }
+  10%, 30%, 50%, 70%, 90% { background-color: rgba(255, 0, 0, 0.3); }
+  20%, 40%, 60%, 80% { background-color: rgba(255, 255, 255, 0.8); }
+}
+
+@keyframes staticNoise {
+  0% { 
+    background-position: 0% 0%;
+    opacity: 0;
+  }
+  50% { 
+    opacity: 0.3;
+  }
+  100% { 
+    background-position: 100% 100%;
+    opacity: 0;
+  }
+}
+
+.animate-systemCrash {
+  animation: systemCrash 1.5s ease-in-out forwards;
+}
+
+.animate-glitchText {
+  animation: glitchText 0.8s ease-in-out forwards;
+}
+
+.animate-errorFlash {
+  animation: errorFlash 1s ease-in-out;
+}
+
+.animate-staticNoise {
+  animation: staticNoise 1.5s linear forwards;
+}
+
 /* 터치 매니퓰레이션 */
 .touch-manipulation {
   touch-action: manipulation;

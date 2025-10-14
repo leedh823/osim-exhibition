@@ -9,6 +9,7 @@ export default function ExhibitionHome() {
   const [aiDialogue, setAiDialogue] = useState('');
   const [showCursor, setShowCursor] = useState(true);
   const [finalAnswer, setFinalAnswer] = useState('');
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // AI 대사 데이터
   const aiDialogues = {
@@ -39,6 +40,15 @@ export default function ExhibitionHome() {
     { id: 4, content: "손글씨.png", type: "image" },
     { id: 5, content: "사랑하는 마음", type: "emotion" }
   ];
+
+  // 시스템 오류 전환 효과
+  const handleSystemCrash = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentStep('error');
+      setIsTransitioning(false);
+    }, 1500); // 애니메이션 시간과 동기화
+  };
 
   // 커서 깜빡임 효과
   useEffect(() => {
@@ -168,8 +178,50 @@ export default function ExhibitionHome() {
           {/* 클릭 영역 - 사이트 진입 효과 */}
           <div 
             className="absolute inset-0 cursor-pointer hover:bg-white/5 transition-all duration-500 z-50"
-            onClick={() => setCurrentStep('error')}
+            onClick={handleSystemCrash}
           ></div>
+
+          {/* 시스템 오류 전환 화면 */}
+          {isTransitioning && (
+            <div className="absolute inset-0 z-[100] pointer-events-none">
+              {/* 전체 화면 크래시 효과 */}
+              <div className="absolute inset-0 animate-systemCrash"></div>
+              
+              {/* 에러 플래시 효과 */}
+              <div className="absolute inset-0 animate-errorFlash"></div>
+              
+              {/* 정적 노이즈 */}
+              <div 
+                className="absolute inset-0 animate-staticNoise"
+                style={{
+                  backgroundImage: `repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.1) 2px,
+                    rgba(255, 255, 255, 0.1) 4px
+                  )`
+                }}
+              ></div>
+              
+              {/* 글리치 텍스트 */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="animate-glitchText text-red-500 font-mono text-6xl font-bold">
+                  SYSTEM ERROR
+                </div>
+              </div>
+              
+              {/* 에러 메시지들 */}
+              <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 text-center animate-glitchText">
+                <div className="text-red-400 font-mono text-xl mb-2">
+                  CRITICAL FAILURE DETECTED
+                </div>
+                <div className="text-gray-400 font-mono text-sm">
+                  Attempting recovery...
+                </div>
+              </div>
+            </div>
+          )}
           </div>
 
           {/* 하단 UI 아이콘들 */}

@@ -170,7 +170,6 @@ export default function ExhibitionHome() {
               className="absolute inset-0 cursor-pointer"
               onClick={() => setCurrentStep('error')}
             ></div>
-            </div>
           </div>
 
           {/* 하단 UI 아이콘들 */}

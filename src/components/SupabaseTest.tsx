@@ -13,7 +13,7 @@ export default function SupabaseTest() {
       setError('')
       
       // Simple connection test - just try to get session info
-      const { data, error } = await supabase.auth.getSession()
+      const { error } = await supabase.auth.getSession()
       
       if (error) {
         setError(`Connection failed: ${error.message}`)

@@ -68,7 +68,7 @@ export default function ExhibitionHome() {
     } else if (currentStep === 'reflection') {
       setAiDialogue(aiDialogues.reflection);
     }
-  }, [currentStep]);
+  }, [currentStep, aiDialogues.error, aiDialogues.recovered, aiDialogues.reflection]);
 
   // 조각 복구 시 AI 대사 변경
   const handlePieceRepair = (pieceId: number) => {
@@ -106,7 +106,7 @@ export default function ExhibitionHome() {
         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#CE9C53] to-[#593B15]">
           <div className="text-center space-y-8">
             <h1 className="text-8xl font-bold mb-8 tracking-wider text-[#FFE805]">
-              It's Just a Tool?
+              It&apos;s Just a Tool?
             </h1>
             <p className="text-3xl mb-12 text-[#FFFFFF]">
               웹사이트 복구에 참여해주세요
@@ -137,7 +137,7 @@ export default function ExhibitionHome() {
 
           <div className="absolute bottom-40 left-20 text-red-600 font-mono text-base rotate-3 opacity-50">
             function loadPage() {`{`}<br/>
-            &nbsp;&nbsp;console.log('Error');<br/>
+            &nbsp;&nbsp;console.log(&apos;Error&apos;);<br/>
             &nbsp;&nbsp;return false;
           </div>
 
@@ -166,7 +166,7 @@ export default function ExhibitionHome() {
           {/* AI 음성 대사 */}
           <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-green-400 p-6 rounded-lg max-w-2xl">
             <div className="font-mono text-lg animate-flicker">
-              "{aiDialogue}"
+              &ldquo;{aiDialogue}&rdquo;
             </div>
           </div>
 
@@ -226,7 +226,7 @@ export default function ExhibitionHome() {
           {/* AI 대사 */}
           <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-green-400 p-6 rounded-lg max-w-2xl">
             <div className="font-mono text-lg animate-flicker">
-              "{aiDialogue}"
+              &ldquo;{aiDialogue}&rdquo;
             </div>
           </div>
         </div>
@@ -241,7 +241,7 @@ export default function ExhibitionHome() {
           
           {/* 복원할 데이터 조각들 */}
           <div className="grid grid-cols-2 gap-8 p-8 max-w-4xl mx-auto">
-            {dataPieces.map((piece, index) => (
+            {dataPieces.map((piece) => (
               <div 
                 key={piece.id}
                 className={`p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer transition-all duration-300 ${
@@ -266,7 +266,7 @@ export default function ExhibitionHome() {
           {/* AI 대사 */}
           <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-green-400 p-6 rounded-lg max-w-2xl">
             <div className="font-mono text-lg animate-flicker">
-              "{aiDialogue}"
+              &ldquo;{aiDialogue}&rdquo;
             </div>
           </div>
         </div>
@@ -310,7 +310,7 @@ export default function ExhibitionHome() {
           {/* AI 대사 */}
           <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-green-400 p-6 rounded-lg max-w-2xl">
             <div className="font-mono text-lg animate-flicker">
-              "{aiDialogue}"
+              &ldquo;{aiDialogue}&rdquo;
             </div>
           </div>
 
@@ -327,7 +327,7 @@ export default function ExhibitionHome() {
         <div className="w-full h-full bg-white flex flex-col items-center justify-center">
           <div className="text-center space-y-12">
             <h1 className="text-8xl font-bold text-gray-800 font-mono">
-              It's Just a Tool?
+              It&apos;s Just a Tool?
             </h1>
             
             <div className="text-4xl text-gray-600">
@@ -348,7 +348,7 @@ export default function ExhibitionHome() {
             
             <button
               onClick={() => {
-                alert(`당신의 답: "${finalAnswer}"\n\n전시를 마칩니다. 감사합니다.`);
+                alert(`당신의 답: &ldquo;${finalAnswer}&rdquo;\n\n전시를 마칩니다. 감사합니다.`);
                 // 전시 재시작
                 setCurrentStep('intro');
                 setRepairedPieces([]);
@@ -369,7 +369,7 @@ export default function ExhibitionHome() {
           {/* AI 대사 */}
           <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black text-green-400 p-6 rounded-lg max-w-2xl">
             <div className="font-mono text-lg animate-flicker">
-              "{aiDialogue}"
+              &ldquo;{aiDialogue}&rdquo;
             </div>
           </div>
         </div>

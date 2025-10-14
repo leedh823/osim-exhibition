@@ -183,12 +183,42 @@ export default function ExhibitionHome() {
 
           {/* 시스템 오류 전환 화면 */}
           {isTransitioning && (
-            <div className="absolute inset-0 z-[100] pointer-events-none">
-              {/* 전체 화면 크래시 효과 */}
-              <div className="absolute inset-0 animate-systemCrash"></div>
+            <div className="absolute inset-0 z-[100] pointer-events-none overflow-hidden">
+              {/* 빨간색 펄스 효과 (전체 화면) */}
+              <div className="absolute inset-0 animate-redPulse"></div>
               
-              {/* 에러 플래시 효과 */}
-              <div className="absolute inset-0 animate-errorFlash"></div>
+              {/* 무너져 내리는 원래 페이지 내용 */}
+              <div className="absolute inset-0 animate-collapseDown">
+                {/* 디지털 오버레이 텍스트들 */}
+                <div className="absolute top-10 left-10 text-gray-400 font-mono text-xs opacity-60">
+                  TRACKING_SYSTEM
+                </div>
+                <div className="absolute top-10 right-10 text-gray-400 font-mono text-xs opacity-60">
+                  INITIALIZING...
+                </div>
+                <div className="absolute top-20 right-10 text-gray-400 font-mono text-xs opacity-60">
+                  SCANNING_PATTERNS
+                </div>
+                
+                {/* 메인 타이틀 */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-9xl font-bold text-white font-mono mb-8 tracking-wide">
+                      It&apos;s Just a Tool
+                    </h1>
+                  </div>
+                </div>
+                
+                {/* 클릭 안내 텍스트 */}
+                <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 text-center">
+                  <div className="text-gray-400 font-mono text-xl opacity-60">
+                    CLICK ANYWHERE TO BEGIN
+                  </div>
+                  <div className="text-gray-500 font-mono text-sm opacity-50 mt-2">
+                    웹사이트 복구에 참여해주세요
+                  </div>
+                </div>
+              </div>
               
               {/* 정적 노이즈 */}
               <div 

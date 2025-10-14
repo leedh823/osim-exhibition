@@ -385,6 +385,65 @@ button:active {
   }
 }
 
+@keyframes collapseDown {
+  0% { 
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(0) scaleY(1);
+    opacity: 1;
+  }
+  85% {
+    transform: translateY(20px) scaleY(0.95) rotateX(5deg);
+    opacity: 0.9;
+  }
+  95% {
+    transform: translateY(100vh) scaleY(0.3) rotateX(45deg);
+    opacity: 0.3;
+  }
+  100% { 
+    transform: translateY(150vh) scaleY(0.1) rotateX(90deg);
+    opacity: 0;
+  }
+}
+
+@keyframes redPulse {
+  0%, 100% { 
+    background-color: transparent;
+  }
+  10% { 
+    background-color: rgba(255, 0, 0, 0.4);
+  }
+  15% { 
+    background-color: transparent;
+  }
+  25% { 
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+  30% { 
+    background-color: transparent;
+  }
+  40% { 
+    background-color: rgba(255, 0, 0, 0.6);
+  }
+  45% { 
+    background-color: transparent;
+  }
+  55% { 
+    background-color: rgba(255, 0, 0, 0.3);
+  }
+  60% { 
+    background-color: transparent;
+  }
+  65% {
+    background-color: rgba(255, 0, 0, 0.7);
+  }
+  70%, 100% { 
+    background-color: transparent;
+  }
+}
+
 .animate-systemCrash {
   animation: systemCrash 7s ease-in-out forwards;
 }
@@ -399,6 +458,16 @@ button:active {
 
 .animate-staticNoise {
   animation: staticNoise 7s linear forwards;
+}
+
+.animate-collapseDown {
+  animation: collapseDown 7s ease-in forwards;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.animate-redPulse {
+  animation: redPulse 7s ease-in-out;
 }
 
 /* 터치 매니퓰레이션 */

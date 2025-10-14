@@ -165,11 +165,11 @@ export default function ExhibitionHome() {
               </div>
             </div>
             
-            {/* 클릭 영역 - 사이트 진입 효과 */}
-            <div 
-              className="absolute inset-0 cursor-pointer hover:bg-white/5 transition-all duration-500"
-              onClick={() => setCurrentStep('error')}
-            ></div>
+          {/* 클릭 영역 - 사이트 진입 효과 */}
+          <div 
+            className="absolute inset-0 cursor-pointer hover:bg-white/5 transition-all duration-500 z-50"
+            onClick={() => setCurrentStep('error')}
+          ></div>
           </div>
 
           {/* 하단 UI 아이콘들 */}
@@ -186,16 +186,16 @@ export default function ExhibitionHome() {
           </div>
 
           {/* 메인 타이틀 - 깔끔한 중앙 배치 */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
             <div className="text-center">
               <h1 className="text-9xl font-bold text-white font-mono mb-8 tracking-wide">
-                It&apos;s just a Tool
+                It&apos;s Just a Tool
               </h1>
             </div>
           </div>
 
           {/* 클릭 안내 텍스트 */}
-          <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 text-center">
+          <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 text-center z-40 pointer-events-none">
             <div className="text-gray-400 font-mono text-xl opacity-60 animate-pulse">
               CLICK ANYWHERE TO BEGIN
             </div>

@@ -165,9 +165,9 @@ export default function ExhibitionHome() {
               </div>
             </div>
             
-            {/* 클릭 영역 */}
+            {/* 클릭 영역 - 사이트 진입 효과 */}
             <div 
-              className="absolute inset-0 cursor-pointer"
+              className="absolute inset-0 cursor-pointer hover:bg-white/5 transition-all duration-500"
               onClick={() => setCurrentStep('error')}
             ></div>
           </div>
@@ -185,41 +185,12 @@ export default function ExhibitionHome() {
             </svg>
           </div>
 
-          {/* 메인 타이틀 (흑백 디지털 감시 시스템 스타일) */}
-          <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-            <div className="relative">
-              {/* 배경 박스 */}
-              <div className="absolute inset-0 bg-black/20 border border-gray-600 rounded-lg -m-8 animate-pulse opacity-40"></div>
-              
-              {/* 메인 타이틀 */}
-              <h1 className="text-8xl font-bold tracking-[0.2em] text-white font-mono mb-6 opacity-90 relative z-10">
-                It&apos;s Just a Tool?
+          {/* 메인 타이틀 - 깔끔한 중앙 배치 */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-9xl font-bold text-white font-mono mb-8 tracking-wide">
+                It&apos;s just a Tool
               </h1>
-              
-              {/* 서브텍스트들 */}
-              <div className="space-y-2 relative z-10">
-                <div className="text-2xl font-mono text-gray-300 opacity-70 animate-pulse delay-300">
-                  SYSTEM_INTERROGATION
-                </div>
-                <div className="text-lg font-mono text-gray-400 opacity-60 animate-pulse delay-700">
-                  AI_HUMAN_RELATIONSHIP_ANALYSIS
-                </div>
-                <div className="text-sm font-mono text-gray-500 opacity-50 animate-pulse delay-1000">
-                  STATUS: QUESTIONING...
-                </div>
-              </div>
-              
-              {/* 주변 디지털 요소들 */}
-              <div className="absolute -top-4 -left-4 w-8 h-8 border border-gray-600 animate-pulse opacity-30"></div>
-              <div className="absolute -top-4 -right-4 w-8 h-8 border border-gray-600 animate-pulse delay-500 opacity-30"></div>
-              <div className="absolute -bottom-4 -left-4 w-8 h-8 border border-gray-600 animate-pulse delay-1000 opacity-30"></div>
-              <div className="absolute -bottom-4 -right-4 w-8 h-8 border border-gray-600 animate-pulse delay-1500 opacity-30"></div>
-              
-              {/* 연결선들 */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                <line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#666666" strokeWidth="1" opacity="0.2" className="animate-pulse" />
-                <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#666666" strokeWidth="1" opacity="0.2" className="animate-pulse delay-700" />
-              </svg>
             </div>
           </div>
 
@@ -287,15 +258,11 @@ export default function ExhibitionHome() {
             </div>
           </div>
 
-          {/* 다음 버튼 */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <button
-              onClick={() => setCurrentStep('repair')}
-              className="bg-gray-800 text-gray-300 px-8 py-4 text-xl font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-colors border border-gray-600"
-            >
-              다음 단계로
-            </button>
-          </div>
+          {/* 클릭 영역 */}
+          <div 
+            className="absolute inset-0 cursor-pointer hover:bg-black/5 transition-all duration-500"
+            onClick={() => setCurrentStep('repair')}
+          ></div>
         </div>
       )}
 

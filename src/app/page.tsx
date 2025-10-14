@@ -48,16 +48,7 @@ export default function ExhibitionHome() {
     return () => clearInterval(interval);
   }, []);
 
-  // 5초 지연 후 자동으로 error 스텝으로 전환
-  useEffect(() => {
-    if (currentStep === 'intro') {
-      const timer = setTimeout(() => {
-        setCurrentStep('error');
-      }, 5000); // 5초 지연
-      
-      return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
-    }
-  }, [currentStep]);
+  // 자동 전환 제거 - 클릭으로만 넘어가도록 변경
 
   // AI 대사 표시 효과
   useEffect(() => {
@@ -76,11 +67,6 @@ export default function ExhibitionHome() {
       setRepairedPieces(prev => [...prev, pieceId]);
       const randomDialogue = aiDialogues.repair[Math.floor(Math.random() * aiDialogues.repair.length)];
       setAiDialogue(randomDialogue);
-      
-      // 모든 조각이 복구되면 다음 단계로
-      if (repairedPieces.length + 1 >= 6) {
-        setTimeout(() => setCurrentStep('restore'), 2000);
-      }
     }
   };
 
@@ -90,11 +76,6 @@ export default function ExhibitionHome() {
       setRestoredData(prev => [...prev, data]);
       const randomDialogue = aiDialogues.restore[Math.floor(Math.random() * aiDialogues.restore.length)];
       setAiDialogue(randomDialogue);
-      
-      // 모든 데이터가 복원되면 다음 단계로
-      if (restoredData.length + 1 >= dataPieces.length) {
-        setTimeout(() => setCurrentStep('recovered'), 3000);
-      }
     }
   };
 
@@ -182,6 +163,13 @@ export default function ExhibitionHome() {
               <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-gray-400 font-mono text-sm opacity-60 animate-pulse">
                 TAP TO INITIATE
               </div>
+            </div>
+            
+            {/* 클릭 영역 */}
+            <div 
+              className="absolute inset-0 cursor-pointer"
+              onClick={() => setCurrentStep('error')}
+            ></div>
             </div>
           </div>
 
@@ -290,11 +278,15 @@ export default function ExhibitionHome() {
             </div>
           </div>
 
-          {/* 클릭하여 다음 단계로 */}
-          <div 
-            className="absolute inset-0 cursor-pointer"
-            onClick={() => setCurrentStep('repair')}
-          ></div>
+          {/* 다음 버튼 */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <button
+              onClick={() => setCurrentStep('repair')}
+              className="bg-gray-800 text-gray-300 px-8 py-4 text-xl font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-colors border border-gray-600"
+            >
+              다음 단계로
+            </button>
+          </div>
         </div>
       )}
 
@@ -349,6 +341,16 @@ export default function ExhibitionHome() {
               &ldquo;{aiDialogue}&rdquo;
             </div>
           </div>
+
+          {/* 다음 버튼 */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <button
+              onClick={() => setCurrentStep('restore')}
+              className="bg-gray-800 text-gray-300 px-8 py-4 text-xl font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-colors border border-gray-600"
+            >
+              데이터 복원으로
+            </button>
+          </div>
         </div>
       )}
 
@@ -388,6 +390,16 @@ export default function ExhibitionHome() {
             <div className="font-mono text-lg animate-flicker">
               &ldquo;{aiDialogue}&rdquo;
             </div>
+          </div>
+
+          {/* 다음 버튼 */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <button
+              onClick={() => setCurrentStep('recovered')}
+              className="bg-gray-800 text-gray-300 px-8 py-4 text-xl font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-colors border border-gray-600"
+            >
+              시스템 복구로
+            </button>
           </div>
         </div>
       )}
@@ -434,11 +446,15 @@ export default function ExhibitionHome() {
             </div>
           </div>
 
-          {/* 다음 단계로 자동 전환 */}
-          <div 
-            className="absolute inset-0 cursor-pointer"
-            onClick={() => setCurrentStep('reflection')}
-          ></div>
+          {/* 다음 버튼 */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <button
+              onClick={() => setCurrentStep('reflection')}
+              className="bg-gray-800 text-gray-300 px-8 py-4 text-xl font-semibold rounded-lg hover:bg-gray-700 hover:text-white transition-colors border border-gray-600"
+            >
+              최종 질문으로
+            </button>
+          </div>
         </div>
       )}
 

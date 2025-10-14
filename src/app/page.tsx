@@ -110,76 +110,76 @@ export default function ExhibitionHome() {
           </div>
 
           {/* 디지털 오버레이 텍스트들 */}
-          <div className="absolute top-10 left-10 text-green-400 font-mono text-sm opacity-60">
+          <div className="absolute top-10 left-10 text-gray-400 font-mono text-sm opacity-40">
             <div className="animate-pulse">TRACKING_SYSTEM v2.1.4</div>
             <div className="animate-pulse delay-100">INITIALIZING...</div>
             <div className="animate-pulse delay-200">SCANNING_PATTERNS</div>
           </div>
 
-          <div className="absolute top-10 right-10 text-green-400 font-mono text-sm opacity-60">
+          <div className="absolute top-10 right-10 text-gray-400 font-mono text-sm opacity-40">
             <div>327548.0</div>
             <div>565</div>
             <div>7549.0</div>
           </div>
 
-          <div className="absolute bottom-20 left-10 text-green-400 font-mono text-sm opacity-60">
+          <div className="absolute bottom-20 left-10 text-gray-400 font-mono text-sm opacity-40">
             <div>(loop (format t&ldquo;~%*))</div>
             <div>32/562.0</div>
             <div>3.0</div>
           </div>
 
-          {/* 바운딩 박스들 (초록색 추적 박스) */}
-          <div className="absolute top-1/4 left-1/4 w-32 h-40 border-2 border-green-400 animate-trackingBox">
-            <div className="absolute -top-6 left-0 text-green-400 text-xs font-mono animate-digitalGlow">SUBJECT_01</div>
-            <div className="absolute -bottom-6 right-0 text-green-400 text-xs font-mono animate-digitalGlow">CONF: 0.95</div>
+          {/* 바운딩 박스들 (연한 초록색 추적 박스) */}
+          <div className="absolute top-1/4 left-1/4 w-32 h-40 border border-gray-500 animate-pulse opacity-30">
+            <div className="absolute -top-6 left-0 text-gray-400 text-xs font-mono opacity-60">SUBJECT_01</div>
+            <div className="absolute -bottom-6 right-0 text-gray-400 text-xs font-mono opacity-60">CONF: 0.95</div>
           </div>
 
-          <div className="absolute top-1/3 right-1/3 w-24 h-32 border-2 border-green-400 animate-trackingBox delay-300">
-            <div className="absolute -top-6 left-0 text-green-400 text-xs font-mono animate-digitalGlow">SUBJECT_02</div>
-            <div className="absolute -bottom-6 right-0 text-green-400 text-xs font-mono animate-digitalGlow">CONF: 0.87</div>
+          <div className="absolute top-1/3 right-1/3 w-24 h-32 border border-gray-500 animate-pulse delay-300 opacity-30">
+            <div className="absolute -top-6 left-0 text-gray-400 text-xs font-mono opacity-60">SUBJECT_02</div>
+            <div className="absolute -bottom-6 right-0 text-gray-400 text-xs font-mono opacity-60">CONF: 0.87</div>
           </div>
 
-          <div className="absolute bottom-1/4 right-1/4 w-28 h-36 border-2 border-green-400 animate-trackingBox delay-700">
-            <div className="absolute -top-6 left-0 text-green-400 text-xs font-mono animate-digitalGlow">SUBJECT_03</div>
-            <div className="absolute -bottom-6 right-0 text-green-400 text-xs font-mono animate-digitalGlow">CONF: 0.92</div>
+          <div className="absolute bottom-1/4 right-1/4 w-28 h-36 border border-gray-500 animate-pulse delay-700 opacity-30">
+            <div className="absolute -top-6 left-0 text-gray-400 text-xs font-mono opacity-60">SUBJECT_03</div>
+            <div className="absolute -bottom-6 right-0 text-gray-400 text-xs font-mono opacity-60">CONF: 0.92</div>
           </div>
 
           {/* 스캔라인 효과 */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scanLine"></div>
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scanLine delay-1500"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent animate-scanLine opacity-30"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent animate-scanLine delay-1500 opacity-30"></div>
           </div>
 
           {/* 데이터 플로우 효과 */}
-          <div className="absolute top-20 left-0 w-32 h-1 bg-green-400 animate-dataFlow opacity-60"></div>
-          <div className="absolute top-32 right-0 w-24 h-1 bg-green-400 animate-dataFlow delay-1000 opacity-60"></div>
-          <div className="absolute bottom-32 left-0 w-40 h-1 bg-green-400 animate-dataFlow delay-2000 opacity-60"></div>
+          <div className="absolute top-20 left-0 w-32 h-1 bg-gray-400 animate-dataFlow opacity-20"></div>
+          <div className="absolute top-32 right-0 w-24 h-1 bg-gray-400 animate-dataFlow delay-1000 opacity-20"></div>
+          <div className="absolute bottom-32 left-0 w-40 h-1 bg-gray-400 animate-dataFlow delay-2000 opacity-20"></div>
 
           {/* 추적선들 */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none">
-            <line x1="25%" y1="25%" x2="35%" y2="35%" stroke="#00ff00" strokeWidth="1" opacity="0.6" className="animate-pulse" />
-            <line x1="65%" y1="33%" x2="75%" y2="25%" stroke="#00ff00" strokeWidth="1" opacity="0.6" className="animate-pulse delay-500" />
-            <line x1="75%" y1="25%" x2="75%" y2="75%" stroke="#00ff00" strokeWidth="1" opacity="0.6" className="animate-pulse delay-1000" />
+            <line x1="25%" y1="25%" x2="35%" y2="35%" stroke="#666666" strokeWidth="1" opacity="0.3" className="animate-pulse" />
+            <line x1="65%" y1="33%" x2="75%" y2="25%" stroke="#666666" strokeWidth="1" opacity="0.3" className="animate-pulse delay-500" />
+            <line x1="75%" y1="25%" x2="75%" y2="75%" stroke="#666666" strokeWidth="1" opacity="0.3" className="animate-pulse delay-1000" />
           </svg>
 
           {/* 중앙 재생 버튼 */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
               {/* 큰 원형 배경 */}
-              <div className="w-48 h-48 rounded-full border-4 border-green-400 bg-black/50 flex items-center justify-center animate-trackingBox shadow-2xl">
+              <div className="w-48 h-48 rounded-full border border-gray-500 bg-black/30 flex items-center justify-center animate-pulse opacity-50 shadow-2xl">
                 {/* 재생 버튼 */}
-                <div className="w-16 h-16 ml-2 animate-digitalGlow">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-green-400">
+                <div className="w-16 h-16 ml-2 opacity-60">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-gray-400">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
               </div>
               
               {/* 버튼 주변 텍스트 */}
-              <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 text-green-400 font-mono text-lg animate-digitalGlow">
+              <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 text-gray-400 font-mono text-lg opacity-60 animate-pulse">
                 ANALYSIS_READY
               </div>
-              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-green-400 font-mono text-sm animate-flicker">
+              <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-gray-400 font-mono text-sm opacity-60 animate-pulse">
                 TAP TO INITIATE
               </div>
             </div>
@@ -198,40 +198,40 @@ export default function ExhibitionHome() {
             </svg>
           </div>
 
-          {/* 메인 타이틀 (디지털 감시 시스템 스타일) */}
+          {/* 메인 타이틀 (흑백 디지털 감시 시스템 스타일) */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
             <div className="relative">
               {/* 배경 박스 */}
-              <div className="absolute inset-0 bg-black/30 border-2 border-green-400 rounded-lg -m-8 animate-trackingBox"></div>
+              <div className="absolute inset-0 bg-black/20 border border-gray-600 rounded-lg -m-8 animate-pulse opacity-40"></div>
               
               {/* 메인 타이틀 */}
-              <h1 className="text-8xl font-bold tracking-[0.2em] text-green-400 font-mono mb-6 animate-digitalGlow relative z-10">
+              <h1 className="text-8xl font-bold tracking-[0.2em] text-white font-mono mb-6 opacity-90 relative z-10">
                 It&apos;s Just a Tool?
               </h1>
               
               {/* 서브텍스트들 */}
               <div className="space-y-2 relative z-10">
-                <div className="text-2xl font-mono text-green-300 opacity-90 animate-digitalGlow delay-300">
+                <div className="text-2xl font-mono text-gray-300 opacity-70 animate-pulse delay-300">
                   SYSTEM_INTERROGATION
                 </div>
-                <div className="text-lg font-mono text-green-400 animate-flicker delay-700">
+                <div className="text-lg font-mono text-gray-400 opacity-60 animate-pulse delay-700">
                   AI_HUMAN_RELATIONSHIP_ANALYSIS
                 </div>
-                <div className="text-sm font-mono text-green-500 opacity-70 animate-pulse delay-1000">
+                <div className="text-sm font-mono text-gray-500 opacity-50 animate-pulse delay-1000">
                   STATUS: QUESTIONING...
                 </div>
               </div>
               
               {/* 주변 디지털 요소들 */}
-              <div className="absolute -top-4 -left-4 w-8 h-8 border-2 border-green-400 animate-pulse"></div>
-              <div className="absolute -top-4 -right-4 w-8 h-8 border-2 border-green-400 animate-pulse delay-500"></div>
-              <div className="absolute -bottom-4 -left-4 w-8 h-8 border-2 border-green-400 animate-pulse delay-1000"></div>
-              <div className="absolute -bottom-4 -right-4 w-8 h-8 border-2 border-green-400 animate-pulse delay-1500"></div>
+              <div className="absolute -top-4 -left-4 w-8 h-8 border border-gray-600 animate-pulse opacity-30"></div>
+              <div className="absolute -top-4 -right-4 w-8 h-8 border border-gray-600 animate-pulse delay-500 opacity-30"></div>
+              <div className="absolute -bottom-4 -left-4 w-8 h-8 border border-gray-600 animate-pulse delay-1000 opacity-30"></div>
+              <div className="absolute -bottom-4 -right-4 w-8 h-8 border border-gray-600 animate-pulse delay-1500 opacity-30"></div>
               
               {/* 연결선들 */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                <line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#00ff00" strokeWidth="1" opacity="0.4" className="animate-pulse" />
-                <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#00ff00" strokeWidth="1" opacity="0.4" className="animate-pulse delay-700" />
+                <line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#666666" strokeWidth="1" opacity="0.2" className="animate-pulse" />
+                <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#666666" strokeWidth="1" opacity="0.2" className="animate-pulse delay-700" />
               </svg>
             </div>
           </div>

@@ -279,21 +279,30 @@ button:active {
     filter: none;
     transform: scale(1);
   }
-  20% { 
+  5% { 
     filter: brightness(2) contrast(2);
     transform: scale(1.02);
   }
-  40% { 
+  10% { 
     filter: brightness(0.5) contrast(0.5) hue-rotate(90deg);
     transform: scale(0.98) rotate(0.5deg);
   }
-  60% { 
+  15% { 
     filter: brightness(1.5) contrast(1.5) saturate(0);
     transform: scale(1.01) rotate(-0.5deg);
   }
-  80% { 
+  20% { 
     filter: brightness(0.3) contrast(3) saturate(0);
     transform: scale(0.99);
+  }
+  25%, 85% {
+    filter: brightness(0.2) contrast(2) saturate(0);
+    transform: scale(1);
+  }
+  90% { 
+    filter: brightness(0.1) contrast(1);
+    transform: scale(1);
+    opacity: 0.5;
   }
   100% { 
     filter: brightness(0) contrast(0);
@@ -303,52 +312,57 @@ button:active {
 }
 
 @keyframes glitchText {
-  0%, 100% { 
+  0% { 
     transform: translate(0);
     opacity: 1;
   }
-  10% { 
+  5% { 
     transform: translate(-2px, 2px);
     opacity: 0.8;
   }
-  20% { 
+  10% { 
     transform: translate(2px, -2px);
     opacity: 0.9;
   }
-  30% { 
+  15% { 
     transform: translate(-3px, 0px);
     opacity: 0.7;
   }
-  40% { 
+  20% { 
     transform: translate(3px, 3px);
     opacity: 0.85;
   }
-  50% { 
+  25% { 
     transform: translate(0px, -3px);
     opacity: 0.6;
   }
-  60% { 
-    transform: translate(-2px, -2px);
-    opacity: 0.75;
+  30%, 80% { 
+    transform: translate(-1px, 1px);
+    opacity: 0.9;
   }
-  70% { 
-    transform: translate(2px, 0px);
-    opacity: 0.5;
-  }
-  80% { 
-    transform: translate(0px, 2px);
-    opacity: 0.3;
+  85% { 
+    transform: translate(2px, -1px);
+    opacity: 0.7;
   }
   90% { 
     transform: translate(-1px, -1px);
-    opacity: 0.2;
+    opacity: 0.5;
+  }
+  95% { 
+    transform: translate(0);
+    opacity: 0.3;
+  }
+  100% { 
+    transform: translate(0);
+    opacity: 0;
   }
 }
 
 @keyframes errorFlash {
   0%, 100% { background-color: transparent; }
-  10%, 30%, 50%, 70%, 90% { background-color: rgba(255, 0, 0, 0.3); }
-  20%, 40%, 60%, 80% { background-color: rgba(255, 255, 255, 0.8); }
+  5%, 15%, 25%, 35%, 45% { background-color: rgba(255, 0, 0, 0.3); }
+  10%, 20%, 30%, 40%, 50% { background-color: rgba(255, 255, 255, 0.8); }
+  55%, 90% { background-color: transparent; }
 }
 
 @keyframes staticNoise {
@@ -356,8 +370,14 @@ button:active {
     background-position: 0% 0%;
     opacity: 0;
   }
-  50% { 
+  10% { 
     opacity: 0.3;
+  }
+  20%, 80% { 
+    opacity: 0.2;
+  }
+  90% {
+    opacity: 0.1;
   }
   100% { 
     background-position: 100% 100%;
@@ -366,19 +386,19 @@ button:active {
 }
 
 .animate-systemCrash {
-  animation: systemCrash 1.5s ease-in-out forwards;
+  animation: systemCrash 7s ease-in-out forwards;
 }
 
 .animate-glitchText {
-  animation: glitchText 0.8s ease-in-out forwards;
+  animation: glitchText 7s ease-in-out forwards;
 }
 
 .animate-errorFlash {
-  animation: errorFlash 1s ease-in-out;
+  animation: errorFlash 7s ease-in-out;
 }
 
 .animate-staticNoise {
-  animation: staticNoise 1.5s linear forwards;
+  animation: staticNoise 7s linear forwards;
 }
 
 /* 터치 매니퓰레이션 */

@@ -47,7 +47,7 @@ export default function ExhibitionHome() {
     setTimeout(() => {
       setCurrentStep('error');
       setIsTransitioning(false);
-    }, 1500); // 애니메이션 시간과 동기화
+    }, 7000); // 7초 동안 에러 화면 표시
   };
 
   // 커서 깜빡임 효과

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #593B15;
+  --background: #000000;
   --foreground: #FFFFFF;
   --accent: #FFE805;
   --secondary: #CE9C53;
@@ -14,14 +14,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* 42인치 세로형 터치스크린 최적화 */
+/* 세로형 16:9 터치스크린 최적화 */
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #593B15;
+  background: #000000;
   color: #FFFFFF;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   user-select: none;
@@ -50,79 +50,30 @@ button:active {
   display: none;
 }
 
-/* 전체 화면 모드 */
-@media screen and (orientation: portrait) {
-  body {
-    height: 100vh;
-    height: 100dvh; /* 동적 뷰포트 높이 */
-  }
-}
+/* 트래킹 전시 전용 애니메이션 */
 
-/* 디지털 감시 시스템 애니메이션 키프레임 */
-@keyframes fadeInScale {
+/* 바운딩 박스 펄스 애니메이션 */
+@keyframes pulse-box {
   0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
   }
   50% {
-    transform: scale(1.05);
+    border-color: #dc2626;
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
   }
 }
 
-@keyframes glow {
-  0%, 100% {
-    text-shadow: 0 0 20px rgba(255, 232, 5, 0.5);
-  }
-  50% {
-    text-shadow: 0 0 30px rgba(255, 232, 5, 0.8), 0 0 40px rgba(255, 232, 5, 0.6);
-  }
+.animate-pulse-box {
+  animation: pulse-box 2s infinite;
 }
 
-/* 디지털 시스템 전용 애니메이션 */
-@keyframes digitalGlow {
-  0%, 100% {
-    text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
-    opacity: 0.8;
-  }
-  50% {
-    text-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00, 0 0 35px #00ff00;
-    opacity: 1;
-  }
-}
-
-@keyframes scanLine {
+/* 스캔라인 애니메이션 */
+@keyframes scan-line {
   0% {
     transform: translateY(-100%);
     opacity: 0;
@@ -136,360 +87,157 @@ button:active {
   }
 }
 
-@keyframes dataFlow {
+.animate-scan-line {
+  animation: scan-line 3s infinite;
+}
+
+/* 카드 뒤집기 애니메이션 */
+@keyframes flip-card {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+.animate-flip-card {
+  animation: flip-card 0.6s ease-in-out;
+}
+
+/* 디지털 글리치 효과 */
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+.animate-glitch {
+  animation: glitch 0.3s infinite;
+}
+
+/* 데이터 플로우 애니메이션 */
+@keyframes data-flow {
   0% {
     transform: translateX(-100%);
     opacity: 0;
   }
-  10%, 90% {
+  50% {
     opacity: 1;
   }
   100% {
-    transform: translateX(100%);
+    transform: translateX(100vw);
     opacity: 0;
   }
 }
 
-@keyframes trackingBox {
-  0%, 100% {
-    border-color: #00ff00;
-    box-shadow: 0 0 10px #00ff00;
-  }
-  50% {
-    border-color: #00ff88;
-    box-shadow: 0 0 20px #00ff88, 0 0 30px #00ff88;
-  }
+.animate-data-flow {
+  animation: data-flow 4s infinite;
 }
 
-@keyframes flicker {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-  75% {
-    opacity: 0.9;
-  }
-}
-
-@keyframes matrixRain {
+/* 타겟 크로스헤어 애니메이션 */
+@keyframes target-pulse {
   0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  10% {
+    transform: scale(1);
     opacity: 1;
   }
-  90% {
-    opacity: 1;
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
   }
   100% {
-    transform: translateY(100vh);
-    opacity: 0;
-  }
-}
-
-/* 애니메이션 클래스 */
-.animate-fadeInScale {
-  animation: fadeInScale 1s ease-out;
-}
-
-.animate-slideInUp {
-  animation: slideInUp 1s ease-out;
-}
-
-.animate-slideInDown {
-  animation: slideInDown 1s ease-out;
-}
-
-.animate-pulse {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-.animate-glow {
-  animation: glow 3s ease-in-out infinite;
-}
-
-/* 디지털 시스템 전용 애니메이션 클래스 */
-.animate-digitalGlow {
-  animation: digitalGlow 2s ease-in-out infinite;
-}
-
-.animate-scanLine {
-  animation: scanLine 3s linear infinite;
-}
-
-.animate-dataFlow {
-  animation: dataFlow 4s linear infinite;
-}
-
-.animate-trackingBox {
-  animation: trackingBox 1.5s ease-in-out infinite;
-}
-
-.animate-flicker {
-  animation: flicker 0.5s ease-in-out infinite;
-}
-
-.animate-matrixRain {
-  animation: matrixRain 2s linear infinite;
-}
-
-/* 지연 효과 */
-.delay-100 {
-  animation-delay: 0.1s;
-}
-
-.delay-200 {
-  animation-delay: 0.2s;
-}
-
-.delay-300 {
-  animation-delay: 0.3s;
-}
-
-.delay-400 {
-  animation-delay: 0.4s;
-}
-
-.delay-500 {
-  animation-delay: 0.5s;
-}
-
-.delay-600 {
-  animation-delay: 0.6s;
-}
-
-.delay-700 {
-  animation-delay: 0.7s;
-}
-
-.delay-800 {
-  animation-delay: 0.8s;
-}
-
-.delay-1000 {
-  animation-delay: 1s;
-}
-
-/* 시스템 오류 전환 애니메이션 */
-@keyframes systemCrash {
-  0% { 
-    filter: none;
     transform: scale(1);
-  }
-  5% { 
-    filter: brightness(2) contrast(2);
-    transform: scale(1.02);
-  }
-  10% { 
-    filter: brightness(0.5) contrast(0.5) hue-rotate(90deg);
-    transform: scale(0.98) rotate(0.5deg);
-  }
-  15% { 
-    filter: brightness(1.5) contrast(1.5) saturate(0);
-    transform: scale(1.01) rotate(-0.5deg);
-  }
-  20% { 
-    filter: brightness(0.3) contrast(3) saturate(0);
-    transform: scale(0.99);
-  }
-  25%, 85% {
-    filter: brightness(0.2) contrast(2) saturate(0);
-    transform: scale(1);
-  }
-  90% { 
-    filter: brightness(0.1) contrast(1);
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  100% { 
-    filter: brightness(0) contrast(0);
-    transform: scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes glitchText {
-  0% { 
-    transform: translate(0);
     opacity: 1;
   }
-  5% { 
-    transform: translate(-2px, 2px);
-    opacity: 0.8;
-  }
-  10% { 
-    transform: translate(2px, -2px);
-    opacity: 0.9;
-  }
-  15% { 
-    transform: translate(-3px, 0px);
-    opacity: 0.7;
-  }
-  20% { 
-    transform: translate(3px, 3px);
-    opacity: 0.85;
-  }
-  25% { 
-    transform: translate(0px, -3px);
-    opacity: 0.6;
-  }
-  30%, 80% { 
-    transform: translate(-1px, 1px);
-    opacity: 0.9;
-  }
-  85% { 
-    transform: translate(2px, -1px);
-    opacity: 0.7;
-  }
-  90% { 
-    transform: translate(-1px, -1px);
-    opacity: 0.5;
-  }
-  95% { 
-    transform: translate(0);
-    opacity: 0.3;
-  }
-  100% { 
-    transform: translate(0);
+}
+
+.animate-target-pulse {
+  animation: target-pulse 1.5s infinite;
+}
+
+/* 채팅 메시지 등장 애니메이션 */
+@keyframes message-slide {
+  0% {
+    transform: translateY(20px);
     opacity: 0;
   }
-}
-
-@keyframes errorFlash {
-  0%, 100% { background-color: transparent; }
-  5%, 15%, 25%, 35%, 45% { background-color: rgba(255, 0, 0, 0.3); }
-  10%, 20%, 30%, 40%, 50% { background-color: rgba(255, 255, 255, 0.8); }
-  55%, 90% { background-color: transparent; }
-}
-
-@keyframes staticNoise {
-  0% { 
-    background-position: 0% 0%;
-    opacity: 0;
-  }
-  10% { 
-    opacity: 0.3;
-  }
-  20%, 80% { 
-    opacity: 0.2;
-  }
-  90% {
-    opacity: 0.1;
-  }
-  100% { 
-    background-position: 100% 100%;
-    opacity: 0;
-  }
-}
-
-@keyframes collapseDown {
-  0% { 
-    transform: translateY(0) scaleY(1) rotateX(0deg);
+  100% {
+    transform: translateY(0);
     opacity: 1;
   }
-  68% {
-    transform: translateY(0) scaleY(1) rotateX(0deg);
-    opacity: 1;
-  }
-  /* 주먹 맞는 순간 - 위로 튀김 */
-  72% {
-    transform: translateY(-30px) scaleY(1.1) scaleX(0.95) rotateX(-3deg);
-    opacity: 1;
-  }
-  /* 잠시 정지 */
-  74% {
-    transform: translateY(-25px) scaleY(1.08) scaleX(0.96) rotateX(-2deg);
-    opacity: 1;
-  }
-  /* 무너지기 시작 */
-  78% {
-    transform: translateY(10px) scaleY(0.9) scaleX(1.02) rotateX(5deg);
-    opacity: 0.95;
-  }
-  /* 빠르게 추락 */
-  85% {
-    transform: translateY(50vh) scaleY(0.6) scaleX(1.05) rotateX(25deg);
-    opacity: 0.7;
-  }
-  92% {
-    transform: translateY(100vh) scaleY(0.3) scaleX(1.1) rotateX(60deg);
-    opacity: 0.3;
-  }
-  /* 완전히 사라짐 */
-  100% { 
-    transform: translateY(150vh) scaleY(0.05) scaleX(1.2) rotateX(90deg);
-    opacity: 0;
+}
+
+.animate-message-slide {
+  animation: message-slide 0.3s ease-out;
+}
+
+/* 카드 호버 효과 */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* 세로형 16:9 비율 강제 */
+.aspect-9-16 {
+  aspect-ratio: 9 / 16;
+}
+
+/* 반응형 텍스트 */
+@media (max-width: 768px) {
+  .text-responsive {
+    font-size: 0.875rem;
   }
 }
 
-@keyframes redPulse {
-  0%, 100% { 
-    background-color: transparent;
-  }
-  10% { 
-    background-color: rgba(255, 0, 0, 0.4);
-  }
-  15% { 
-    background-color: transparent;
-  }
-  25% { 
-    background-color: rgba(255, 0, 0, 0.5);
-  }
-  30% { 
-    background-color: transparent;
-  }
-  40% { 
-    background-color: rgba(255, 0, 0, 0.6);
-  }
-  45% { 
-    background-color: transparent;
-  }
-  55% { 
-    background-color: rgba(255, 0, 0, 0.3);
-  }
-  60% { 
-    background-color: transparent;
-  }
-  65% {
-    background-color: rgba(255, 0, 0, 0.7);
-  }
-  70%, 100% { 
-    background-color: transparent;
+@media (min-width: 769px) {
+  .text-responsive {
+    font-size: 1rem;
   }
 }
 
-.animate-systemCrash {
-  animation: systemCrash 7s ease-in-out forwards;
+/* 터치 디바이스 최적화 */
+@media (hover: none) and (pointer: coarse) {
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input {
+    min-height: 44px;
+    font-size: 16px; /* iOS 줌 방지 */
+  }
 }
 
-.animate-glitchText {
-  animation: glitchText 7s ease-in-out forwards;
-}
-
-.animate-errorFlash {
-  animation: errorFlash 7s ease-in-out;
-}
-
-.animate-staticNoise {
-  animation: staticNoise 7s linear forwards;
-}
-
-.animate-collapseDown {
-  animation: collapseDown 7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  transform-style: preserve-3d;
-  perspective: 1000px;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-}
-
-.animate-redPulse {
-  animation: redPulse 7s ease-in-out;
-}
-
-/* 터치 매니퓰레이션 */
-.touch-manipulation {
-  touch-action: manipulation;
+/* 프린트 스타일 */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
 }

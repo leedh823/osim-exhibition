@@ -109,23 +109,11 @@ export default function TrackingExhibition() {
           <div className="absolute top-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent animate-scan-line opacity-60"></div>
         </div>
         
-        {/* 자전거 타는 사람 클릭 영역 */}
+        {/* 자전거 타는 사람 클릭 영역 - 투명하게 */}
         <div 
-          className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-20 h-28 border-2 border-red-500 animate-pulse-box z-30 cursor-pointer hover:bg-red-500/20 transition-colors"
+          className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-20 h-28 z-30 cursor-pointer"
           onClick={() => setCurrentStep('enlarged_video')}
         >
-          <div className="absolute -top-6 left-0 text-red-500 text-xs font-mono">
-            CYCLIST_01
-          </div>
-          <div className="absolute -bottom-6 right-0 text-red-500 text-xs font-mono">
-            CONF: 0.95
-          </div>
-          {/* 클릭 안내 */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-white text-xs font-mono animate-pulse">
-              CLICK CYCLIST
-            </div>
-          </div>
         </div>
         
         {/* 클릭 안내 */}

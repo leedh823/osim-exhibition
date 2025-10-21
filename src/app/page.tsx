@@ -111,7 +111,7 @@ export default function TrackingExhibition() {
         
         {/* 자전거 타는 사람 클릭 영역 */}
         <div 
-          className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-32 h-40 border-2 border-red-500 animate-pulse-box z-30 cursor-pointer hover:bg-red-500/20 transition-colors"
+          className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-24 h-32 border-2 border-red-500 animate-pulse-box z-30 cursor-pointer hover:bg-red-500/20 transition-colors"
           onClick={() => setCurrentStep('enlarged_video')}
         >
           <div className="absolute -top-6 left-0 text-red-500 text-xs font-mono">

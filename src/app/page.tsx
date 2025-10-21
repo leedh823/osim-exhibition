@@ -109,7 +109,7 @@ export default function TrackingExhibition() {
           muted
           onClick={() => setCurrentStep('ai_chat')}
         >
-          <source src="/1.mp4" type="video/mp4" />
+          <source src="/2.mp4" type="video/mp4" />
         </video>
         
         {/* 디지털 분석 오버레이 */}
@@ -157,7 +157,7 @@ export default function TrackingExhibition() {
             loop 
             muted
           >
-            <source src="/1.mp4" type="video/mp4" />
+            <source src="/2.mp4" type="video/mp4" />
           </video>
           
           {/* 영상 오버레이 */}

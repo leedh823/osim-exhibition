@@ -75,10 +75,11 @@ export default function TrackingExhibition() {
       <div className="w-full h-screen bg-black aspect-[9/16] mx-auto relative overflow-hidden">
         {/* 영상 */}
         <video 
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover cursor-pointer"
           autoPlay 
           loop 
           muted
+          onClick={() => setCurrentStep('enlarged_video')}
         >
           <source src="/1.mp4" type="video/mp4" />
         </video>
@@ -109,13 +110,13 @@ export default function TrackingExhibition() {
           <div className="absolute top-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent animate-scan-line opacity-60"></div>
         </div>
         
-        {/* 특정 인물 클릭 영역 */}
+        {/* 자전거 타는 사람 클릭 영역 */}
         <div 
           className="absolute top-1/3 left-1/4 w-32 h-40 border-2 border-red-500 animate-pulse-box z-30 cursor-pointer hover:bg-red-500/20 transition-colors"
           onClick={() => setCurrentStep('enlarged_video')}
         >
           <div className="absolute -top-6 left-0 text-red-500 text-xs font-mono">
-            SUBJECT_01
+            CYCLIST_01
           </div>
           <div className="absolute -bottom-6 right-0 text-red-500 text-xs font-mono">
             CONF: 0.95
@@ -123,14 +124,14 @@ export default function TrackingExhibition() {
           {/* 클릭 안내 */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-white text-xs font-mono animate-pulse">
-              CLICK HERE
+              CLICK CYCLIST
             </div>
           </div>
         </div>
         
         {/* 클릭 안내 */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
-          CLICK ON THE PERSON TO ANALYZE
+          CLICK ANYWHERE OR ON THE CYCLIST TO ANALYZE
         </div>
       </div>
     );

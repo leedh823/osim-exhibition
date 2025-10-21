@@ -127,9 +127,9 @@ export default function TrackingExhibition() {
   // 3. AI 채팅 화면
   if (currentStep === 'ai_chat') {
     return (
-      <div className="w-full h-screen bg-black aspect-[9/16] mx-auto flex flex-col">
-        {/* 상단: 확대 영상 */}
-        <div className="flex-1 relative">
+      <div className="w-full h-screen bg-black aspect-[9/16] mx-auto relative">
+        {/* 상단: 2.mp4 영상 */}
+        <div className="absolute top-0 left-0 w-full h-1/2">
           <video 
             className="w-full h-full object-cover"
             autoPlay 
@@ -138,23 +138,18 @@ export default function TrackingExhibition() {
           >
             <source src="/2.mp4" type="video/mp4" />
           </video>
-          
-          {/* 영상 오버레이 */}
-          <div className="absolute top-4 left-4 text-white font-mono text-sm z-10">
-            <div className="animate-pulse">AI_ANALYSIS_MODE</div>
-            <div className="animate-pulse delay-100">TURN: {currentTurn + 1}/3</div>
-          </div>
         </div>
         
-        {/* 하단: AI 채팅 */}
-        <div className="h-1/2 bg-gray-900 p-4 flex flex-col">
-          <div className="flex-1 overflow-y-auto mb-4 space-y-2">
+        {/* 하단: 반투명 배경 + 채팅 */}
+        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black/70 backdrop-blur-sm">
+          {/* 채팅 메시지 영역 */}
+          <div className="h-3/4 overflow-y-auto p-4 space-y-3">
             {chatMessages.map((msg, index) => (
-              <div key={index} className={`${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
-                <div className={`inline-block p-3 rounded-lg max-w-xs ${
+              <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-xs p-3 rounded-lg ${
                   msg.role === 'user' 
                     ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-700 text-gray-100'
+                    : 'bg-white/20 text-white backdrop-blur-sm'
                 }`}>
                   {msg.content}
                 </div>
@@ -162,30 +157,33 @@ export default function TrackingExhibition() {
             ))}
           </div>
           
-          <div className="flex gap-2">
-            <input 
-              type="text" 
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-1 p-3 bg-gray-800 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-              placeholder="답변을 입력하세요..."
-              disabled={currentTurn >= 3}
-            />
-            <button 
-              onClick={handleSendMessage}
-              disabled={!userInput.trim() || currentTurn >= 3}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
-            >
-              전송
-            </button>
-          </div>
-          
-          {currentTurn >= 3 && (
-            <div className="text-center text-green-400 font-mono text-sm mt-2 animate-pulse">
-              분석 결과를 생성하고 있습니다...
+          {/* 입력 영역 */}
+          <div className="h-1/4 p-4 border-t border-white/20">
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="flex-1 p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:border-blue-400 focus:outline-none backdrop-blur-sm placeholder-white/60"
+                placeholder="답변을 입력하세요..."
+                disabled={currentTurn >= 3}
+              />
+              <button 
+                onClick={handleSendMessage}
+                disabled={!userInput.trim() || currentTurn >= 3}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+              >
+                전송
+              </button>
             </div>
-          )}
+            
+            {currentTurn >= 3 && (
+              <div className="text-center text-green-400 font-mono text-sm mt-2 animate-pulse">
+                분석 결과를 생성하고 있습니다...
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );

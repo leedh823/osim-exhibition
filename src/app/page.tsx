@@ -89,7 +89,15 @@ export default function TrackingExhibition() {
         {/* 자전거 영역 클릭 - 투명하게 */}
         <div 
           className="absolute bottom-1/6 left-1/2 transform -translate-x-1/2 w-40 h-32 z-30 cursor-pointer"
-          onClick={() => setCurrentStep('enlarged_video')}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setCurrentStep('enlarged_video');
+          }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
         </div>
         

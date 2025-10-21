@@ -88,11 +88,10 @@ export default function TrackingExhibition() {
         
         {/* 자전거 영역 클릭 - 투명하게 */}
         <div 
-          className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-40 h-32 z-50 cursor-pointer"
+          className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 w-24 h-24 z-50 cursor-pointer"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('자전거 클릭됨!');
             setCurrentStep('enlarged_video');
           }}
           onMouseDown={(e) => {
@@ -112,21 +111,22 @@ export default function TrackingExhibition() {
       <div className="w-full h-screen bg-black aspect-[9/16] mx-auto relative overflow-hidden">
         {/* 영상 */}
         <video 
-          className="w-full h-full object-cover cursor-pointer"
+          className="w-full h-full object-cover"
           autoPlay 
           loop 
           muted
-          onClick={() => {
-            console.log('2번 영상 클릭됨!');
-            setCurrentStep('ai_chat');
-          }}
         >
           <source src="/2.mp4" type="video/mp4" />
         </video>
         
-        {/* 클릭 안내 */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
-          CLICK TO START AI CHAT
+        {/* 채팅 시작 버튼 */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+          <button 
+            onClick={() => setCurrentStep('ai_chat')}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-mono text-lg animate-pulse"
+          >
+            START AI CHAT
+          </button>
         </div>
       </div>
     );

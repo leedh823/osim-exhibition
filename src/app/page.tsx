@@ -86,9 +86,9 @@ export default function TrackingExhibition() {
         
         
         
-        {/* 자전거 타는 사람 클릭 영역 - 투명하게 */}
+        {/* 자전거 영역 클릭 - 투명하게 */}
         <div 
-          className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-20 h-28 z-30 cursor-pointer"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-24 z-30 cursor-pointer"
           onClick={() => setCurrentStep('enlarged_video')}
         >
         </div>

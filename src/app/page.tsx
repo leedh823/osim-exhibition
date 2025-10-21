@@ -115,9 +115,18 @@ export default function TrackingExhibition() {
           autoPlay 
           loop 
           muted
+          onLoadStart={() => console.log('2.mp4 로딩 시작')}
+          onLoadedData={() => console.log('2.mp4 로딩 완료')}
+          onError={(e) => console.log('2.mp4 로딩 에러:', e)}
         >
           <source src="/2.mp4" type="video/mp4" />
         </video>
+        
+        {/* 디버깅 정보 */}
+        <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
+          <div>현재 단계: {currentStep}</div>
+          <div>영상 경로: /2.mp4</div>
+        </div>
         
         {/* 채팅 시작 버튼 */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">

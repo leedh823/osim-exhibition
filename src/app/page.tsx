@@ -75,11 +75,10 @@ export default function TrackingExhibition() {
       <div className="w-full h-screen bg-black aspect-[9/16] mx-auto relative overflow-hidden">
         {/* 영상 */}
         <video 
-          className="w-full h-full object-cover cursor-pointer"
+          className="w-full h-full object-cover"
           autoPlay 
           loop 
           muted
-          onClick={() => setCurrentStep('enlarged_video')}
         >
           <source src="/1.mp4" type="video/mp4" />
         </video>
@@ -131,7 +130,7 @@ export default function TrackingExhibition() {
         
         {/* 클릭 안내 */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
-          CLICK ANYWHERE OR ON THE CYCLIST TO ANALYZE
+          CLICK ON THE CYCLIST TO ANALYZE
         </div>
       </div>
     );

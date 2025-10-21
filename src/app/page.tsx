@@ -120,6 +120,10 @@ export default function TrackingExhibition() {
           <source src="/2.mp4" type="video/mp4" />
         </video>
         
+        {/* 클릭 안내 */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
+          CLICK TO START AI CHAT
+        </div>
       </div>
     );
   }
@@ -141,7 +145,7 @@ export default function TrackingExhibition() {
         </div>
         
         {/* 하단: 반투명 배경 + 채팅 */}
-        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black/70 backdrop-blur-sm">
+        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black/30 backdrop-blur-sm">
           {/* 채팅 메시지 영역 */}
           <div className="h-3/4 overflow-y-auto p-4 space-y-3">
             {chatMessages.map((msg, index) => (

@@ -88,10 +88,11 @@ export default function TrackingExhibition() {
         
         {/* 자전거 영역 클릭 - 투명하게 */}
         <div 
-          className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 w-32 h-24 z-50 cursor-pointer"
+          className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-40 h-32 z-50 cursor-pointer"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            console.log('자전거 클릭됨!');
             setCurrentStep('enlarged_video');
           }}
           onMouseDown={(e) => {
@@ -115,7 +116,10 @@ export default function TrackingExhibition() {
           autoPlay 
           loop 
           muted
-          onClick={() => setCurrentStep('ai_chat')}
+          onClick={() => {
+            console.log('2번 영상 클릭됨!');
+            setCurrentStep('ai_chat');
+          }}
         >
           <source src="/2.mp4" type="video/mp4" />
         </video>

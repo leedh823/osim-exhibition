@@ -112,35 +112,6 @@ export default function TrackingExhibition() {
           <source src="/2.mp4" type="video/mp4" />
         </video>
         
-        {/* 디지털 분석 오버레이 */}
-        <div className="absolute top-4 left-4 text-white font-mono text-sm z-10">
-          <div className="animate-pulse">ANALYSIS_MODE</div>
-          <div className="animate-pulse delay-100">ZOOM: 2.5x</div>
-        </div>
-        
-        <div className="absolute top-4 right-4 text-white font-mono text-sm z-10">
-          <div className="animate-pulse">DETAILED_SCAN</div>
-          <div className="animate-pulse delay-200">PROCESSING...</div>
-        </div>
-        
-        {/* 녹색 타겟 크로스헤어 */}
-        <div className="absolute inset-0 flex items-center justify-center z-20">
-          <div className="w-24 h-24 border-4 border-green-500 rounded-full animate-ping">
-            <div className="w-full h-full border-2 border-green-400 rounded-full animate-pulse"></div>
-          </div>
-        </div>
-        
-        {/* 분석 데이터 */}
-        <div className="absolute bottom-20 left-4 text-green-400 font-mono text-xs z-10">
-          <div>MOTION_DETECTED: YES</div>
-          <div>BEHAVIOR_PATTERN: WALKING</div>
-          <div>EMOTION_LEVEL: NEUTRAL</div>
-        </div>
-        
-        {/* 클릭 안내 */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
-          CLICK TO START AI CHAT
-        </div>
       </div>
     );
   }

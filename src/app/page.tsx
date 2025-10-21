@@ -83,31 +83,8 @@ export default function TrackingExhibition() {
           <source src="/1.mp4" type="video/mp4" />
         </video>
         
-        {/* 디지털 오버레이 */}
-        <div className="absolute top-4 left-4 text-white font-mono text-sm z-10">
-          <div className="animate-pulse">CAM_01 | 01/01/24 14:30:15</div>
-          <div className="animate-pulse delay-100">TRACKING: ACTIVE</div>
-        </div>
         
-        <div className="absolute top-4 right-4 text-white font-mono text-sm z-10">
-          <div className="animate-pulse">SUBJECT_DETECTED</div>
-          <div className="animate-pulse delay-200">CONFIDENCE: 0.95</div>
-        </div>
         
-        {/* 바운딩 박스 */}
-        <div className="absolute top-1/3 left-1/4 w-32 h-40 border-2 border-red-500 animate-pulse-box z-20">
-          <div className="absolute -top-6 left-0 text-red-500 text-xs font-mono">
-            SUBJECT_01
-          </div>
-          <div className="absolute -bottom-6 right-0 text-red-500 text-xs font-mono">
-            CONF: 0.95
-          </div>
-        </div>
-        
-        {/* 스캔라인 */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent animate-scan-line opacity-60"></div>
-        </div>
         
         {/* 자전거 타는 사람 클릭 영역 - 투명하게 */}
         <div 

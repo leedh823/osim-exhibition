@@ -116,10 +116,6 @@ export default function TrackingExhibition() {
         >
         </div>
         
-        {/* 클릭 안내 */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
-          CLICK ON THE CYCLIST TO ANALYZE
-        </div>
       </div>
     );
   }

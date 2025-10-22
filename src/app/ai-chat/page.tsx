@@ -27,8 +27,11 @@ export default function AIChat() {
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
-    // 첫 번째 질문만 중복 실행 방지
-    if (currentTurn === 0 && chatMessages.length > 0) return;
+    // 이미 AI 메시지가 마지막이면 중복 실행 방지
+    if (chatMessages.length > 0) {
+      const lastMessage = chatMessages[chatMessages.length - 1];
+      if (lastMessage.role === 'assistant') return;
+    }
     
     setIsLoading(true);
     
@@ -100,15 +103,29 @@ export default function AIChat() {
     }
   }, []);
 
-  // AI 질문 자동 표시
+  // AI 질문 자동 표시 (첫 번째 질문만)
   useEffect(() => {
-    if (currentTurn < 3) {
+    if (currentTurn === 0 && chatMessages.length === 0) {
       const timer = setTimeout(() => {
         handleAIMessage();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentTurn, handleAIMessage]);
+  }, [currentTurn, handleAIMessage, chatMessages.length]);
+
+  // 사용자 답변 후 AI 다음 질문 생성
+  useEffect(() => {
+    if (currentTurn > 0 && currentTurn < 5 && chatMessages.length > 0) {
+      // 사용자 메시지가 마지막인지 확인
+      const lastMessage = chatMessages[chatMessages.length - 1];
+      if (lastMessage.role === 'user') {
+        const timer = setTimeout(() => {
+          handleAIMessage();
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [currentTurn, chatMessages, handleAIMessage]);
 
   // 5턴 완료 시 분석 결과로 전환
   useEffect(() => {
@@ -226,3 +243,4 @@ export default function AIChat() {
     </div>
   );
 }
+

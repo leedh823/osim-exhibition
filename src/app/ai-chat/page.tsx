@@ -27,8 +27,8 @@ export default function AIChat() {
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
-    // 이미 메시지가 있으면 중복 실행 방지
-    if (chatMessages.length > 0) return;
+    // 첫 번째 질문만 중복 실행 방지
+    if (currentTurn === 0 && chatMessages.length > 0) return;
     
     setIsLoading(true);
     
@@ -100,15 +100,15 @@ export default function AIChat() {
     }
   }, []);
 
-  // AI 질문 자동 표시 (한 번만 실행)
+  // AI 질문 자동 표시
   useEffect(() => {
-    if (currentTurn < 3 && chatMessages.length === 0) {
+    if (currentTurn < 3) {
       const timer = setTimeout(() => {
         handleAIMessage();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentTurn, handleAIMessage, chatMessages.length]);
+  }, [currentTurn, handleAIMessage]);
 
   // 5턴 완료 시 분석 결과로 전환
   useEffect(() => {
@@ -130,6 +130,8 @@ export default function AIChat() {
       setChatMessages(prev => [...prev, newMessage]);
       setUserInput('');
       setCurrentTurn(prev => prev + 1);
+      
+      // AI 응답을 위한 추가 로직은 useEffect에서 처리됨
     }
   };
 

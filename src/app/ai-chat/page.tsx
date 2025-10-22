@@ -31,6 +31,9 @@ export default function AIChat() {
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
+    // 이미 메시지가 있으면 중복 실행 방지
+    if (chatMessages.length > 0) return;
+    
     setIsLoading(true);
     
     try {
@@ -52,9 +55,9 @@ export default function AIChat() {
         console.error('API 오류:', data.error);
         // 오류 시 더미 메시지 사용
         const dummyQuestions = [
-          "이 사람은 무엇을 하고 있나요?",
-          "어떤 행동을 하고 있나요?",
-          "이 사람의 감정 상태는 어떠한가요?"
+          "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?",
+          "이 사람의 행동 패턴을 보면 어떤 상황에 처해 있다고 생각하나요?",
+          "이 인물의 다음 행동을 예측해본다면 무엇일까요?"
         ];
         
         const newMessage = {
@@ -78,9 +81,9 @@ export default function AIChat() {
       console.error('AI 메시지 처리 오류:', error);
       // 오류 시 더미 메시지 사용
       const dummyQuestions = [
-        "이 사람은 무엇을 하고 있나요?",
-        "어떤 행동을 하고 있나요?",
-        "이 사람의 감정 상태는 어떠한가요?"
+        "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?",
+        "이 사람의 행동 패턴을 보면 어떤 상황에 처해 있다고 생각하나요?",
+        "이 인물의 다음 행동을 예측해본다면 무엇일까요?"
       ];
       
       const newMessage = {
@@ -91,7 +94,7 @@ export default function AIChat() {
     } finally {
       setIsLoading(false);
     }
-  }, [chatMessages, currentTurn, selectedPerson]);
+  }, [chatMessages.length, currentTurn, selectedPerson]);
 
   // 선택된 인물 정보 로드
   useEffect(() => {
@@ -101,15 +104,15 @@ export default function AIChat() {
     }
   }, []);
 
-  // AI 질문 자동 표시
+  // AI 질문 자동 표시 (한 번만 실행)
   useEffect(() => {
-    if (currentTurn < 3) {
+    if (currentTurn < 3 && chatMessages.length === 0) {
       const timer = setTimeout(() => {
         handleAIMessage();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentTurn, handleAIMessage]);
+  }, [currentTurn, handleAIMessage, chatMessages.length]);
 
   // 5턴 완료 시 분석 결과로 전환
   useEffect(() => {

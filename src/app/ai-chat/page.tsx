@@ -1,38 +1,48 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
+interface ChatMessage {
+  role: string;
+  content: string;
+}
+
+interface AnalysisData {
+  trackedPersonAnalysis: string;
+  viewerAnalysis: string;
+}
 
 export default function AIChat() {
   const router = useRouter();
-  const [chatMessages, setChatMessages] = useState<Array<{role: string, content: string}>>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [currentTurn, setCurrentTurn] = useState(0);
   const [userInput, setUserInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<any>(null);
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
 
-  // AI 질문 더미 데이터 - useMemo로 최적화
-  const aiQuestions = useMemo(() => [
-    "이 사람은 무엇을 하고 있나요?",
-    "어떤 행동을 하고 있나요?",
-    "이 사람의 감정 상태는 어떠한가요?"
-  ], []);
+  // 선택된 인물 정보 로드
+  useEffect(() => {
+    const storedPerson = localStorage.getItem('selectedPerson');
+    if (storedPerson) {
+      setSelectedPerson(JSON.parse(storedPerson));
+    }
+  }, []);
 
   // AI 질문 자동 표시
   useEffect(() => {
     if (currentTurn < 3) {
       const timer = setTimeout(() => {
-        const newMessage = {
-          role: 'assistant',
-          content: aiQuestions[currentTurn]
-        };
-        setChatMessages(prev => [...prev, newMessage]);
+        handleAIMessage();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentTurn, aiQuestions]);
+  }, [currentTurn]);
 
-  // 3턴 완료 시 분석 결과로 전환
+  // 5턴 완료 시 분석 결과로 전환
   useEffect(() => {
-    if (currentTurn >= 3) {
+    if (currentTurn >= 5) {
       const timer = setTimeout(() => {
         router.push('/analysis');
       }, 2000);
@@ -40,8 +50,73 @@ export default function AIChat() {
     }
   }, [currentTurn, router]);
 
+  // AI 메시지 처리
+  const handleAIMessage = async () => {
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: chatMessages,
+          turnCount: currentTurn,
+          selectedPerson: selectedPerson
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error('API 오류:', data.error);
+        // 오류 시 더미 메시지 사용
+        const dummyQuestions = [
+          "이 사람은 무엇을 하고 있나요?",
+          "어떤 행동을 하고 있나요?",
+          "이 사람의 감정 상태는 어떠한가요?"
+        ];
+        
+        const newMessage = {
+          role: 'assistant',
+          content: dummyQuestions[currentTurn] || "분석을 시작하겠습니다..."
+        };
+        setChatMessages(prev => [...prev, newMessage]);
+      } else {
+        const newMessage = {
+          role: 'assistant',
+          content: data.content
+        };
+        setChatMessages(prev => [...prev, newMessage]);
+        
+        // 분석 데이터가 있으면 저장
+        if (data.analysis) {
+          setAnalysisData(data.analysis);
+          localStorage.setItem('analysisData', JSON.stringify(data.analysis));
+        }
+      }
+    } catch (error) {
+      console.error('AI 메시지 처리 오류:', error);
+      // 오류 시 더미 메시지 사용
+      const dummyQuestions = [
+        "이 사람은 무엇을 하고 있나요?",
+        "어떤 행동을 하고 있나요?",
+        "이 사람의 감정 상태는 어떠한가요?"
+      ];
+      
+      const newMessage = {
+        role: 'assistant',
+        content: dummyQuestions[currentTurn] || "분석을 시작하겠습니다..."
+      };
+      setChatMessages(prev => [...prev, newMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // 채팅 메시지 전송
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (userInput.trim()) {
       const newMessage = {
         role: 'user',
@@ -109,20 +184,26 @@ export default function AIChat() {
               onKeyPress={handleKeyPress}
               className="flex-1 p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:border-blue-400 focus:outline-none backdrop-blur-sm placeholder-white/60"
               placeholder="답변을 입력하세요..."
-              disabled={currentTurn >= 3}
+              disabled={currentTurn >= 5 || isLoading}
             />
             <button 
               onClick={handleSendMessage}
-              disabled={!userInput.trim() || currentTurn >= 3}
+              disabled={!userInput.trim() || currentTurn >= 5 || isLoading}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
             >
-              전송
+              {isLoading ? 'AI 응답 중...' : '전송'}
             </button>
           </div>
           
-          {currentTurn >= 3 && (
+          {currentTurn >= 5 && (
             <div className="text-center text-green-400 font-mono text-sm mt-2 animate-pulse">
               분석 결과를 생성하고 있습니다...
+            </div>
+          )}
+          
+          {isLoading && (
+            <div className="text-center text-blue-400 font-mono text-sm mt-2 animate-pulse">
+              AI가 생각하고 있습니다...
             </div>
           )}
         </div>

@@ -6,20 +6,44 @@ import { useRouter } from 'next/navigation';
 export default function Analysis() {
   const router = useRouter();
   const [analysisResults, setAnalysisResults] = useState<{
-    personAnalysis: string;
+    trackedPersonAnalysis: string;
     viewerAnalysis: string;
   } | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<any>(null);
 
-  // 분석 결과 생성 (더미 데이터)
+  // 분석 결과 로드
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // localStorage에서 분석 데이터 로드
+    const storedAnalysis = localStorage.getItem('analysisData');
+    const storedPerson = localStorage.getItem('selectedPerson');
+    
+    if (storedAnalysis) {
+      try {
+        const analysisData = JSON.parse(storedAnalysis);
+        setAnalysisResults(analysisData);
+      } catch (error) {
+        console.error('분석 데이터 파싱 오류:', error);
+        // 오류 시 더미 데이터 사용
+        setAnalysisResults({
+          trackedPersonAnalysis: "이 사람은 편의점 앞에서 휴식을 취하고 있는 것으로 보입니다. 혼자 앉아 있는 모습에서 고독감이나 피로감을 느끼고 있을 수 있습니다.",
+          viewerAnalysis: "관람자는 이 사람의 상황에 공감하고 있으며, 도시 생활의 피로와 고독감에 대해 깊이 생각하고 있습니다."
+        });
+      }
+    } else {
+      // 분석 데이터가 없으면 더미 데이터 사용
       setAnalysisResults({
-        personAnalysis: "이 사람은 편의점 앞에서 휴식을 취하고 있는 것으로 보입니다. 혼자 앉아 있는 모습에서 고독감이나 피로감을 느끼고 있을 수 있습니다. 주변 환경을 둘러보는 행동으로 보아 잠시 휴식을 취한 후 다시 일상으로 돌아갈 준비를 하고 있는 것 같습니다.",
-        viewerAnalysis: "관람자는 이 사람의 상황에 공감하고 있으며, 도시 생활의 피로와 고독감에 대해 깊이 생각하고 있습니다. 타인의 상황을 세심하게 관찰하고 분석하는 능력이 뛰어나며, 사회적 상황에 대한 이해도가 높습니다."
+        trackedPersonAnalysis: "이 사람은 편의점 앞에서 휴식을 취하고 있는 것으로 보입니다. 혼자 앉아 있는 모습에서 고독감이나 피로감을 느끼고 있을 수 있습니다.",
+        viewerAnalysis: "관람자는 이 사람의 상황에 공감하고 있으며, 도시 생활의 피로와 고독감에 대해 깊이 생각하고 있습니다."
       });
-    }, 2000);
+    }
 
-    return () => clearTimeout(timer);
+    if (storedPerson) {
+      try {
+        setSelectedPerson(JSON.parse(storedPerson));
+      } catch (error) {
+        console.error('선택된 인물 데이터 파싱 오류:', error);
+      }
+    }
   }, []);
 
   // 인쇄 기능
@@ -40,8 +64,15 @@ export default function Analysis() {
         {/* 카드 1: 추적된 사람 분석 */}
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 w-80 h-96 border border-white/20">
           <h3 className="text-white text-lg font-bold mb-4">추적된 사람 분석</h3>
+          {selectedPerson && (
+            <div className="text-white/60 text-xs mb-3">
+              <div>객체 ID: {selectedPerson.id}</div>
+              <div>위치: ({Math.round(selectedPerson.x)}, {Math.round(selectedPerson.y)})</div>
+              <div>움직임: {selectedPerson.isMoving ? '움직임 감지됨' : '정지 상태'}</div>
+            </div>
+          )}
           <div className="text-white/80 text-sm leading-relaxed">
-            {analysisResults ? analysisResults.personAnalysis : "분석 중..."}
+            {analysisResults ? analysisResults.trackedPersonAnalysis : "분석 중..."}
           </div>
         </div>
 

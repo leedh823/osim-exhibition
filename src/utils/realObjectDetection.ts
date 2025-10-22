@@ -21,6 +21,13 @@ export class RealObjectDetector {
   private frameCount = 0;
   private readonly confidenceThreshold = 0.3;
   private readonly movingThreshold = 5; // 픽셀 이동 임계값
+  
+  // 표준 박스 크기 설정
+  private readonly STANDARD_WIDTH = 200;
+  private readonly STANDARD_HEIGHT = 300;
+  
+  // 트래킹 연결을 위한 이전 위치 저장
+  private lastKnownPositions: Map<string, { x: number; y: number; frameCount: number }> = new Map();
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
@@ -57,24 +64,31 @@ export class RealObjectDetector {
       // 비디오에서 객체 감지
       const predictions = await this.model.detect(videoElement);
       
-      // 사람만 필터링하고 DetectedObject 형태로 변환
+      // 사람만 필터링하고 DetectedObject 형태로 변환 (표준 크기 적용)
       const detectedObjects: DetectedObject[] = predictions
         .filter(prediction => 
           prediction.class === 'person' && 
           prediction.score >= this.confidenceThreshold
         )
-        .map((prediction, index) => ({
-          id: `person_${this.frameCount}_${index}`,
-          x: prediction.bbox[0],
-          y: prediction.bbox[1],
-          width: prediction.bbox[2],
-          height: prediction.bbox[3],
-          label: '사람',
-          confidence: prediction.score,
-          isMoving: false,
-          speed: 0,
-          direction: { x: 0, y: 0 }
-        }));
+        .map((prediction, index) => {
+          // 원본 중심점 계산
+          const centerX = prediction.bbox[0] + prediction.bbox[2] / 2;
+          const centerY = prediction.bbox[1] + prediction.bbox[3] / 2;
+          
+          // 표준 크기로 조정 (중심점 기준)
+          return {
+            id: `person_${this.frameCount}_${index}`,
+            x: centerX - this.STANDARD_WIDTH / 2,
+            y: centerY - this.STANDARD_HEIGHT / 2,
+            width: this.STANDARD_WIDTH,
+            height: this.STANDARD_HEIGHT,
+            label: '사람',
+            confidence: prediction.score,
+            isMoving: false,
+            speed: 0,
+            direction: { x: 0, y: 0 }
+          };
+        });
 
       // 움직임 감지 및 속도 계산
       const objectsWithMotion = this.detectMotion(detectedObjects);
@@ -112,18 +126,42 @@ export class RealObjectDetector {
         }
       });
 
-      if (closestPrevObj && minDistance < 150) { // 150픽셀 이내면 같은 객체로 간주 (임계값 증가)
+      if (closestPrevObj && minDistance < 200) { // 200픽셀 이내면 같은 객체로 간주 (표준 크기 고려)
         const speed = minDistance;
         const direction = {
           x: currentObj.x - (closestPrevObj as DetectedObject).x,
           y: currentObj.y - (closestPrevObj as DetectedObject).y
         };
         
+        // 위치 정보 업데이트
+        this.lastKnownPositions.set(currentObj.id, {
+          x: currentObj.x,
+          y: currentObj.y,
+          frameCount: this.frameCount
+        });
+        
         return {
           ...currentObj,
           isMoving: speed > this.movingThreshold,
           speed: speed,
           direction: direction
+        };
+      }
+
+      // 트래킹이 끊어진 경우, 이전 위치를 기반으로 예측
+      const lastKnown = this.lastKnownPositions.get(currentObj.id);
+      if (lastKnown && this.frameCount - lastKnown.frameCount < 5) {
+        // 최근 5프레임 이내라면 위치 보간
+        const interpolatedX = lastKnown.x + (currentObj.x - lastKnown.x) * 0.3;
+        const interpolatedY = lastKnown.y + (currentObj.y - lastKnown.y) * 0.3;
+        
+        return {
+          ...currentObj,
+          x: interpolatedX,
+          y: interpolatedY,
+          isMoving: true,
+          speed: Math.sqrt(Math.pow(currentObj.x - lastKnown.x, 2) + Math.pow(currentObj.y - lastKnown.y, 2)),
+          direction: { x: currentObj.x - lastKnown.x, y: currentObj.y - lastKnown.y }
         };
       }
 

@@ -151,9 +151,17 @@ export default function AIChat() {
         </video>
         
         {/* 디버깅 정보 */}
-        <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
-          <div>현재 페이지: ai-chat</div>
-          <div>AI 채팅 화면</div>
+        <div className="absolute top-4 left-4 text-white font-mono text-sm z-20 bg-black/80 p-3 rounded-lg border border-white/20">
+          <div className="mb-1">현재 페이지: ai-chat</div>
+          <div className="mb-1">AI 채팅 화면</div>
+          {selectedPerson && (
+            <>
+              <div className="mb-1">선택된 인물: {selectedPerson.label}</div>
+              <div className="mb-1">위치: ({Math.round(selectedPerson.x)}, {Math.round(selectedPerson.y)})</div>
+              <div className="mb-1">움직임: {selectedPerson.isMoving ? '움직임 감지됨' : '정지 상태'}</div>
+              <div>신뢰도: {(selectedPerson.confidence * 100).toFixed(1)}%</div>
+            </>
+          )}
         </div>
       </div>
       

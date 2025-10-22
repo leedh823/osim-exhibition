@@ -13,9 +13,16 @@ export async function POST(request: NextRequest) {
     let systemPrompt = '';
     
     if (turnCount < 3) {
-      // 1-3턴: 영상 속 인물에 대한 질문
+      // 1-3턴: 영상 분석 기반 맞춤형 질문
       systemPrompt = `당신은 영상 분석 전문가입니다. 
-      영상 속 인물의 행동, 감정, 상황을 분석하여 질문을 던지세요.
+      
+      다음 영상 정보를 바탕으로 맞춤형 질문을 생성하세요:
+      - 선택된 인물: ${selectedPerson ? selectedPerson.label : '알 수 없음'}
+      - 위치: (${selectedPerson ? Math.round(selectedPerson.x) : 0}, ${selectedPerson ? Math.round(selectedPerson.y) : 0})
+      - 움직임: ${selectedPerson ? (selectedPerson.isMoving ? '움직임 감지됨' : '정지 상태') : '알 수 없음'}
+      - 신뢰도: ${selectedPerson ? (selectedPerson.confidence * 100).toFixed(1) : 0}%
+      
+      영상 속 인물의 구체적인 행동, 감정, 상황을 분석하여 개인화된 질문을 던지세요.
       질문은 간단하고 구체적으로 하세요.
       한국어로 답변하세요.`;
     } else if (turnCount === 3) {
@@ -26,15 +33,18 @@ export async function POST(request: NextRequest) {
       // 5턴: 최종 분석 결과 생성
       systemPrompt = `당신은 심리학자이자 행동 분석 전문가입니다.
       
-      다음 정보를 바탕으로 2개의 분석 결과를 생성하세요:
+      다음 영상 분석 정보를 바탕으로 2개의 분석 결과를 생성하세요:
       
       1. **추적된 인물 분석**:
       - 선택된 인물: ${selectedPerson ? selectedPerson.label : '알 수 없음'}
-      - 위치: (${selectedPerson ? selectedPerson.x : 0}, ${selectedPerson ? selectedPerson.y : 0})
+      - 위치: (${selectedPerson ? Math.round(selectedPerson.x) : 0}, ${selectedPerson ? Math.round(selectedPerson.y) : 0})
       - 움직임: ${selectedPerson ? (selectedPerson.isMoving ? '움직임 감지됨' : '정지 상태') : '알 수 없음'}
+      - 신뢰도: ${selectedPerson ? (selectedPerson.confidence * 100).toFixed(1) : 0}%
+      - 속도: ${selectedPerson ? (selectedPerson.speed || 0).toFixed(1) : 0} 픽셀/프레임
       
       2. **관람자 분석**:
       - 대화 패턴과 답변 내용을 분석
+      - 영상에 대한 관심도와 관찰력 평가
       
       각 분석은 200자 이내로 간결하게 작성하세요.
       JSON 형태로 응답하세요:

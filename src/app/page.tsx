@@ -1,304 +1,42 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function TrackingExhibition() {
-  const [currentStep, setCurrentStep] = useState('tracking_video');
-  const [chatMessages, setChatMessages] = useState<Array<{role: string, content: string}>>([]);
-  const [currentTurn, setCurrentTurn] = useState(0);
-  const [userInput, setUserInput] = useState('');
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [analysisResults, setAnalysisResults] = useState([
-    {
-      subjectType: 'tracked_person',
-      analysisText: '이 사람은 공원에서 혼자 걷고 있는 것으로 보입니다. 천천히 걸으며 주변을 둘러보는 행동을 보여주고 있습니다. 혼자만의 시간을 즐기고 있는 것 같습니다.'
-    },
-    {
-      subjectType: 'viewer',
-      analysisText: '관람자는 매우 집중적으로 영상을 관찰하고 있습니다. 세부사항에 주의를 기울이며, 분석적 사고를 보여주고 있습니다.'
-    }
-  ]);
+  const router = useRouter();
 
-  // AI 질문 더미 데이터
-  const aiQuestions = [
-    "이 사람은 무엇을 하고 있나요?",
-    "어떤 행동을 하고 있나요?",
-    "이 사람의 감정 상태는 어떠한가요?"
-  ];
-
-  // AI 질문 자동 표시
-  useEffect(() => {
-    if (currentStep === 'ai_chat' && currentTurn < 3) {
-      const timer = setTimeout(() => {
-        const newMessage = {
-          role: 'assistant',
-          content: aiQuestions[currentTurn]
-        };
-        setChatMessages(prev => [...prev, newMessage]);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [currentStep, currentTurn, aiQuestions]);
-
-  // 3턴 완료 시 분석 결과로 전환
-  useEffect(() => {
-    if (currentStep === 'ai_chat' && currentTurn >= 3) {
-      const timer = setTimeout(() => {
-        setCurrentStep('analysis_results');
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [currentTurn, currentStep]);
-
-  // 2번 영상 자동 재생
-  useEffect(() => {
-    if (currentStep === 'enlarged_video' && videoRef.current) {
-      const video = videoRef.current;
-      const playVideo = async () => {
-        try {
-          await video.play();
-          console.log('2번 영상 자동 재생 성공');
-        } catch (error) {
-          console.log('2번 영상 자동 재생 실패:', error);
-        }
-      };
-      playVideo();
-    }
-  }, [currentStep]);
-
-  // 채팅 메시지 전송
-  const handleSendMessage = () => {
-    if (userInput.trim()) {
-      const newMessage = {
-        role: 'user',
-        content: userInput
-      };
-      setChatMessages(prev => [...prev, newMessage]);
-      setUserInput('');
-      setCurrentTurn(prev => prev + 1);
-    }
+  const handleScreenClick = () => {
+    console.log('화면 클릭됨! enlarged 페이지로 이동');
+    router.push('/enlarged');
   };
 
-  // Enter 키로 메시지 전송
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
-
-  // 1. 트래킹 영상 화면 (가로형 16:9)
-  if (currentStep === 'tracking_video') {
   return (
-      <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
-        {/* 영상 */}
-        <video 
-          className="w-full h-full object-cover"
-          autoPlay 
-          loop 
-          muted
-          playsInline
-          controls={false}
-        >
-          <source src="/1.mp4" type="video/mp4" />
-        </video>
-        
-        
-        
-        
-        {/* 자전거 영역 클릭 - 투명하게 */}
-        <div 
-          className="absolute bottom-1/5 left-1/2 transform -translate-x-1/2 w-32 h-32 z-50 cursor-pointer"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('자전거 클릭됨! 현재 단계:', currentStep);
-            setCurrentStep('enlarged_video');
-          }}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-        </div>
-
-        {/* 디버깅 정보 */}
-        <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
-          <div>현재 단계: {currentStep}</div>
-          <div>1번 영상 - 자전거 클릭하세요</div>
-        </div>
-
+    <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
+      {/* 영상 */}
+      <video 
+        className="w-full h-full object-cover"
+        autoPlay 
+        loop 
+        muted
+        playsInline
+        controls={false}
+      >
+        <source src="/1.mp4" type="video/mp4" />
+      </video>
+      
+      {/* 화면 전체 클릭 */}
+      <div 
+        className="absolute inset-0 w-full h-full z-50 cursor-pointer"
+        onClick={handleScreenClick}
+      >
       </div>
-    );
-  }
 
-  // 2. 확대된 영상 화면 (가로형 16:9)
-  if (currentStep === 'enlarged_video') {
-    return (
-      <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
-        {/* 영상 */}
-        <video 
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          autoPlay 
-          loop 
-          muted
-          playsInline
-          controls={false}
-          onLoadStart={() => console.log('2.mp4 로딩 시작')}
-          onLoadedData={() => console.log('2.mp4 로딩 완료')}
-          onCanPlay={() => console.log('2.mp4 재생 가능')}
-          onPlay={() => console.log('2.mp4 재생 시작')}
-          onError={(e) => console.log('2.mp4 로딩 에러:', e)}
-        >
-          <source src="/2.mp4" type="video/mp4" />
-        </video>
-        
-        {/* 디버깅 정보 */}
-        <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
-          <div>현재 단계: {currentStep}</div>
-          <div>2번 영상 재생 중</div>
-          <div>영상 경로: /2.mp4</div>
-          <div>자동재생: ON</div>
-        </div>
-        
+      {/* 디버깅 정보 */}
+      <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
+        <div>현재 페이지: tracking</div>
+        <div>1번 영상 - 화면 클릭하세요</div>
       </div>
-    );
-  }
-
-  // 3. AI 채팅 화면 (좌우 50% 분할)
-  if (currentStep === 'ai_chat') {
-    return (
-      <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative">
-        {/* 왼쪽 50%: 2.mp4 영상 */}
-        <div className="absolute top-0 left-0 w-1/2 h-full">
-          <video 
-            className="w-full h-full object-cover"
-            autoPlay 
-            loop 
-            muted
-            playsInline
-            controls={false}
-          >
-            <source src="/2.mp4" type="video/mp4" />
-          </video>
-          
-          {/* 디버깅 정보 */}
-          <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
-            <div>현재 단계: {currentStep}</div>
-            <div>AI 채팅 화면</div>
-          </div>
-        </div>
-        
-        {/* 오른쪽 50%: AI 채팅 인터페이스 */}
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-black/30 backdrop-blur-sm">
-          {/* 채팅 메시지 영역 */}
-          <div className="h-3/4 overflow-y-auto p-4 space-y-3">
-            {chatMessages.map((msg, index) => (
-              <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-xs p-3 rounded-lg ${
-                  msg.role === 'user' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-white/20 text-white backdrop-blur-sm'
-                }`}>
-                  {msg.content}
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* 입력 영역 */}
-          <div className="h-1/4 p-4 border-t border-white/20">
-            <div className="flex gap-2">
-              <input 
-                type="text" 
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="flex-1 p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:border-blue-400 focus:outline-none backdrop-blur-sm placeholder-white/60"
-                placeholder="답변을 입력하세요..."
-                disabled={currentTurn >= 3}
-              />
-              <button 
-                onClick={handleSendMessage}
-                disabled={!userInput.trim() || currentTurn >= 3}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
-              >
-                전송
-              </button>
-            </div>
-            
-            {currentTurn >= 3 && (
-              <div className="text-center text-green-400 font-mono text-sm mt-2 animate-pulse">
-                분석 결과를 생성하고 있습니다...
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 4. 분석 결과 화면 (카드) - 가로형 16:9
-  if (currentStep === 'analysis_results') {
-    return (
-      <div className="w-full h-screen bg-gray-100 aspect-[16/9] mx-auto p-4">
-        <div className="h-full flex flex-col">
-          {/* 제목 */}
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">분석 결과</h1>
-            <p className="text-gray-600 text-sm">카드를 클릭하여 자세한 분석을 확인하세요</p>
-          </div>
-          
-          {/* 카드 그리드 */}
-          <div className="grid grid-cols-2 gap-4 flex-1">
-            {/* 카드 1: 추적된 사람 */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
-              <div className="h-1/2 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                <div className="text-white text-center">
-                  <div className="text-4xl mb-2">👤</div>
-                  <div className="text-sm font-mono">추적된 사람</div>
-                </div>
-              </div>
-              <div className="h-1/2 p-4 text-xs">
-                <h3 className="font-bold mb-2 text-gray-800">행동 분석</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {analysisResults[0]?.analysisText}
-                </p>
-              </div>
-            </div>
-            
-            {/* 카드 2: 관람자 */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
-              <div className="h-1/2 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
-                <div className="text-white text-center">
-                  <div className="text-4xl mb-2">🎭</div>
-                  <div className="text-sm font-mono">관람자</div>
-                </div>
-              </div>
-              <div className="h-1/2 p-4 text-xs">
-                <h3 className="font-bold mb-2 text-gray-800">관찰 패턴</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {analysisResults[1]?.analysisText}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          {/* 인쇄 버튼 */}
-          <div className="mt-6 text-center">
-            <button 
-              className="px-8 py-4 bg-yellow-400 text-black rounded-lg font-bold text-lg hover:bg-yellow-500 transition-colors shadow-lg"
-              onClick={() => {
-                alert('인쇄 요청이 전송되었습니다.\n카드가 프린터로 전송됩니다.');
-              }}
-            >
-              🖨️ 인쇄하기
-            </button>
-          </div>
-        </div>
     </div>
   );
-}
 
-  return null;
 }

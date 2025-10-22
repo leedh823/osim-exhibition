@@ -1,0 +1,66 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function EnlargedVideo() {
+  const router = useRouter();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // 2번 영상 자동 재생
+  useEffect(() => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      const playVideo = async () => {
+        try {
+          await video.play();
+          console.log('2번 영상 자동 재생 성공');
+        } catch (error) {
+          console.log('2번 영상 자동 재생 실패:', error);
+        }
+      };
+      playVideo();
+    }
+  }, []);
+
+  const handleVideoClick = () => {
+    console.log('2번 영상 클릭됨! AI 채팅으로 이동');
+    router.push('/ai-chat');
+  };
+
+  return (
+    <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
+      {/* 영상 */}
+      <video 
+        ref={videoRef}
+        className="w-full h-full object-cover cursor-pointer"
+        autoPlay 
+        loop 
+        muted
+        playsInline
+        controls={false}
+        onClick={handleVideoClick}
+        onLoadStart={() => console.log('2.mp4 로딩 시작')}
+        onLoadedData={() => console.log('2.mp4 로딩 완료')}
+        onCanPlay={() => console.log('2.mp4 재생 가능')}
+        onPlay={() => console.log('2.mp4 재생 시작')}
+        onError={(e) => console.log('2.mp4 로딩 에러:', e)}
+      >
+        <source src="/2.mp4" type="video/mp4" />
+      </video>
+      
+      {/* 디버깅 정보 */}
+      <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
+        <div>현재 페이지: enlarged</div>
+        <div>2번 영상 재생 중</div>
+        <div>영상 경로: /2.mp4</div>
+        <div>자동재생: ON</div>
+      </div>
+      
+      {/* 클릭 안내 */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
+        CLICK TO START AI CHAT
+      </div>
+    </div>
+  );
+}

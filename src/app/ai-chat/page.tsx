@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface ChatMessage {
@@ -19,39 +19,19 @@ export default function AIChat() {
   const [currentTurn, setCurrentTurn] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<any>(null);
+  const [selectedPerson, setSelectedPerson] = useState<{
+    id: string;
+    label: string;
+    x: number;
+    y: number;
+    confidence: number;
+    isMoving: boolean;
+    speed?: number;
+  } | null>(null);
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
 
-  // 선택된 인물 정보 로드
-  useEffect(() => {
-    const storedPerson = localStorage.getItem('selectedPerson');
-    if (storedPerson) {
-      setSelectedPerson(JSON.parse(storedPerson));
-    }
-  }, []);
-
-  // AI 질문 자동 표시
-  useEffect(() => {
-    if (currentTurn < 3) {
-      const timer = setTimeout(() => {
-        handleAIMessage();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [currentTurn]);
-
-  // 5턴 완료 시 분석 결과로 전환
-  useEffect(() => {
-    if (currentTurn >= 5) {
-      const timer = setTimeout(() => {
-        router.push('/analysis');
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [currentTurn, router]);
-
   // AI 메시지 처리
-  const handleAIMessage = async () => {
+  const handleAIMessage = useCallback(async () => {
     setIsLoading(true);
     
     try {
@@ -113,7 +93,35 @@ export default function AIChat() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [chatMessages, currentTurn, selectedPerson]);
+
+  // 선택된 인물 정보 로드
+  useEffect(() => {
+    const storedPerson = localStorage.getItem('selectedPerson');
+    if (storedPerson) {
+      setSelectedPerson(JSON.parse(storedPerson));
+    }
+  }, []);
+
+  // AI 질문 자동 표시
+  useEffect(() => {
+    if (currentTurn < 3) {
+      const timer = setTimeout(() => {
+        handleAIMessage();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentTurn, handleAIMessage]);
+
+  // 5턴 완료 시 분석 결과로 전환
+  useEffect(() => {
+    if (currentTurn >= 5) {
+      const timer = setTimeout(() => {
+        router.push('/analysis');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentTurn, router]);
 
   // 채팅 메시지 전송
   const handleSendMessage = async () => {

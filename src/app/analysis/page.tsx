@@ -1,15 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function Analysis() {
-  const router = useRouter();
   const [analysisResults, setAnalysisResults] = useState<{
     trackedPersonAnalysis: string;
     viewerAnalysis: string;
   } | null>(null);
-  const [selectedPerson, setSelectedPerson] = useState<any>(null);
+  const [selectedPerson, setSelectedPerson] = useState<{
+    id: string;
+    label: string;
+    x: number;
+    y: number;
+    confidence: number;
+    isMoving: boolean;
+    speed?: number;
+  } | null>(null);
 
   // 분석 결과 로드
   useEffect(() => {

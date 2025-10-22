@@ -13,22 +13,14 @@ export async function POST(request: NextRequest) {
     let systemPrompt = '';
     
     if (turnCount < 3) {
-      // 1-3턴: 인물 분석 기반 맞춤형 질문
-      systemPrompt = `당신은 CCTV 화면 분석 전문가입니다. 
+      // 1-3턴: 고정된 질문들
+      const fixedQuestions = [
+        "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?",
+        "이 사람의 행동 패턴을 보면 어떤 상황에 처해 있다고 생각하나요?",
+        "이 인물의 다음 행동을 예측해본다면 무엇일까요?"
+      ];
       
-      다음 CCTV 화면 정보를 바탕으로 인물 분석에 맞춘 구체적인 질문을 생성하세요:
-      - 선택된 인물: ${selectedPerson ? selectedPerson.label : '알 수 없음'}
-      - 위치: (${selectedPerson ? Math.round(selectedPerson.x) : 0}, ${selectedPerson ? Math.round(selectedPerson.y) : 0})
-      - 움직임: ${selectedPerson ? (selectedPerson.isMoving ? '움직임 감지됨' : '정지 상태') : '알 수 없음'}
-      - 신뢰도: ${selectedPerson ? (selectedPerson.confidence * 100).toFixed(1) : 0}%
-      
-      인물의 행동 패턴, 위치, 움직임 상태를 분석하여 다음과 같은 관점에서 질문하세요:
-      - 행동 분석: "이 사람이 지금 하고 있는 구체적인 행동은 무엇인가요?"
-      - 상황 분석: "이 사람이 처한 상황이나 환경은 어떤 것 같나요?"
-      - 의도 분석: "이 사람의 목적이나 다음 행동을 예측해보세요."
-      
-      질문은 인물의 구체적인 행동과 상황에 맞춰서 하세요.
-      한국어로 답변하세요.`;
+      systemPrompt = `다음 질문을 그대로 출력하세요: "${fixedQuestions[turnCount]}"`;
     } else if (turnCount === 3) {
       // 4턴: 분석 시작 알림
       systemPrompt = `이제 3턴의 대화를 바탕으로 분석을 시작합니다.

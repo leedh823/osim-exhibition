@@ -97,7 +97,7 @@ export class RealObjectDetector {
     }
 
     return currentObjects.map(currentObj => {
-      // 이전 프레임에서 가장 가까운 객체 찾기
+      // 이전 프레임에서 가장 가까운 객체 찾기 (거리 임계값 증가)
       let closestPrevObj: DetectedObject | null = null;
       let minDistance = Infinity;
 
@@ -112,7 +112,7 @@ export class RealObjectDetector {
         }
       });
 
-      if (closestPrevObj && minDistance < 100) { // 100픽셀 이내면 같은 객체로 간주
+      if (closestPrevObj && minDistance < 150) { // 150픽셀 이내면 같은 객체로 간주 (임계값 증가)
         const speed = minDistance;
         const direction = {
           x: currentObj.x - (closestPrevObj as DetectedObject).x,
@@ -135,12 +135,10 @@ export class RealObjectDetector {
     objects.forEach(obj => {
       const isSelected = obj.id === selectedObjectId;
       
-      // 움직이는 객체는 빨간색, 정지된 객체는 노란색, 선택된 객체는 초록색
-      let strokeColor = '#ffff00'; // 기본 노란색
+      // 고정 색상: f5da31 (노란색 계열)
+      let strokeColor = '#f5da31'; // 고정 색상
       if (isSelected) {
         strokeColor = '#00ff00'; // 선택됨 - 초록색
-      } else if (obj.isMoving) {
-        strokeColor = '#ff0000'; // 움직임 - 빨간색
       }
 
       // 테두리 그리기
@@ -148,21 +146,11 @@ export class RealObjectDetector {
       ctx.lineWidth = 3;
       ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
 
-      // 반투명 배경
-      ctx.fillStyle = obj.isMoving ? 'rgba(255, 0, 0, 0.1)' : 'rgba(255, 255, 0, 0.1)';
+      // 반투명 배경 (고정 색상)
+      ctx.fillStyle = 'rgba(245, 218, 49, 0.1)'; // f5da31 색상의 반투명
       ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
 
-      // 라벨 표시
-      const labelText = `${obj.label} ${obj.isMoving ? '(움직임)' : '(정지)'} (${(obj.confidence * 100).toFixed(0)}%)`;
-      const labelWidth = ctx.measureText(labelText).width + 10;
-      const labelHeight = 20;
-
-      ctx.fillStyle = strokeColor;
-      ctx.fillRect(obj.x, obj.y - labelHeight, labelWidth, labelHeight);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 12px Arial';
-      ctx.fillText(labelText, obj.x + 5, obj.y - 5);
+      // 라벨 제거 (깔끔한 UI)
 
       // 움직임 방향 벡터 그리기
       if (obj.isMoving && obj.speed && obj.speed > 0) {

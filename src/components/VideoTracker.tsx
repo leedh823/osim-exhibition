@@ -175,25 +175,11 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
         }}
       />
 
-      {/* 디버깅 정보 */}
-      <div className="absolute top-32 left-4 text-white font-mono text-sm z-20 bg-black/80 p-3 rounded-lg border border-white/20">
-        <div className="mb-1">실제 객체 감지: {isDetecting ? 'ON' : 'OFF'}</div>
-        <div className="mb-1">감지된 객체: {detectedObjects.length}개</div>
-        <div className="mb-1">움직이는 객체: {detectedObjects.filter(obj => obj.isMoving).length}개</div>
-        <div className="mb-1">객체 감지: {realObjectDetector.isReady() ? 'READY' : 'LOADING'}</div>
-        <div className="mb-1">캔버스 크기: {canvasRef.current ? `${canvasRef.current.width}x${canvasRef.current.height}` : 'N/A'}</div>
-        {detectedObjects.map((obj, index) => (
-          <div key={index} className="mb-1 text-xs">
-            객체 {index}: {obj.label} {obj.isMoving ? '(움직임)' : '(정지)'} ({obj.x}, {obj.y})
-          </div>
-        ))}
-        <div>선택된 객체: {selectedObject ? selectedObject.label : 'NONE'}</div>
-      </div>
 
       {/* 클릭 안내 */}
       {detectedObjects.length > 0 && (
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10 bg-black/80 p-4 rounded-lg border border-red-500">
-          🔴 움직이는 사람을 클릭하세요 ({detectedObjects.filter(obj => obj.isMoving).length}명 움직임)
+          🔴 움직이는 사람을 클릭하세요
         </div>
       )}
     </div>

@@ -28,7 +28,6 @@ export default function AIChat() {
     isMoving: boolean;
     speed?: number;
   } | null>(null);
-  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -72,7 +71,6 @@ export default function AIChat() {
         
         // 분석 데이터가 있으면 저장
         if (data.analysis) {
-          setAnalysisData(data.analysis);
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
         }
       }

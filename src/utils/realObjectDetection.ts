@@ -152,20 +152,7 @@ export class RealObjectDetector {
 
       // 라벨 제거 (깔끔한 UI)
 
-      // 움직임 방향 벡터 그리기
-      if (obj.isMoving && obj.speed && obj.speed > 0) {
-        const centerX = obj.x + obj.width / 2;
-        const centerY = obj.y + obj.height / 2;
-        const endX = centerX + (obj.direction?.x || 0) * 2;
-        const endY = centerY + (obj.direction?.y || 0) * 2;
-
-        ctx.strokeStyle = '#ff0000';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-      }
+      // 움직임 방향 벡터 제거 (깔끔한 UI)
     });
   }
 

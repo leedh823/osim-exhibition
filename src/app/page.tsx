@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function TrackingExhibition() {
   const [currentStep, setCurrentStep] = useState('tracking_video');
   const [chatMessages, setChatMessages] = useState<Array<{role: string, content: string}>>([]);
   const [currentTurn, setCurrentTurn] = useState(0);
   const [userInput, setUserInput] = useState('');
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [analysisResults, setAnalysisResults] = useState([
     {
       subjectType: 'tracked_person',
@@ -37,7 +38,7 @@ export default function TrackingExhibition() {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentStep, currentTurn]);
+  }, [currentStep, currentTurn, aiQuestions]);
 
   // 3턴 완료 시 분석 결과로 전환
   useEffect(() => {
@@ -48,6 +49,22 @@ export default function TrackingExhibition() {
       return () => clearTimeout(timer);
     }
   }, [currentTurn, currentStep]);
+
+  // 2번 영상 자동 재생
+  useEffect(() => {
+    if (currentStep === 'enlarged_video' && videoRef.current) {
+      const video = videoRef.current;
+      const playVideo = async () => {
+        try {
+          await video.play();
+          console.log('2번 영상 자동 재생 성공');
+        } catch (error) {
+          console.log('2번 영상 자동 재생 실패:', error);
+        }
+      };
+      playVideo();
+    }
+  }, [currentStep]);
 
   // 채팅 메시지 전송
   const handleSendMessage = () => {
@@ -69,16 +86,18 @@ export default function TrackingExhibition() {
     }
   };
 
-  // 1. 트래킹 영상 화면
+  // 1. 트래킹 영상 화면 (가로형 16:9)
   if (currentStep === 'tracking_video') {
-    return (
-      <div className="w-full h-screen bg-black aspect-[9/16] mx-auto relative overflow-hidden">
+  return (
+      <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
         {/* 영상 */}
         <video 
           className="w-full h-full object-cover"
           autoPlay 
           loop 
           muted
+          playsInline
+          controls={false}
         >
           <source src="/1.mp4" type="video/mp4" />
         </video>
@@ -88,10 +107,11 @@ export default function TrackingExhibition() {
         
         {/* 자전거 영역 클릭 - 투명하게 */}
         <div 
-          className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 w-24 h-24 z-50 cursor-pointer"
+          className="absolute bottom-1/5 left-1/2 transform -translate-x-1/2 w-32 h-32 z-50 cursor-pointer"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            console.log('자전거 클릭됨! 현재 단계:', currentStep);
             setCurrentStep('enlarged_video');
           }}
           onMouseDown={(e) => {
@@ -100,23 +120,34 @@ export default function TrackingExhibition() {
           }}
         >
         </div>
-        
+
+        {/* 디버깅 정보 */}
+        <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
+          <div>현재 단계: {currentStep}</div>
+          <div>1번 영상 - 자전거 클릭하세요</div>
+        </div>
+
       </div>
     );
   }
 
-  // 2. 확대된 영상 화면
+  // 2. 확대된 영상 화면 (가로형 16:9)
   if (currentStep === 'enlarged_video') {
     return (
-      <div className="w-full h-screen bg-black aspect-[9/16] mx-auto relative overflow-hidden">
+      <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
         {/* 영상 */}
         <video 
+          ref={videoRef}
           className="w-full h-full object-cover"
           autoPlay 
           loop 
           muted
+          playsInline
+          controls={false}
           onLoadStart={() => console.log('2.mp4 로딩 시작')}
           onLoadedData={() => console.log('2.mp4 로딩 완료')}
+          onCanPlay={() => console.log('2.mp4 재생 가능')}
+          onPlay={() => console.log('2.mp4 재생 시작')}
           onError={(e) => console.log('2.mp4 로딩 에러:', e)}
         >
           <source src="/2.mp4" type="video/mp4" />
@@ -125,40 +156,41 @@ export default function TrackingExhibition() {
         {/* 디버깅 정보 */}
         <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
           <div>현재 단계: {currentStep}</div>
+          <div>2번 영상 재생 중</div>
           <div>영상 경로: /2.mp4</div>
+          <div>자동재생: ON</div>
         </div>
         
-        {/* 채팅 시작 버튼 */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-          <button 
-            onClick={() => setCurrentStep('ai_chat')}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-mono text-lg animate-pulse"
-          >
-            START AI CHAT
-          </button>
-        </div>
       </div>
     );
   }
 
-  // 3. AI 채팅 화면
+  // 3. AI 채팅 화면 (좌우 50% 분할)
   if (currentStep === 'ai_chat') {
     return (
-      <div className="w-full h-screen bg-black aspect-[9/16] mx-auto relative">
-        {/* 상단: 2.mp4 영상 */}
-        <div className="absolute top-0 left-0 w-full h-1/2">
+      <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative">
+        {/* 왼쪽 50%: 2.mp4 영상 */}
+        <div className="absolute top-0 left-0 w-1/2 h-full">
           <video 
             className="w-full h-full object-cover"
             autoPlay 
             loop 
             muted
+            playsInline
+            controls={false}
           >
             <source src="/2.mp4" type="video/mp4" />
           </video>
+          
+          {/* 디버깅 정보 */}
+          <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
+            <div>현재 단계: {currentStep}</div>
+            <div>AI 채팅 화면</div>
+          </div>
         </div>
         
-        {/* 하단: 반투명 배경 + 채팅 */}
-        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black/30 backdrop-blur-sm">
+        {/* 오른쪽 50%: AI 채팅 인터페이스 */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-black/30 backdrop-blur-sm">
           {/* 채팅 메시지 영역 */}
           <div className="h-3/4 overflow-y-auto p-4 space-y-3">
             {chatMessages.map((msg, index) => (
@@ -206,10 +238,10 @@ export default function TrackingExhibition() {
     );
   }
 
-  // 4. 분석 결과 화면 (카드)
+  // 4. 분석 결과 화면 (카드) - 가로형 16:9
   if (currentStep === 'analysis_results') {
     return (
-      <div className="w-full h-screen bg-gray-100 aspect-[9/16] mx-auto p-4">
+      <div className="w-full h-screen bg-gray-100 aspect-[16/9] mx-auto p-4">
         <div className="h-full flex flex-col">
           {/* 제목 */}
           <div className="text-center mb-6">
@@ -264,9 +296,9 @@ export default function TrackingExhibition() {
             </button>
           </div>
         </div>
-      </div>
-    );
-  }
+    </div>
+  );
+}
 
   return null;
 }

@@ -153,7 +153,7 @@ export default function AIChat() {
         {/* 디버깅 정보 */}
         <div className="absolute top-4 left-4 text-white font-mono text-sm z-20 bg-black/80 p-3 rounded-lg border border-white/20">
           <div className="mb-1">현재 페이지: ai-chat</div>
-          <div className="mb-1">AI 채팅 화면</div>
+          <div className="mb-1">CCTV 화면 분석</div>
           {selectedPerson && (
             <>
               <div className="mb-1">선택된 인물: {selectedPerson.label}</div>

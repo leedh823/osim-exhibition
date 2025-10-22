@@ -8,10 +8,6 @@ interface ChatMessage {
   content: string;
 }
 
-interface AnalysisData {
-  trackedPersonAnalysis: string;
-  viewerAnalysis: string;
-}
 
 export default function AIChat() {
   const router = useRouter();
@@ -94,7 +90,7 @@ export default function AIChat() {
     } finally {
       setIsLoading(false);
     }
-  }, [chatMessages.length, currentTurn, selectedPerson]);
+  }, [chatMessages, currentTurn, selectedPerson]);
 
   // 선택된 인물 정보 로드
   useEffect(() => {

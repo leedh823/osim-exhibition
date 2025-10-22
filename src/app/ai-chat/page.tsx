@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function AIChat() {
@@ -9,12 +9,12 @@ export default function AIChat() {
   const [currentTurn, setCurrentTurn] = useState(0);
   const [userInput, setUserInput] = useState('');
 
-  // AI 질문 더미 데이터
-  const aiQuestions = [
+  // AI 질문 더미 데이터 - useMemo로 최적화
+  const aiQuestions = useMemo(() => [
     "이 사람은 무엇을 하고 있나요?",
     "어떤 행동을 하고 있나요?",
     "이 사람의 감정 상태는 어떠한가요?"
-  ];
+  ], []);
 
   // AI 질문 자동 표시
   useEffect(() => {

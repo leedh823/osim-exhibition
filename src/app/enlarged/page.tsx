@@ -7,21 +7,28 @@ export default function EnlargedVideo() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 2번 영상 단순 재생 (한 번만)
+  // 2번 영상 재생 (사이트 진입 시 1번만, 끝나면 다시 재생)
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
       
       const handleLoadedData = () => {
         console.log('2번 영상 로딩 완료 - 재생 시작');
-        // 한 번만 재생
+        video.play().catch(console.error);
+      };
+      
+      const handleEnded = () => {
+        console.log('2번 영상 재생 완료 - 다시 재생');
+        video.currentTime = 0;
         video.play().catch(console.error);
       };
       
       video.addEventListener('loadeddata', handleLoadedData);
+      video.addEventListener('ended', handleEnded);
       
       return () => {
         video.removeEventListener('loadeddata', handleLoadedData);
+        video.removeEventListener('ended', handleEnded);
       };
     }
   }, []);
@@ -37,7 +44,6 @@ export default function EnlargedVideo() {
       <video 
         ref={videoRef}
         className="w-full h-full object-cover cursor-pointer"
-        loop 
         muted
         playsInline
         controls={false}
@@ -52,7 +58,7 @@ export default function EnlargedVideo() {
         <div>현재 페이지: enlarged</div>
         <div>2번 영상 재생 중</div>
         <div>영상 경로: /2.mp4</div>
-        <div>재생 모드: 수동 제어</div>
+        <div>재생 모드: 끝나면 다시 재생</div>
       </div>
       
       {/* 클릭 안내 */}

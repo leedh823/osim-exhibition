@@ -96,43 +96,17 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPerso
           onMouseLeave={handleMouseUp}
           onClick={handleCardClick}
         >
-          {/* 카드 앞면 - 일러스트 */}
+          {/* 카드 앞면 - thinking 이미지 */}
           <div 
-            className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-xl shadow-2xl"
+            className="absolute inset-0 w-full h-full rounded-xl shadow-2xl overflow-hidden"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            <div className="p-8 h-full flex flex-col items-center justify-center text-white">
-              {/* AI 분석 이미지 */}
-              <div className="mb-6 w-full max-w-md">
-                <Image
-                  src="/thinking-person.png"
-                  alt="당신의 시선은 당신에 대해 무엇을 말해줄까요?"
-                  width={400}
-                  height={300}
-                  className="w-full h-auto rounded-lg shadow-lg"
-                />
-              </div>
-              <h2 className="text-2xl font-bold mb-2">AI 분석 결과</h2>
-              <p className="text-center text-lg opacity-90">
-                CCTV 화면 속 인물과 관람자의 상호작용 분석
-              </p>
-              
-              {/* 분석 대상 정보 */}
-              <div className="mt-6 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
-                <div className="text-sm opacity-80">분석 대상</div>
-                <div className="font-semibold">
-                  {selectedPerson?.label || '감지된 인물'}
-                </div>
-                <div className="text-xs opacity-70">
-                  신뢰도: {Math.round((selectedPerson?.confidence || 0) * 100)}%
-                </div>
-              </div>
-              
-              {/* 클릭 안내 */}
-              <div className="mt-6 text-sm opacity-70 animate-pulse">
-                클릭하여 분석 결과 보기
-              </div>
-            </div>
+            <Image
+              src="/thinking-person.png"
+              alt="당신의 시선은 당신에 대해 무엇을 말해줄까요?"
+              fill
+              className="object-cover"
+            />
           </div>
 
           {/* 카드 뒷면 - 분석 결과 */}

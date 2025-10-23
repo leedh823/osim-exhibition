@@ -7,14 +7,14 @@ export default function EnlargedVideo() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 2번 영상 재생 (로딩 완료 후 재생, 끝나면 다시 재생)
+  // 2번 영상 재생 (화면 로딩 완료 후에만 재생, 끝나면 다시 재생)
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
       
       const handleCanPlayThrough = () => {
-        console.log('2번 영상 로딩 완료 - 재생 시작');
-        video.play().catch(console.error);
+        console.log('2번 영상 로딩 완료 - 재생 준비됨');
+        // 자동 재생하지 않음, 사용자가 클릭해야 재생
       };
       
       const handleEnded = () => {
@@ -52,8 +52,19 @@ export default function EnlargedVideo() {
   }, []);
 
   const handleVideoClick = () => {
-    console.log('2번 영상 클릭됨! AI 채팅으로 이동');
-    router.push('/ai-chat');
+    if (videoRef.current) {
+      const video = videoRef.current;
+      
+      // 영상이 재생 중이면 AI 채팅으로 이동
+      if (!video.paused) {
+        console.log('2번 영상 클릭됨! AI 채팅으로 이동');
+        router.push('/ai-chat');
+      } else {
+        // 영상이 정지되어 있으면 재생 시작
+        console.log('2번 영상 클릭됨! 재생 시작');
+        video.play().catch(console.error);
+      }
+    }
   };
 
   return (
@@ -76,15 +87,16 @@ export default function EnlargedVideo() {
         <div>현재 페이지: enlarged</div>
         <div>2번 영상 재생 중</div>
         <div>영상 경로: /2.mp4</div>
-        <div>재생 모드: 로딩 완료 후 재생</div>
+        <div>재생 모드: 클릭으로 재생 시작</div>
         <div>재생 시간: {videoRef.current?.currentTime?.toFixed(1) || '0.0'}초</div>
         <div>영상 길이: {videoRef.current?.duration?.toFixed(1) || '0.0'}초</div>
         <div>로딩 상태: {videoRef.current?.readyState || '0'}</div>
+        <div>재생 상태: {videoRef.current?.paused ? '정지' : '재생 중'}</div>
       </div>
       
       {/* 클릭 안내 */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
-        CLICK TO START AI CHAT
+        {videoRef.current?.paused ? 'CLICK TO START VIDEO' : 'CLICK TO START AI CHAT'}
       </div>
     </div>
   );

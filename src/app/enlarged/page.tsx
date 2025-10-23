@@ -7,10 +7,15 @@ export default function EnlargedVideo() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 2번 영상 재생 (끝나면 다시 재생)
+  // 2번 영상 재생 (로딩 완료 후 재생, 끝나면 다시 재생)
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
+      
+      const handleCanPlayThrough = () => {
+        console.log('2번 영상 로딩 완료 - 재생 시작');
+        video.play().catch(console.error);
+      };
       
       const handleEnded = () => {
         console.log('2번 영상 재생 완료 - 다시 재생');
@@ -22,10 +27,24 @@ export default function EnlargedVideo() {
         console.log('2번 영상 재생 중...');
       };
       
+      const handleLoadStart = () => {
+        console.log('2번 영상 로딩 시작...');
+      };
+      
+      const handleLoadedData = () => {
+        console.log('2번 영상 데이터 로딩 완료');
+      };
+      
+      video.addEventListener('loadstart', handleLoadStart);
+      video.addEventListener('loadeddata', handleLoadedData);
+      video.addEventListener('canplaythrough', handleCanPlayThrough);
       video.addEventListener('ended', handleEnded);
       video.addEventListener('play', handlePlay);
       
       return () => {
+        video.removeEventListener('loadstart', handleLoadStart);
+        video.removeEventListener('loadeddata', handleLoadedData);
+        video.removeEventListener('canplaythrough', handleCanPlayThrough);
         video.removeEventListener('ended', handleEnded);
         video.removeEventListener('play', handlePlay);
       };
@@ -43,7 +62,6 @@ export default function EnlargedVideo() {
       <video 
         ref={videoRef}
         className="w-full h-full object-cover cursor-pointer"
-        autoPlay
         muted
         playsInline
         controls={false}
@@ -58,9 +76,10 @@ export default function EnlargedVideo() {
         <div>현재 페이지: enlarged</div>
         <div>2번 영상 재생 중</div>
         <div>영상 경로: /2.mp4</div>
-        <div>재생 모드: autoPlay + 끝나면 다시 재생</div>
+        <div>재생 모드: 로딩 완료 후 재생</div>
         <div>재생 시간: {videoRef.current?.currentTime?.toFixed(1) || '0.0'}초</div>
         <div>영상 길이: {videoRef.current?.duration?.toFixed(1) || '0.0'}초</div>
+        <div>로딩 상태: {videoRef.current?.readyState || '0'}</div>
       </div>
       
       {/* 클릭 안내 */}

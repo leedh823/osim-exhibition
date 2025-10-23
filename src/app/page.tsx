@@ -9,10 +9,26 @@ export default function TrackingExhibition() {
 
   const handlePersonClick = (person: DetectedObject) => {
     console.log('선택된 실제 객체:', person);
-    // 선택된 실제 객체 정보를 localStorage에 저장
-    localStorage.setItem('selectedPerson', JSON.stringify(person));
-    // 2번 영상 페이지로 이동
-    router.push('/enlarged');
+    console.log('🚀 페이지 이동 시작...');
+    
+    try {
+      // 선택된 실제 객체 정보를 localStorage에 저장
+      localStorage.setItem('selectedPerson', JSON.stringify(person));
+      console.log('✅ localStorage 저장 완료');
+      
+      // 2번 영상 페이지로 이동
+      console.log('🔄 router.push 호출 중...');
+      router.push('/enlarged');
+      console.log('✅ router.push 호출 완료');
+      
+      // 대안적인 페이지 이동 (router가 작동하지 않을 경우)
+      setTimeout(() => {
+        console.log('🔄 대안적 페이지 이동 시도...');
+        window.location.href = '/enlarged';
+      }, 1000);
+    } catch (error) {
+      console.error('❌ 페이지 이동 중 오류:', error);
+    }
   };
 
   const handleScreenClick = () => {

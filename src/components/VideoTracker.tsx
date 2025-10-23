@@ -147,14 +147,18 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
 
     if (clickedObject) {
       console.log('✅ 실제 객체 클릭됨:', clickedObject);
+      console.log('🔄 onPersonClick 호출 중...');
       // 어떤 트래킹 영역이든 클릭하면 즉시 페이지 이동
       onPersonClick(clickedObject);
+      console.log('✅ onPersonClick 호출 완료');
     } else {
       console.log('❌ 객체가 아닌 곳 클릭됨');
       console.log('🔍 임시 해결책: 첫 번째 감지된 객체로 페이지 이동');
       if (detectedObjects.length > 0) {
         console.log('✅ 첫 번째 객체로 페이지 이동:', detectedObjects[0]);
+        console.log('🔄 onPersonClick 호출 중...');
         onPersonClick(detectedObjects[0]);
+        console.log('✅ onPersonClick 호출 완료');
       }
     }
   };

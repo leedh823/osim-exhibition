@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 
 interface AnalysisData {
   trackedPersonAnalysis: string;
@@ -101,8 +102,16 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPerso
             style={{ backfaceVisibility: 'hidden' }}
           >
             <div className="p-8 h-full flex flex-col items-center justify-center text-white">
-              {/* AI 분석 아이콘 */}
-              <div className="text-6xl mb-4">🤖</div>
+              {/* AI 분석 이미지 */}
+              <div className="mb-6 w-full max-w-md">
+                <Image
+                  src="/thinking-person.png"
+                  alt="당신의 시선은 당신에 대해 무엇을 말해줄까요?"
+                  width={400}
+                  height={300}
+                  className="w-full h-auto rounded-lg shadow-lg"
+                />
+              </div>
               <h2 className="text-2xl font-bold mb-2">AI 분석 결과</h2>
               <p className="text-center text-lg opacity-90">
                 CCTV 화면 속 인물과 관람자의 상호작용 분석

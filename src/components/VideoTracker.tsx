@@ -125,10 +125,14 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
 
     console.log(`클릭 위치: (${clickPoint.x}, ${clickPoint.y})`);
     console.log(`감지된 객체 수: ${detectedObjects.length}`);
+    console.log(`캔버스 크기: ${canvas.width}x${canvas.height}`);
+    console.log(`캔버스 rect: ${rect.width}x${rect.height}`);
 
     // 모든 객체의 위치 출력 (디버깅용)
     detectedObjects.forEach((obj, index) => {
       console.log(`객체 ${index}: (${obj.x}, ${obj.y}) 크기: ${obj.width}x${obj.height}, 움직임: ${obj.isMoving}`);
+      console.log(`객체 ${index} 범위: x=${obj.x}~${obj.x + obj.width}, y=${obj.y}~${obj.y + obj.height}`);
+      console.log(`클릭이 범위 안에 있는가: x=${clickPoint.x >= obj.x && clickPoint.x <= obj.x + obj.width}, y=${clickPoint.y >= obj.y && clickPoint.y <= obj.y + obj.height}`);
     });
 
     // 클릭된 객체 찾기

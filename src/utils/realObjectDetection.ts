@@ -149,18 +149,22 @@ export class RealObjectDetector {
   }
 
   findClickedObject(clickPoint: { x: number; y: number }, objects: DetectedObject[]): DetectedObject | null {
+    console.log(`findClickedObject 호출: 클릭 위치 (${clickPoint.x}, ${clickPoint.y}), 객체 수: ${objects.length}`);
+    
     // 가장 최근에 그려진 객체부터 확인 (가장 위에 그려진 객체)
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i];
-      if (
-        clickPoint.x >= obj.x &&
-        clickPoint.x <= obj.x + obj.width &&
-        clickPoint.y >= obj.y &&
-        clickPoint.y <= obj.y + obj.height
-      ) {
+      const isInXRange = clickPoint.x >= obj.x && clickPoint.x <= obj.x + obj.width;
+      const isInYRange = clickPoint.y >= obj.y && clickPoint.y <= obj.y + obj.height;
+      
+      console.log(`객체 ${i} 체크: x=${isInXRange}, y=${isInYRange}, 전체=${isInXRange && isInYRange}`);
+      
+      if (isInXRange && isInYRange) {
+        console.log(`✅ 객체 ${i} 클릭됨!`);
         return obj;
       }
     }
+    console.log(`❌ 클릭된 객체 없음`);
     return null;
   }
 }

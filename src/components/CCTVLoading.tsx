@@ -29,7 +29,7 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
         }
         return prev;
       });
-    }, 1000);
+    }, 1800); // 12초로 연장 (7스텝 * 1.8초 = 12.6초)
 
     return () => clearInterval(stepInterval);
   }, [loadingSteps.length]);
@@ -78,8 +78,6 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
       <div className="absolute inset-0 bg-gradient-to-b from-green-900/20 to-transparent" />
       <div className="absolute inset-0 bg-black/50 animate-pulse" />
       
-      {/* 스캔라인 효과 */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-pulse" />
       
       {/* 메인 콘텐츠 */}
       <div className="relative z-10 text-green-400 font-mono text-lg">

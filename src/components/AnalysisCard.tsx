@@ -80,7 +80,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPerso
       <div className="relative z-10 perspective-1000">
         <div
           ref={cardRef}
-          className={`relative w-96 h-54 cursor-pointer transition-transform duration-500 ease-out ${
+          className={`relative w-[80vw] h-[45vw] cursor-pointer transition-transform duration-500 ease-out ${
             isDragging ? 'cursor-grabbing' : 'cursor-grab'
           }`}
           style={{

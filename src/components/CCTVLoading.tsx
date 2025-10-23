@@ -8,7 +8,6 @@ interface CCTVLoadingProps {
 
 const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [displayText, setDisplayText] = useState('');
 
   const loadingSteps = [
     'CCTV SYSTEM INITIALIZING...',
@@ -33,26 +32,6 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
     return () => clearInterval(stepInterval);
   }, [loadingSteps.length]);
 
-  useEffect(() => {
-    if (currentStep < loadingSteps.length) {
-      const text = loadingSteps[currentStep];
-      let index = 0;
-      setDisplayText('');
-
-      const typeInterval = setInterval(() => {
-        setDisplayText(prev => {
-          if (index < text.length) {
-            index++;
-            return text.substring(0, index);
-          }
-          clearInterval(typeInterval);
-          return text;
-        });
-      }, 50);
-
-      return () => clearInterval(typeInterval);
-    }
-  }, [currentStep, loadingSteps]);
 
 
   useEffect(() => {
@@ -74,22 +53,16 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
       {/* 메인 콘텐츠 */}
       <div className="relative z-10 text-green-400 font-mono text-lg">
         <div className="bg-black/80 p-8 rounded-lg border border-green-500/30 shadow-2xl">
-          <div className="flex items-center">
-            <span className="text-green-400 font-bold">
-              {displayText}
-            </span>
-          </div>
-          
-          {/* 진행 바 */}
-          <div className="mt-4 w-full bg-green-900/30 rounded-full h-2">
+          {/* 진행 바만 표시 */}
+          <div className="w-full bg-green-900/30 rounded-full h-4">
             <div 
-              className="bg-green-400 h-2 rounded-full transition-all duration-1000 ease-out"
+              className="bg-green-400 h-4 rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${((currentStep + 1) / loadingSteps.length) * 100}%` }}
             />
           </div>
           
           {/* 시스템 정보 */}
-          <div className="mt-4 text-green-500/70 text-sm">
+          <div className="mt-4 text-green-500/70 text-sm text-center">
             <div>System: CCTV Analysis v2.1</div>
             <div>Status: {currentStep < loadingSteps.length - 1 ? 'Processing...' : 'Ready'}</div>
           </div>

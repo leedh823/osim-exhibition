@@ -12,6 +12,7 @@ interface VideoTrackerProps {
 export default function VideoTracker({ videoSrc, onPersonClick, className }: VideoTrackerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number | undefined>(undefined);
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
   const [isDetecting, setIsDetecting] = useState(false);
 
@@ -79,33 +80,27 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
     }
   }, []);
 
-  // 감지 루프 시작/중지 (성능 최적화: 100ms 간격)
+  // 감지 루프 시작/중지 (원상 복귀 + 성능 최적화)
   useEffect(() => {
     if (isDetecting) {
-      console.log('🚀 성능 최적화: 100ms 간격 트래킹 시작');
-      let consecutiveEmptyFrames = 0;
-      
-      const interval = setInterval(() => {
-        // 연속으로 5번 빈 프레임이면 트래킹 간격을 늘림 (성능 최적화)
-        if (detectedObjects.length === 0) {
-          consecutiveEmptyFrames++;
-          if (consecutiveEmptyFrames > 5) {
-            console.log('🔋 성능 모드: 객체 없음, 트래킹 간격 증가');
-            return; // 이번 프레임 스킵
-          }
-        } else {
-          consecutiveEmptyFrames = 0;
-        }
-        
+      console.log('🚀 트래킹 시작 (성능 최적화: 200ms 간격)');
+      const startDetection = () => {
         detectAndDrawObjects();
-      }, 100); // 100ms = 0.1초 간격
-      
-      return () => {
-        console.log('⏹️ 트래킹 중지');
-        clearInterval(interval);
+        animationRef.current = requestAnimationFrame(startDetection);
       };
+      startDetection();
+    } else {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     }
-  }, [isDetecting, detectAndDrawObjects, detectedObjects.length]);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isDetecting, detectAndDrawObjects]);
 
   // 비디오 로드 완료 시 감지 시작
   const handleVideoLoaded = () => {

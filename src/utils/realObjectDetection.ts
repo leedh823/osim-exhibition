@@ -22,7 +22,7 @@ export class RealObjectDetector {
   private readonly confidenceThreshold = 0.3;
   private readonly movingThreshold = 5; // 픽셀 이동 임계값
   private lastDetectionTime = 0;
-  private readonly detectionInterval = 100; // 100ms 간격
+  private readonly detectionInterval = 200; // 200ms 간격 (절반 속도)
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;

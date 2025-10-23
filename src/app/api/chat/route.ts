@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages, turnCount, selectedPerson } = await request.json();
+    const { turnCount } = await request.json();
 
     let response = '';
     

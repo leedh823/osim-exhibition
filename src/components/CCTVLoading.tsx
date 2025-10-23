@@ -32,7 +32,7 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
     }, 1000);
 
     return () => clearInterval(stepInterval);
-  }, []);
+  }, [loadingSteps.length]);
 
   useEffect(() => {
     if (currentStep < loadingSteps.length) {
@@ -53,7 +53,7 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
 
       return () => clearInterval(typeInterval);
     }
-  }, [currentStep]);
+  }, [currentStep, loadingSteps]);
 
   useEffect(() => {
     const cursorInterval = setInterval(() => {
@@ -70,7 +70,7 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [currentStep, onComplete]);
+  }, [currentStep, onComplete, loadingSteps.length]);
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center overflow-hidden">

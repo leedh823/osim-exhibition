@@ -1,15 +1,25 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 interface AnalysisData {
   trackedPersonAnalysis: string;
   viewerAnalysis: string;
 }
 
+interface SelectedPerson {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  confidence: number;
+  isMoving: boolean;
+  speed?: number;
+}
+
 interface AnalysisCardProps {
   analysisData: AnalysisData;
-  selectedPerson: any;
+  selectedPerson: SelectedPerson | null;
 }
 
 const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPerson }) => {

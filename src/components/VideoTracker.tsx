@@ -140,7 +140,7 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
     if (clickedObject) {
       console.log('✅ 실제 객체 클릭됨:', clickedObject);
       
-      // 다중 선택 로직
+      // 다중 선택 로직 (최대 2개)
       setSelectedObjects(prev => {
         const exists = prev.find(obj => obj.id === clickedObject.id);
         if (exists) {
@@ -156,10 +156,8 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
         }
       });
       
-      // 첫 번째 객체 선택 시에만 onPersonClick 호출
-      if (selectedObjects.length === 0) {
-        onPersonClick(clickedObject);
-      }
+      // 어떤 트래킹 영역이든 클릭하면 즉시 페이지 이동
+      onPersonClick(clickedObject);
     } else {
       console.log('❌ 객체가 아닌 곳 클릭됨');
     }

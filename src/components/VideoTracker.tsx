@@ -176,12 +176,6 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
       />
 
 
-      {/* 클릭 안내 */}
-      {detectedObjects.length > 0 && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10 bg-black/80 p-4 rounded-lg border border-red-500">
-          🔴 움직이는 사람을 클릭하세요
-        </div>
-      )}
     </div>
   );
 }

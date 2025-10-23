@@ -53,12 +53,6 @@ export default function TrackingExhibition() {
       >
       </div>
 
-      {/* 디버깅 정보 */}
-      <div className="absolute top-4 left-4 text-white font-mono text-sm z-20 bg-black/80 p-3 rounded-lg border border-white/20">
-        <div className="mb-1">현재 페이지: tracking</div>
-        <div className="mb-1">실제 객체 감지 활성화</div>
-        <div>움직이는 사람을 클릭하세요</div>
-      </div>
     </div>
   );
 

@@ -186,14 +186,11 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full cursor-pointer z-10"
         onClick={handleCanvasClick}
-        onMouseDown={() => console.log('🖱️ 캔버스 마우스 다운')}
-        onMouseUp={() => console.log('🖱️ 캔버스 마우스 업')}
         style={{ 
           pointerEvents: 'auto',
           width: '100%',
           height: '100%',
-          objectFit: 'cover',
-          backgroundColor: 'rgba(255, 0, 0, 0.1)' // 디버깅용 빨간색 배경
+          objectFit: 'cover'
         }}
       />
 

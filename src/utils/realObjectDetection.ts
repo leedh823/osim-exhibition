@@ -164,6 +164,32 @@ export class RealObjectDetector {
         return obj;
       }
     }
+    
+    // 정확한 클릭이 안 되면 가장 가까운 객체 찾기
+    if (objects.length > 0) {
+      let closestObj = objects[0];
+      let minDistance = Infinity;
+      
+      objects.forEach((obj, index) => {
+        const centerX = obj.x + obj.width / 2;
+        const centerY = obj.y + obj.height / 2;
+        const distance = Math.sqrt(
+          Math.pow(clickPoint.x - centerX, 2) + 
+          Math.pow(clickPoint.y - centerY, 2)
+        );
+        
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestObj = obj;
+        }
+        
+        console.log(`객체 ${index} 거리: ${distance.toFixed(2)}px`);
+      });
+      
+      console.log(`🔍 가장 가까운 객체: 거리 ${minDistance.toFixed(2)}px`);
+      return closestObj;
+    }
+    
     console.log(`❌ 클릭된 객체 없음`);
     return null;
   }

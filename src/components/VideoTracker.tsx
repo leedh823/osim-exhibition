@@ -151,6 +151,11 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
       onPersonClick(clickedObject);
     } else {
       console.log('❌ 객체가 아닌 곳 클릭됨');
+      console.log('🔍 임시 해결책: 첫 번째 감지된 객체로 페이지 이동');
+      if (detectedObjects.length > 0) {
+        console.log('✅ 첫 번째 객체로 페이지 이동:', detectedObjects[0]);
+        onPersonClick(detectedObjects[0]);
+      }
     }
   };
 

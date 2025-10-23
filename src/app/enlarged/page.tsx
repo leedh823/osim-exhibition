@@ -7,19 +7,10 @@ export default function EnlargedVideo() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 2번 영상 재생 (사이트 진입 시 1번만, 끝나면 다시 재생)
+  // 2번 영상 재생 (끝나면 다시 재생)
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
-      let hasStartedPlaying = false;
-      
-      const handleCanPlay = () => {
-        if (!hasStartedPlaying) {
-          console.log('2번 영상 재생 가능 - 재생 시작');
-          hasStartedPlaying = true;
-          video.play().catch(console.error);
-        }
-      };
       
       const handleEnded = () => {
         console.log('2번 영상 재생 완료 - 다시 재생');
@@ -31,20 +22,12 @@ export default function EnlargedVideo() {
         console.log('2번 영상 재생 중...');
       };
       
-      const handlePause = () => {
-        console.log('2번 영상 일시정지');
-      };
-      
-      video.addEventListener('canplay', handleCanPlay);
       video.addEventListener('ended', handleEnded);
       video.addEventListener('play', handlePlay);
-      video.addEventListener('pause', handlePause);
       
       return () => {
-        video.removeEventListener('canplay', handleCanPlay);
         video.removeEventListener('ended', handleEnded);
         video.removeEventListener('play', handlePlay);
-        video.removeEventListener('pause', handlePause);
       };
     }
   }, []);
@@ -60,6 +43,7 @@ export default function EnlargedVideo() {
       <video 
         ref={videoRef}
         className="w-full h-full object-cover cursor-pointer"
+        autoPlay
         muted
         playsInline
         controls={false}
@@ -74,7 +58,7 @@ export default function EnlargedVideo() {
         <div>현재 페이지: enlarged</div>
         <div>2번 영상 재생 중</div>
         <div>영상 경로: /2.mp4</div>
-        <div>재생 모드: 끝나면 다시 재생</div>
+        <div>재생 모드: autoPlay + 끝나면 다시 재생</div>
         <div>재생 시간: {videoRef.current?.currentTime?.toFixed(1) || '0.0'}초</div>
         <div>영상 길이: {videoRef.current?.duration?.toFixed(1) || '0.0'}초</div>
       </div>

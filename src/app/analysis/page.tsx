@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CCTVLoading from '@/components/CCTVLoading';
+import AnalysisCard from '@/components/AnalysisCard';
 
 export default function Analysis() {
   const [analysisResults, setAnalysisResults] = useState<{
@@ -16,6 +18,7 @@ export default function Analysis() {
     isMoving: boolean;
     speed?: number;
   } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 분석 결과 로드
   useEffect(() => {
@@ -52,56 +55,26 @@ export default function Analysis() {
     }
   }, []);
 
-  // 인쇄 기능
-  const handlePrint = () => {
-    window.print();
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
   };
 
+  if (isLoading) {
+    return <CCTVLoading onComplete={handleLoadingComplete} />;
+  }
+
+  if (!analysisResults) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">분석 데이터를 불러오는 중...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative">
-      {/* 디버깅 정보 */}
-      <div className="absolute top-4 left-4 text-white font-mono text-sm z-20 bg-black/80 p-3 rounded-lg border border-white/20">
-        <div className="mb-1">현재 페이지: analysis</div>
-        <div className="mb-1">분석 결과 화면</div>
-      </div>
-
-      {/* 분석 결과 카드들 */}
-      <div className="flex justify-center items-center h-full p-8 space-x-8">
-        {/* 카드 1: 추적된 사람 분석 */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 w-80 h-96 border border-white/20">
-          <h3 className="text-white text-lg font-bold mb-4">추적된 사람 분석</h3>
-          {selectedPerson && (
-            <div className="text-white/60 text-xs mb-3">
-              <div>객체 ID: {selectedPerson.id}</div>
-              <div>위치: ({Math.round(selectedPerson.x)}, {Math.round(selectedPerson.y)})</div>
-              <div>움직임: {selectedPerson.isMoving ? '움직임 감지됨' : '정지 상태'}</div>
-            </div>
-          )}
-          <div className="text-white/80 text-sm leading-relaxed">
-            {analysisResults ? analysisResults.trackedPersonAnalysis : "분석 중..."}
-          </div>
-        </div>
-
-        {/* 카드 2: 관람자 분석 */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 w-80 h-96 border border-white/20">
-          <h3 className="text-white text-lg font-bold mb-4">관람자 분석</h3>
-          <div className="text-white/80 text-sm leading-relaxed">
-            {analysisResults ? analysisResults.viewerAnalysis : "분석 중..."}
-          </div>
-        </div>
-      </div>
-
-      {/* 인쇄 버튼 */}
-      {analysisResults && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-          <button
-            onClick={handlePrint}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-          >
-            인쇄하기
-          </button>
-        </div>
-      )}
-    </div>
+    <AnalysisCard 
+      analysisData={analysisResults} 
+      selectedPerson={selectedPerson} 
+    />
   );
 }

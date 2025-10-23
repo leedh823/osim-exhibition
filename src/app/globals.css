@@ -1,10 +1,53 @@
 @import "tailwindcss";
 
+/* 폰트 설정 */
+@font-face {
+  font-family: 'Coolvetica';
+  src: url('/fonts/Coolvetica Rg.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Coolvetica';
+  src: url('/fonts/Coolvetica Hv Comp.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NEXON Lv1 Gothic';
+  src: url('/fonts/NEXON Lv1 Gothic OTF.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NEXON Lv1 Gothic';
+  src: url('/fonts/NEXON Lv1 Gothic OTF Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NEXON Lv1 Gothic';
+  src: url('/fonts/NEXON Lv1 Gothic OTF Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #000000;
   --foreground: #FFFFFF;
   --accent: #FFE805;
   --secondary: #CE9C53;
+  --font-coolvetica: 'Coolvetica', sans-serif;
+  --font-nexon: 'NEXON Lv1 Gothic', sans-serif;
 }
 
 @theme inline {

@@ -23,7 +23,7 @@ interface AnalysisCardProps {
   selectedPerson: SelectedPerson | null;
 }
 
-const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPerson }) => {
+const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -117,46 +117,51 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPerso
               transform: 'rotateY(180deg)'
             }}
           >
-            <div className="p-6 h-full overflow-y-auto">
-              <div className="text-white">
-                <h3 className="text-xl font-bold mb-4 text-green-400">📊 분석 결과</h3>
+            <div className="p-8 h-full overflow-y-auto">
+              <div className="text-white" style={{ fontFamily: 'var(--font-nexon)' }}>
+                {/* 상단 제목 */}
+                <div className="mb-8">
+                  <h3 className="text-3xl font-bold mb-3 text-green-400" style={{ fontFamily: 'var(--font-coolvetica)' }}>
+                    📊 AI Analysis Result
+                  </h3>
+                  <p className="text-xl font-medium text-white mb-6">분석 결과</p>
+                  <div className="border-b-2 border-green-500/50 mb-8"></div>
+                </div>
                 
                 {/* 추적된 인물 분석 */}
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold mb-2 text-blue-400">
-                    🎭 추적된 인물 분석
+                <div className="mb-8">
+                  <h4 className="text-xl font-semibold mb-4 text-blue-400 flex items-center" style={{ fontFamily: 'var(--font-coolvetica)' }}>
+                    👤 Tracked Person Analysis
                   </h4>
-                  <div className="bg-black/30 p-4 rounded-lg text-sm leading-relaxed">
-                    {analysisData.trackedPersonAnalysis}
+                  <div className="text-base font-normal text-gray-200 leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)' }}>
+                    This person appears to be taking a break in front of a convenience store. The solitary posture suggests feelings of loneliness or fatigue. The urban lifestyle&apos;s exhaustion and daily monotony are evident in their demeanor.
                   </div>
                 </div>
 
                 {/* 관람자 분석 */}
-                <div className="mb-4">
-                  <h4 className="text-lg font-semibold mb-2 text-purple-400">
-                    👤 관람자 성향 분석
+                <div className="mb-8">
+                  <h4 className="text-xl font-semibold mb-4 text-blue-400 flex items-center" style={{ fontFamily: 'var(--font-coolvetica)' }}>
+                    👥 Viewer Analysis
                   </h4>
-                  <div className="bg-black/30 p-4 rounded-lg text-sm leading-relaxed">
-                    {analysisData.viewerAnalysis}
+                  <div className="text-base font-normal text-gray-200 leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)' }}>
+                    The viewer shows empathy towards this person&apos;s situation and is deeply contemplating the fatigue and loneliness of urban life. They demonstrate excellent empathy and caring abilities towards others.
                   </div>
                 </div>
-
-                {/* 인쇄 버튼 */}
-                <button
-                  onClick={handlePrint}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
-                >
-                  🖨️ 분석 결과 인쇄
-                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 조작 안내 */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-green-400/70 text-sm font-mono">
-        드래그하여 카드 회전 • 클릭하여 뒤집기
+      {/* 인쇄 버튼 */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <button
+          onClick={handlePrint}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center text-lg"
+          style={{ fontFamily: 'var(--font-coolvetica)' }}
+        >
+          🖨️ Print Analysis Results
+        </button>
       </div>
     </div>
   );

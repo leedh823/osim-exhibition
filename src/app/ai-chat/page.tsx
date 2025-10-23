@@ -161,8 +161,8 @@ export default function AIChat() {
 
   return (
     <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative">
-      {/* 왼쪽 50%: 2.mp4 영상 */}
-      <div className="absolute top-0 left-0 w-1/2 h-full">
+      {/* 전체 화면: 2.mp4 영상 */}
+      <div className="absolute top-0 left-0 w-full h-full">
         <video 
           className="w-full h-full object-cover"
           autoPlay 
@@ -173,11 +173,10 @@ export default function AIChat() {
         >
           <source src="/2.mp4" type="video/mp4" />
         </video>
-        
       </div>
       
-      {/* 오른쪽 50%: AI 채팅 인터페이스 */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-black/30 backdrop-blur-sm">
+      {/* 오른쪽 50%: AI 채팅 인터페이스 (불투명도 적용) */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-black/60 backdrop-blur-sm">
         {/* 채팅 메시지 영역 */}
         <div className="h-3/4 overflow-y-auto p-4 space-y-3">
           {chatMessages.map((msg, index) => (

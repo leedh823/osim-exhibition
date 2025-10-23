@@ -9,7 +9,6 @@ interface CCTVLoadingProps {
 const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [displayText, setDisplayText] = useState('');
-  const [showCursor, setShowCursor] = useState(true);
 
   const loadingSteps = [
     'CCTV SYSTEM INITIALIZING...',
@@ -55,13 +54,6 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
     }
   }, [currentStep, loadingSteps]);
 
-  useEffect(() => {
-    const cursorInterval = setInterval(() => {
-      setShowCursor(prev => !prev);
-    }, 500);
-
-    return () => clearInterval(cursorInterval);
-  }, []);
 
   useEffect(() => {
     if (currentStep === loadingSteps.length - 1) {
@@ -85,7 +77,6 @@ const CCTVLoading: React.FC<CCTVLoadingProps> = ({ onComplete }) => {
           <div className="flex items-center">
             <span className="text-green-400 font-bold">
               {displayText}
-              {showCursor && <span className="animate-pulse">|</span>}
             </span>
           </div>
           

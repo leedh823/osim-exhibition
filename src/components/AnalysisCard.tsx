@@ -78,7 +78,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-pulse" />
       
       {/* 3D 카드 컨테이너 */}
-      <div className="relative z-10 perspective-1000">
+      <div className="relative z-10 perspective-1000 -mt-16">
         <div
           ref={cardRef}
           className={`relative w-[80vw] h-[45vw] cursor-pointer transition-transform duration-500 ease-out ${
@@ -111,39 +111,39 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
 
           {/* 카드 뒷면 - 분석 결과 */}
           <div 
-            className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl"
+            className="absolute inset-0 w-full h-full bg-white rounded-xl shadow-2xl"
             style={{ 
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)'
             }}
           >
             <div className="p-8 h-full overflow-y-auto">
-              <div className="text-white" style={{ fontFamily: 'var(--font-nexon)' }}>
+              <div className="text-[#6FA68B]" style={{ fontFamily: 'var(--font-nexon)' }}>
                 {/* 상단 제목 */}
                 <div className="mb-8">
-                  <h3 className="text-3xl font-bold mb-3 text-green-400" style={{ fontFamily: 'var(--font-coolvetica)' }}>
-                    📊 AI Analysis Result
+                  <h3 className="text-3xl font-bold mb-3" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
+                    AI Analysis Result
                   </h3>
-                  <p className="text-xl font-medium text-white mb-6">분석 결과</p>
-                  <div className="border-b-2 border-green-500/50 mb-8"></div>
+                  <p className="text-xl font-medium mb-6" style={{ color: '#6FA68B' }}>분석 결과</p>
+                  <div className="border-b-2 mb-8" style={{ borderColor: '#6FA68B' }}></div>
                 </div>
                 
                 {/* 추적된 인물 분석 */}
                 <div className="mb-8">
-                  <h4 className="text-xl font-semibold mb-4 text-blue-400 flex items-center" style={{ fontFamily: 'var(--font-coolvetica)' }}>
-                    👤 Tracked Person Analysis
+                  <h4 className="text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
+                    Tracked Person Analysis
                   </h4>
-                  <div className="text-base font-normal text-gray-200 leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)' }}>
+                  <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
                     This person appears to be taking a break in front of a convenience store. The solitary posture suggests feelings of loneliness or fatigue. The urban lifestyle&apos;s exhaustion and daily monotony are evident in their demeanor.
                   </div>
                 </div>
 
                 {/* 관람자 분석 */}
                 <div className="mb-8">
-                  <h4 className="text-xl font-semibold mb-4 text-blue-400 flex items-center" style={{ fontFamily: 'var(--font-coolvetica)' }}>
-                    👥 Viewer Analysis
+                  <h4 className="text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
+                    Viewer Analysis
                   </h4>
-                  <div className="text-base font-normal text-gray-200 leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)' }}>
+                  <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
                     The viewer shows empathy towards this person&apos;s situation and is deeply contemplating the fatigue and loneliness of urban life. They demonstrate excellent empathy and caring abilities towards others.
                   </div>
                 </div>
@@ -154,13 +154,13 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
       </div>
 
       {/* 인쇄 버튼 */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
         <button
           onClick={handlePrint}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center text-lg"
+          className="bg-[#6FA68B] hover:bg-[#5a8a73] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center text-lg"
           style={{ fontFamily: 'var(--font-coolvetica)' }}
         >
-          🖨️ Print Analysis Results
+          Print Analysis Results
         </button>
       </div>
     </div>

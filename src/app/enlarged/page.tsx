@@ -7,26 +7,39 @@ export default function EnlargedVideo() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 2번 영상 로딩 완료 확인
+  // 2번 영상 재생 상태 관리
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
-      
-      const handleLoadedData = () => {
-        console.log('2번 영상 로딩 완료, 자동 재생 확인');
-        // autoPlay 속성으로 자동 재생되므로 별도 play() 호출 불필요
-      };
+      let hasStartedPlaying = false;
       
       const handlePlay = () => {
-        console.log('2번 영상 재생 시작');
+        if (!hasStartedPlaying) {
+          console.log('2번 영상 첫 재생 시작');
+          hasStartedPlaying = true;
+        } else {
+          console.log('2번 영상 중복 재생 감지 - 방지');
+          video.pause();
+          video.currentTime = 0;
+          video.play();
+        }
       };
       
-      video.addEventListener('loadeddata', handleLoadedData);
+      const handleLoadedData = () => {
+        console.log('2번 영상 로딩 완료');
+        // autoPlay가 작동하지 않을 경우에만 수동 재생
+        if (video.paused) {
+          console.log('autoPlay 실패, 수동 재생 시작');
+          video.play().catch(console.error);
+        }
+      };
+      
       video.addEventListener('play', handlePlay);
+      video.addEventListener('loadeddata', handleLoadedData);
       
       return () => {
-        video.removeEventListener('loadeddata', handleLoadedData);
         video.removeEventListener('play', handlePlay);
+        video.removeEventListener('loadeddata', handleLoadedData);
       };
     }
   }, []);
@@ -42,7 +55,6 @@ export default function EnlargedVideo() {
       <video 
         ref={videoRef}
         className="w-full h-full object-cover cursor-pointer"
-        autoPlay 
         loop 
         muted
         playsInline
@@ -58,7 +70,7 @@ export default function EnlargedVideo() {
         <div>현재 페이지: enlarged</div>
         <div>2번 영상 재생 중</div>
         <div>영상 경로: /2.mp4</div>
-        <div>자동재생: ON</div>
+        <div>재생 모드: 수동 제어</div>
       </div>
       
       {/* 클릭 안내 */}

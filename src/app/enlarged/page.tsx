@@ -11,10 +11,14 @@ export default function EnlargedVideo() {
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
+      let hasStartedPlaying = false;
       
-      const handleLoadedData = () => {
-        console.log('2번 영상 로딩 완료 - 재생 시작');
-        video.play().catch(console.error);
+      const handleCanPlay = () => {
+        if (!hasStartedPlaying) {
+          console.log('2번 영상 재생 가능 - 재생 시작');
+          hasStartedPlaying = true;
+          video.play().catch(console.error);
+        }
       };
       
       const handleEnded = () => {
@@ -23,12 +27,24 @@ export default function EnlargedVideo() {
         video.play().catch(console.error);
       };
       
-      video.addEventListener('loadeddata', handleLoadedData);
+      const handlePlay = () => {
+        console.log('2번 영상 재생 중...');
+      };
+      
+      const handlePause = () => {
+        console.log('2번 영상 일시정지');
+      };
+      
+      video.addEventListener('canplay', handleCanPlay);
       video.addEventListener('ended', handleEnded);
+      video.addEventListener('play', handlePlay);
+      video.addEventListener('pause', handlePause);
       
       return () => {
-        video.removeEventListener('loadeddata', handleLoadedData);
+        video.removeEventListener('canplay', handleCanPlay);
         video.removeEventListener('ended', handleEnded);
+        video.removeEventListener('play', handlePlay);
+        video.removeEventListener('pause', handlePause);
       };
     }
   }, []);
@@ -59,6 +75,8 @@ export default function EnlargedVideo() {
         <div>2번 영상 재생 중</div>
         <div>영상 경로: /2.mp4</div>
         <div>재생 모드: 끝나면 다시 재생</div>
+        <div>재생 시간: {videoRef.current?.currentTime?.toFixed(1) || '0.0'}초</div>
+        <div>영상 길이: {videoRef.current?.duration?.toFixed(1) || '0.0'}초</div>
       </div>
       
       {/* 클릭 안내 */}

@@ -15,7 +15,6 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
   const animationRef = useRef<number | undefined>(undefined);
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
   const [isDetecting, setIsDetecting] = useState(false);
-  const [selectedObjects, setSelectedObjects] = useState<DetectedObject[]>([]);
 
   // 실제 객체 감지 초기화
   useEffect(() => {
@@ -67,9 +66,8 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
         // 비디오 다시 그리기
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        // 감지된 객체 그리기 (다중 선택 지원)
-        const selectedIds = selectedObjects.map(obj => obj.id);
-        realObjectDetector.drawObjects(ctx, objects, selectedIds);
+        // 감지된 객체 그리기
+        realObjectDetector.drawObjects(ctx, objects);
         
         console.log(`실제 객체 감지 완료: ${objects.length}개, 움직이는 객체: ${objects.filter(obj => obj.isMoving).length}개`);
       } catch (error) {
@@ -80,7 +78,7 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
     } catch (error) {
       console.error('실제 객체 감지 중 오류:', error);
     }
-  }, [selectedObjects]);
+  }, []);
 
   // 감지 루프 시작/중지
   useEffect(() => {
@@ -139,23 +137,6 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
 
     if (clickedObject) {
       console.log('✅ 실제 객체 클릭됨:', clickedObject);
-      
-      // 다중 선택 로직 (최대 2개)
-      setSelectedObjects(prev => {
-        const exists = prev.find(obj => obj.id === clickedObject.id);
-        if (exists) {
-          // 이미 선택된 객체면 제거
-          const newSelection = prev.filter(obj => obj.id !== clickedObject.id);
-          console.log('객체 선택 해제:', clickedObject.id);
-          return newSelection;
-        } else {
-          // 새로운 객체 선택 (최대 2개)
-          const newSelection = [...prev, clickedObject].slice(-2);
-          console.log('객체 선택됨:', clickedObject.id, '총 선택된 객체:', newSelection.length);
-          return newSelection;
-        }
-      });
-      
       // 어떤 트래킹 영역이든 클릭하면 즉시 페이지 이동
       onPersonClick(clickedObject);
     } else {
@@ -193,20 +174,6 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
         }}
       />
 
-      {/* 다중 선택 상태 표시 */}
-      {selectedObjects.length > 0 && (
-        <div className="absolute top-4 left-4 bg-black/80 p-3 rounded-lg border border-white/20 text-white font-mono text-sm z-20">
-          <div className="mb-2">선택된 객체: {selectedObjects.length}/2</div>
-          {selectedObjects.map((obj, index) => (
-            <div key={obj.id} className="text-xs opacity-80">
-              {index + 1}. {obj.label} (신뢰도: {Math.round(obj.confidence * 100)}%)
-            </div>
-          ))}
-          <div className="text-xs text-green-400 mt-2">
-            클릭하여 선택/해제
-          </div>
-        </div>
-      )}
 
     </div>
   );

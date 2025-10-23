@@ -131,24 +131,11 @@ export class RealObjectDetector {
     });
   }
 
-  drawObjects(ctx: CanvasRenderingContext2D, objects: DetectedObject[], selectedObjectIds: string[]): void {
-    objects.forEach((obj, index) => {
-      const isSelected = selectedObjectIds.includes(obj.id);
-      
-      // 다중 선택 색상 시스템
-      let strokeColor = '#f5da31'; // 기본 색상 (노란색)
-      let fillColor = 'rgba(245, 218, 49, 0.1)'; // 기본 반투명 배경
-      
-      if (isSelected) {
-        // 선택된 객체는 다른 색상으로 구분
-        if (selectedObjectIds.indexOf(obj.id) === 0) {
-          strokeColor = '#00ff00'; // 첫 번째 선택 - 초록색
-          fillColor = 'rgba(0, 255, 0, 0.1)';
-        } else if (selectedObjectIds.indexOf(obj.id) === 1) {
-          strokeColor = '#ff6b6b'; // 두 번째 선택 - 빨간색
-          fillColor = 'rgba(255, 107, 107, 0.1)';
-        }
-      }
+  drawObjects(ctx: CanvasRenderingContext2D, objects: DetectedObject[]): void {
+    objects.forEach((obj) => {
+      // 모든 객체를 동일한 색상으로 표시
+      const strokeColor = '#f5da31'; // 기본 색상 (노란색)
+      const fillColor = 'rgba(245, 218, 49, 0.1)'; // 기본 반투명 배경
 
       // 테두리 그리기
       ctx.strokeStyle = strokeColor;
@@ -158,14 +145,6 @@ export class RealObjectDetector {
       // 반투명 배경
       ctx.fillStyle = fillColor;
       ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-
-      // 선택된 객체에 번호 표시
-      if (isSelected) {
-        const selectionIndex = selectedObjectIds.indexOf(obj.id) + 1;
-        ctx.fillStyle = strokeColor;
-        ctx.font = 'bold 16px Arial';
-        ctx.fillText(`${selectionIndex}`, obj.x + 5, obj.y + 20);
-      }
     });
   }
 

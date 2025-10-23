@@ -11,6 +11,7 @@ export default function TrackingExhibition() {
     console.log('선택된 실제 객체:', person);
     // 선택된 실제 객체 정보를 localStorage에 저장
     localStorage.setItem('selectedPerson', JSON.stringify(person));
+    // 2번 영상 페이지로 이동
     router.push('/enlarged');
   };
 

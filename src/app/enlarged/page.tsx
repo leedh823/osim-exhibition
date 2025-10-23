@@ -7,19 +7,27 @@ export default function EnlargedVideo() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 2번 영상 자동 재생
+  // 2번 영상 로딩 완료 확인
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
-      const playVideo = async () => {
-        try {
-          await video.play();
-          console.log('2번 영상 자동 재생 성공');
-        } catch (error) {
-          console.log('2번 영상 자동 재생 실패:', error);
-        }
+      
+      const handleLoadedData = () => {
+        console.log('2번 영상 로딩 완료, 자동 재생 확인');
+        // autoPlay 속성으로 자동 재생되므로 별도 play() 호출 불필요
       };
-      playVideo();
+      
+      const handlePlay = () => {
+        console.log('2번 영상 재생 시작');
+      };
+      
+      video.addEventListener('loadeddata', handleLoadedData);
+      video.addEventListener('play', handlePlay);
+      
+      return () => {
+        video.removeEventListener('loadeddata', handleLoadedData);
+        video.removeEventListener('play', handlePlay);
+      };
     }
   }, []);
 
@@ -40,10 +48,6 @@ export default function EnlargedVideo() {
         playsInline
         controls={false}
         onClick={handleVideoClick}
-        onLoadStart={() => console.log('2.mp4 로딩 시작')}
-        onLoadedData={() => console.log('2.mp4 로딩 완료')}
-        onCanPlay={() => console.log('2.mp4 재생 가능')}
-        onPlay={() => console.log('2.mp4 재생 시작')}
         onError={(e) => console.log('2.mp4 로딩 에러:', e)}
       >
         <source src="/2.mp4" type="video/mp4" />

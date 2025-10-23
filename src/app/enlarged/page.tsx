@@ -71,17 +71,6 @@ export default function EnlargedVideo() {
         <source src="/2.mp4" type="video/mp4" />
       </video>
       
-      {/* 디버깅 정보 */}
-      <div className="absolute top-4 left-4 text-white font-mono text-sm z-20">
-        <div>현재 페이지: enlarged</div>
-        <div>2번 영상 재생 중</div>
-        <div>영상 경로: /2.mp4</div>
-        <div>재생 모드: 로딩 완료 후 자동 재생</div>
-        <div>재생 시간: {videoRef.current?.currentTime?.toFixed(1) || '0.0'}초</div>
-        <div>영상 길이: {videoRef.current?.duration?.toFixed(1) || '0.0'}초</div>
-        <div>로딩 상태: {videoRef.current?.readyState || '0'}</div>
-        <div>재생 상태: {videoRef.current?.paused ? '정지' : '재생 중'}</div>
-      </div>
       
       {/* 클릭 안내 */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">

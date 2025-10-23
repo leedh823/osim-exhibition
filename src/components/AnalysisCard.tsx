@@ -121,16 +121,16 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
               <div className="text-[#6FA68B]" style={{ fontFamily: 'var(--font-nexon)' }}>
                 {/* 상단 제목 */}
                 <div className="mb-8">
-                  <h3 className="text-3xl font-bold mb-3" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
+                  <h3 className="text-3xl font-normal mb-3" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
                     AI Analysis Result
                   </h3>
-                  <p className="text-xl font-medium mb-6" style={{ color: '#6FA68B' }}>분석 결과</p>
+                  <p className="text-xl font-normal mb-6" style={{ color: '#6FA68B' }}>분석 결과</p>
                   <div className="border-b-2 mb-8" style={{ borderColor: '#6FA68B' }}></div>
                 </div>
                 
                 {/* 추적된 인물 분석 */}
                 <div className="mb-8">
-                  <h4 className="text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
+                  <h4 className="text-xl font-normal mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
                     Tracked Person Analysis
                   </h4>
                   <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
@@ -140,7 +140,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
 
                 {/* 관람자 분석 */}
                 <div className="mb-8">
-                  <h4 className="text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
+                  <h4 className="text-xl font-normal mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
                     Viewer Analysis
                   </h4>
                   <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>

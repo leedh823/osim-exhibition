@@ -7,43 +7,20 @@ export default function EnlargedVideo() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 2번 영상 재생 상태 관리 (완전한 중복 방지)
+  // 2번 영상 단순 재생 (한 번만)
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
-      let hasStartedPlaying = false;
-      let playTimeout: NodeJS.Timeout | null = null;
-      
-      const handlePlay = () => {
-        if (!hasStartedPlaying) {
-          console.log('2번 영상 첫 재생 시작');
-          hasStartedPlaying = true;
-        } else {
-          console.log('2번 영상 중복 재생 감지 - 완전 차단');
-          video.pause();
-          return; // 중복 재생 완전 차단
-        }
-      };
       
       const handleLoadedData = () => {
-        console.log('2번 영상 로딩 완료');
-        // 한 번만 재생 시도
-        if (!hasStartedPlaying && video.paused) {
-          console.log('수동 재생 시작');
-          playTimeout = setTimeout(() => {
-            if (!hasStartedPlaying) {
-              video.play().catch(console.error);
-            }
-          }, 100); // 100ms 지연으로 안정성 확보
-        }
+        console.log('2번 영상 로딩 완료 - 재생 시작');
+        // 한 번만 재생
+        video.play().catch(console.error);
       };
       
-      video.addEventListener('play', handlePlay);
       video.addEventListener('loadeddata', handleLoadedData);
       
       return () => {
-        if (playTimeout) clearTimeout(playTimeout);
-        video.removeEventListener('play', handlePlay);
         video.removeEventListener('loadeddata', handleLoadedData);
       };
     }

@@ -1,97 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export async function POST(request: NextRequest) {
   try {
     const { messages, turnCount, selectedPerson } = await request.json();
 
-    // 시스템 프롬프트 설정
-    let systemPrompt = '';
+    let response = '';
     
     if (turnCount < 3) {
       if (turnCount === 0) {
         // 1턴: 고정된 첫 번째 질문
-        systemPrompt = `다음 질문을 그대로 출력하세요: "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?"`;
+        response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
       } else {
-        // 2-3턴: 관람자 답변에 맞춰서 유도리 있는 질문 생성
-        systemPrompt = `당신은 CCTV 화면 분석 전문가입니다.
-        
-        관람자의 이전 답변을 바탕으로 자연스럽게 이어지는 질문을 생성하세요.
-        관람자의 답변 내용을 참고하여 더 깊이 있는 분석을 유도하는 질문을 하세요.
-        
-        예시:
-        - 관람자가 행동을 언급했다면 → 상황이나 감정에 대한 질문
-        - 관람자가 상황을 언급했다면 → 의도나 다음 행동에 대한 질문
-        - 관람자가 감정을 언급했다면 → 행동 패턴이나 환경에 대한 질문
-        
-        질문은 간단하고 구체적으로 하세요.
-        한국어로 답변하세요.`;
+        // 2-3턴: 더미 후속 질문
+        const followUpQuestions = [
+          "그 행동을 보면서 어떤 감정을 느끼시나요?",
+          "이 상황에서 당신이라면 어떻게 행동하실 것 같나요?"
+        ];
+        response = followUpQuestions[turnCount - 1] || "이 상황에 대해 더 자세히 말씀해주세요.";
       }
     } else if (turnCount === 3) {
       // 4턴: 분석 시작 알림
-      systemPrompt = `이제 3턴의 대화를 바탕으로 분석을 시작합니다.
-      "분석을 시작하겠습니다..."라고 답변하세요.`;
+      response = "분석을 시작하겠습니다...";
     } else {
-      // 5턴: 최종 분석 결과 생성
-      systemPrompt = `당신은 심리학자이자 CCTV 화면 분석 전문가입니다.
+      // 5턴: 최종 분석 결과 생성 (더미 데이터)
+      const analysisData = {
+        trackedPersonAnalysis: "이 사람은 편의점 앞에서 휴식을 취하고 있는 것으로 보입니다. 혼자 앉아 있는 모습에서 고독감이나 피로감을 느끼고 있을 수 있습니다. 도시 생활의 피로와 일상의 무료함이 느껴지는 모습입니다.",
+        viewerAnalysis: "관람자는 이 사람의 상황에 공감하고 있으며, 도시 생활의 피로와 고독감에 대해 깊이 생각하고 있습니다. 타인에 대한 배려심과 공감 능력이 뛰어난 것으로 보입니다."
+      };
       
-      다음 CCTV 화면 분석 정보와 대화 내용을 바탕으로 2개의 분석 결과를 생성하세요:
-      
-      1. **추적된 인물 분석**:
-      - 선택된 인물: ${selectedPerson ? selectedPerson.label : '알 수 없음'}
-      - 위치: (${selectedPerson ? Math.round(selectedPerson.x) : 0}, ${selectedPerson ? Math.round(selectedPerson.y) : 0})
-      - 움직임: ${selectedPerson ? (selectedPerson.isMoving ? '움직임 감지됨' : '정지 상태') : '알 수 없음'}
-      - 신뢰도: ${selectedPerson ? (selectedPerson.confidence * 100).toFixed(1) : 0}%
-      - 속도: ${selectedPerson ? (selectedPerson.speed || 0).toFixed(1) : 0} 픽셀/프레임
-      
-      인물의 행동 패턴, 위치, 움직임 데이터와 관람자의 답변을 종합하여 분석하세요.
-      
-      2. **관람자 분석**:
-      - 대화 패턴과 답변 내용을 분석
-      - CCTV 화면에 대한 관심도와 관찰력 평가
-      - 인물에 대한 공감 능력과 분석적 사고 평가
-      
-      각 분석은 200자 이내로 간결하게 작성하세요.
-      JSON 형태로 응답하세요:
-      {
-        "trackedPersonAnalysis": "추적된 인물에 대한 분석 텍스트",
-        "viewerAnalysis": "관람자에 대한 분석 텍스트"
-      }`;
-    }
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...messages
-      ],
-      max_tokens: 500,
-      temperature: 0.7,
-    });
-
-    const response = completion.choices[0].message.content;
-
-    // 5턴에서는 JSON 파싱 시도
-    if (turnCount >= 4) {
-      try {
-        const analysisData = JSON.parse(response || '{}');
-        return NextResponse.json({
-          content: response,
-          analysis: analysisData,
-          isAnalysis: true
-        });
-      } catch (error) {
-        console.error('JSON 파싱 오류:', error);
-        return NextResponse.json({
-          content: response,
-          analysis: null,
-          isAnalysis: false
-        });
-      }
+      return NextResponse.json({
+        content: "분석이 완료되었습니다.",
+        analysis: analysisData,
+        isAnalysis: true
+      });
     }
 
     return NextResponse.json({
@@ -101,9 +42,9 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('OpenAI API 오류:', error);
+    console.error('API 오류:', error);
     return NextResponse.json(
-      { error: 'AI 응답 생성 중 오류가 발생했습니다.' },
+      { error: '응답 생성 중 오류가 발생했습니다.' },
       { status: 500 }
     );
   }

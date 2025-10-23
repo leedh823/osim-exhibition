@@ -111,9 +111,15 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
 
   // 캔버스 클릭 이벤트 처리
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!canvasRef.current) return;
+    console.log('🎯 캔버스 클릭 이벤트 발생!');
+    
+    if (!canvasRef.current) {
+      console.log('❌ canvasRef가 없음');
+      return;
+    }
 
     const canvas = canvasRef.current;
+    console.log('✅ canvasRef 확인됨');
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -170,11 +176,14 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
         ref={canvasRef}
         className="absolute top-0 left-0 w-full h-full cursor-pointer z-10"
         onClick={handleCanvasClick}
+        onMouseDown={() => console.log('🖱️ 캔버스 마우스 다운')}
+        onMouseUp={() => console.log('🖱️ 캔버스 마우스 업')}
         style={{ 
           pointerEvents: 'auto',
           width: '100%',
           height: '100%',
-          objectFit: 'cover'
+          objectFit: 'cover',
+          backgroundColor: 'rgba(255, 0, 0, 0.1)' // 디버깅용 빨간색 배경
         }}
       />
 

@@ -33,7 +33,7 @@ export default function TrackingExhibition() {
       <div 
         className="absolute inset-0 w-full h-full z-5 cursor-pointer"
         onClick={handleScreenClick}
-        style={{ pointerEvents: 'auto' }}
+        style={{ pointerEvents: 'none' }}
       >
       </div>
 

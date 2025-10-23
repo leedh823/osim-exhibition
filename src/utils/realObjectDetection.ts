@@ -21,6 +21,8 @@ export class RealObjectDetector {
   private frameCount = 0;
   private readonly confidenceThreshold = 0.3;
   private readonly movingThreshold = 5; // 픽셀 이동 임계값
+  private lastDetectionTime = 0;
+  private readonly detectionInterval = 100; // 100ms 간격
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
@@ -52,6 +54,13 @@ export class RealObjectDetector {
       console.log('모델이 준비되지 않음');
       return [];
     }
+
+    // 성능 최적화: 너무 자주 감지하지 않음
+    const now = Date.now();
+    if (now - this.lastDetectionTime < this.detectionInterval) {
+      return this.previousObjects; // 이전 결과 반환
+    }
+    this.lastDetectionTime = now;
 
     try {
       // 비디오에서 객체 감지

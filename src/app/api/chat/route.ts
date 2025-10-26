@@ -49,7 +49,9 @@ export async function POST(request: NextRequest) {
         3. 의복, 직업, 나이대 등 추측성 질문은 하지 마세요
         4. 이전에 한 질문과 중복되지 않는 새로운 질문
         5. 인물의 현재 상황과 행동에 집중한 질문
-        6. 한 문장으로 자연스럽게 질문해주세요:`;
+        6. 쉬운 단어와 간단한 문장으로 질문해주세요
+        7. '상호작용', '심리상태', '행동패턴' 등 어려운 단어는 피해주세요
+        8. 한 문장으로 자연스럽게 질문해주세요:`;
         
         const completion = await openai.chat.completions.create({
           model: "gpt-4",

@@ -74,8 +74,10 @@ export default function AIChat() {
         // 분석 데이터가 있으면 저장
         if (data.analysis) {
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
-          // 분석이 완료되면 currentTurn을 6으로 설정하여 페이지 전환 트리거
-          setCurrentTurn(6);
+          // 분석이 완료되면 3초 후 페이지 전환
+          setTimeout(() => {
+            router.push('/analysis');
+          }, 3000);
         }
       }
     } catch (error) {
@@ -137,16 +139,7 @@ export default function AIChat() {
     }
   }, [currentTurn, chatMessages, handleAIMessage]);
 
-  // 6턴 완료 시 분석 결과로 전환 (3초 후)
-  useEffect(() => {
-    if (currentTurn >= 6) {
-      // 6턴에서 분석 시작 메시지를 보낸 후 3초 뒤에 페이지 전환
-      const timer = setTimeout(() => {
-        router.push('/analysis');
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [currentTurn, router]);
+  // 6턴 완료 시 분석 결과로 전환 (3초 후) - handleAIMessage에서 처리하므로 제거
 
   // 채팅 메시지 전송
   const handleSendMessage = async () => {

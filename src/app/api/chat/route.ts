@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
           .filter((msg: ChatMessage) => msg.role === 'assistant')
           .map((msg: ChatMessage) => msg.content);
         
-        systemPrompt = `당신은 CCTV 영상 속 인물을 분석하는 AI입니다. 사용자의 이전 답변을 바탕으로 점점 더 깊이 있고 주관적인 답변을 유도하는 질문을 해주세요. 
+        systemPrompt = `당신은 CCTV 영상 속 인물을 분석하는 AI입니다. 사용자의 이전 답변을 바탕으로 구체적이고 상세한 답변을 유도하는 질문을 해주세요. 
         
         사용자의 답변: ${messages[messages.length - 1]?.content || ''}
         
@@ -53,11 +53,12 @@ export async function POST(request: NextRequest) {
         2. 얼굴, 표정, 외모, 개인적 특성과 관련된 질문은 절대 하지 마세요
         3. 의복, 직업, 나이대 등 추측성 질문은 하지 마세요
         4. 이전에 한 질문과 중복되지 않는 새로운 질문
-        5. 점점 더 주관적이고 개인적인 생각을 유도하는 질문
-        6. 2-4번째 질문은 딥하고 깊이 있는 질문으로 설정
-        7. 사용자가 서술형으로 길게 답할 수 있도록 유도
-        8. 쉬운 단어와 간단한 문장으로 질문해주세요
-        9. 한 문장으로 자연스럽게 질문해주세요:`;
+        5. 구체적인 행동이나 상황에 대해 상세히 설명하도록 유도
+        6. "어떻게", "왜", "어디서", "언제" 등의 구체적 질문 사용
+        7. 사용자가 2-3문장 이상으로 답할 수 있도록 유도
+        8. 단답형이 아닌 서술형 답변을 유도하는 질문
+        9. 쉬운 단어와 간단한 문장으로 질문해주세요
+        10. 한 문장으로 자연스럽게 질문해주세요:`;
         
         const completion = await openai.chat.completions.create({
           model: "gpt-4",

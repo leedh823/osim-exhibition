@@ -130,10 +130,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     if (clickedObject) {
       onPersonClick(clickedObject);
-    } else if (detectedObjects.length > 0) {
-      // 첫 번째 감지된 객체로 페이지 이동
-      onPersonClick(detectedObjects[0]);
     }
+    // 트래킹 영역이 아닌 곳을 클릭하면 아무것도 하지 않음
   }, [detectedObjects, onPersonClick]);
 
   return (

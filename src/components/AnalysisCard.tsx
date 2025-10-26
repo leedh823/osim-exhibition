@@ -133,9 +133,12 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                   <h4 className="text-xl font-normal mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
                     Tracked Person Analysis
                   </h4>
+                  <div className="text-base font-normal leading-relaxed pl-4 mb-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
+                    This person appears to be taking a break in front of a convenience store. The solitary posture suggests feelings of loneliness or fatigue. The urban lifestyle&apos;s exhaustion and daily monotony are evident in their demeanor.
+                  </div>
                   <p className="text-sm font-normal mb-2" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>추적된 인물 분석</p>
                   <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    This person appears to be taking a break in front of a convenience store. The solitary posture suggests feelings of loneliness or fatigue. The urban lifestyle&apos;s exhaustion and daily monotony are evident in their demeanor.
+                    이 사람은 편의점 앞에서 휴식을 취하고 있는 것으로 보입니다. 혼자 앉아 있는 모습에서 고독감이나 피로감을 느끼고 있을 수 있습니다. 도시 생활의 피로와 일상의 무료함이 느껴지는 모습입니다.
                   </div>
                 </div>
 
@@ -144,9 +147,12 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                   <h4 className="text-xl font-normal mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
                     Viewer Analysis
                   </h4>
+                  <div className="text-base font-normal leading-relaxed pl-4 mb-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
+                    The viewer shows empathy towards this person&apos;s situation and is deeply contemplating the fatigue and loneliness of urban life. They demonstrate excellent empathy and caring abilities towards others.
+                  </div>
                   <p className="text-sm font-normal mb-2" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>관람자 분석</p>
                   <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    The viewer shows empathy towards this person&apos;s situation and is deeply contemplating the fatigue and loneliness of urban life. They demonstrate excellent empathy and caring abilities towards others.
+                    관람자는 이 사람의 상황에 공감하고 있으며, 도시 생활의 피로와 고독감에 대해 깊이 생각하고 있습니다. 타인에 대한 배려심과 공감 능력이 뛰어난 것으로 보입니다.
                   </div>
                 </div>
               </div>

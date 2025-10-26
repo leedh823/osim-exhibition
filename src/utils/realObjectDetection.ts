@@ -22,7 +22,7 @@ export class RealObjectDetector {
   private readonly confidenceThreshold = 0.3;
   private readonly movingThreshold = 5; // 픽셀 이동 임계값
   private lastDetectionTime = 0;
-  private readonly detectionInterval = 200; // 200ms 간격 (절반 속도)
+  private readonly detectionInterval = 300; // 300ms 간격 (성능 최적화)
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
@@ -47,6 +47,19 @@ export class RealObjectDetector {
 
   isReady(): boolean {
     return this.isInitialized && this.model !== null;
+  }
+
+  // 메모리 정리 함수
+  dispose(): void {
+    if (this.model) {
+      // TensorFlow.js 모델 메모리 해제
+      this.model.dispose();
+      this.model = null;
+    }
+    this.isInitialized = false;
+    this.previousObjects = [];
+    this.frameCount = 0;
+    console.log('객체 탐지 모델 메모리 해제 완료');
   }
 
   async detectObjects(videoElement: HTMLVideoElement): Promise<DetectedObject[]> {
@@ -91,7 +104,7 @@ export class RealObjectDetector {
       this.previousObjects = detectedObjects;
       this.frameCount++;
       
-      console.log(`감지된 사람: ${objectsWithMotion.length}명, 움직이는 사람: ${objectsWithMotion.filter(obj => obj.isMoving).length}명`);
+      // 성능 최적화: 로깅 제거
       
       return objectsWithMotion;
     } catch (error) {
@@ -158,18 +171,13 @@ export class RealObjectDetector {
   }
 
   findClickedObject(clickPoint: { x: number; y: number }, objects: DetectedObject[]): DetectedObject | null {
-    console.log(`findClickedObject 호출: 클릭 위치 (${clickPoint.x}, ${clickPoint.y}), 객체 수: ${objects.length}`);
-    
     // 가장 최근에 그려진 객체부터 확인 (가장 위에 그려진 객체)
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i];
       const isInXRange = clickPoint.x >= obj.x && clickPoint.x <= obj.x + obj.width;
       const isInYRange = clickPoint.y >= obj.y && clickPoint.y <= obj.y + obj.height;
       
-      console.log(`객체 ${i} 체크: x=${isInXRange}, y=${isInYRange}, 전체=${isInXRange && isInYRange}`);
-      
       if (isInXRange && isInYRange) {
-        console.log(`✅ 객체 ${i} 클릭됨!`);
         return obj;
       }
     }
@@ -179,7 +187,7 @@ export class RealObjectDetector {
       let closestObj = objects[0];
       let minDistance = Infinity;
       
-      objects.forEach((obj, index) => {
+      objects.forEach((obj) => {
         const centerX = obj.x + obj.width / 2;
         const centerY = obj.y + obj.height / 2;
         const distance = Math.sqrt(
@@ -191,15 +199,11 @@ export class RealObjectDetector {
           minDistance = distance;
           closestObj = obj;
         }
-        
-        console.log(`객체 ${index} 거리: ${distance.toFixed(2)}px`);
       });
       
-      console.log(`🔍 가장 가까운 객체: 거리 ${minDistance.toFixed(2)}px`);
       return closestObj;
     }
     
-    console.log(`❌ 클릭된 객체 없음`);
     return null;
   }
 }

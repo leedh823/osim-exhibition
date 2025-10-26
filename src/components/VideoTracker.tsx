@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, memo } from 'react';
 import { realObjectDetector, DetectedObject } from '@/utils/realObjectDetection';
 
 interface VideoTrackerProps {
@@ -9,7 +9,7 @@ interface VideoTrackerProps {
   className?: string;
 }
 
-export default function VideoTracker({ videoSrc, onPersonClick, className }: VideoTrackerProps) {
+const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className }: VideoTrackerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
@@ -21,21 +21,26 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
     const initializeRealObjectDetection = async () => {
       try {
         await realObjectDetector.initialize();
-        // 즉시 감지 활성화
         setIsDetecting(true);
-        console.log('실제 객체 감지 초기화 완료 및 즉시 활성화');
       } catch (error) {
         console.error('실제 객체 감지 초기화 실패:', error);
-        // 초기화 실패해도 강제로 감지 활성화
         setIsDetecting(true);
-        console.log('초기화 실패했지만 강제로 감지 활성화');
       }
     };
 
     initializeRealObjectDetection();
+
+    // 컴포넌트 언마운트 시 메모리 정리
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      // 메모리 정리는 필요시에만 (페이지 이동 시)
+      // realObjectDetector.dispose();
+    };
   }, []);
 
-  // 실제 객체 감지 및 그리기
+  // 실제 객체 감지 및 그리기 (성능 최적화)
   const detectAndDrawObjects = useCallback(async () => {
     if (!videoRef.current || !canvasRef.current) {
       return;
@@ -47,43 +52,40 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
     
     if (!ctx) return;
 
-    // 캔버스 크기를 비디오 크기에 맞춤
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // 캔버스 크기를 비디오 크기에 맞춤 (한 번만 설정)
+    if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+    }
 
     try {
-      // 현재 프레임을 캔버스에 그리기
+      // 실제 객체 감지
+      const objects = await realObjectDetector.detectObjects(video);
+      
+      // 객체가 변경된 경우에만 상태 업데이트
+      if (objects.length !== detectedObjects.length || 
+          objects.some((obj, index) => !detectedObjects[index] || obj.id !== detectedObjects[index].id)) {
+        setDetectedObjects(objects);
+      }
+      
+      // 캔버스 클리어 및 비디오 그리기
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // 실제 객체 감지 (무조건 실행)
-      try {
-        const objects = await realObjectDetector.detectObjects(video);
-        setDetectedObjects(objects);
-        
-        // 캔버스 클리어
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // 비디오 다시 그리기
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // 감지된 객체 그리기
-        realObjectDetector.drawObjects(ctx, objects);
-        
-        console.log(`실제 객체 감지 완료: ${objects.length}개, 움직이는 객체: ${objects.filter(obj => obj.isMoving).length}개`);
-      } catch (error) {
-        console.log('객체 감지 중 오류, 계속 시도:', error);
-        // 오류가 발생해도 계속 실행
-      }
+      // 감지된 객체 그리기
+      realObjectDetector.drawObjects(ctx, objects);
 
     } catch (error) {
-      console.error('실제 객체 감지 중 오류:', error);
+      // 성능 최적화: 에러 로깅 최소화
+      if (Math.random() < 0.01) { // 1% 확률로만 로깅
+        console.error('객체 감지 중 오류:', error);
+      }
     }
-  }, []);
+  }, [detectedObjects]);
 
-  // 감지 루프 시작/중지 (원상 복귀 + 성능 최적화)
+  // 감지 루프 시작/중지 (성능 최적화)
   useEffect(() => {
     if (isDetecting) {
-      console.log('🚀 트래킹 시작 (성능 최적화: 200ms 간격)');
       const startDetection = () => {
         detectAndDrawObjects();
         animationRef.current = requestAnimationFrame(startDetection);
@@ -103,24 +105,17 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
   }, [isDetecting, detectAndDrawObjects]);
 
   // 비디오 로드 완료 시 감지 시작
-  const handleVideoLoaded = () => {
-    console.log('비디오 로드 완료, 실제 객체 감지 시작');
-    // 무조건 감지 활성화
+  const handleVideoLoaded = useCallback(() => {
     setIsDetecting(true);
-    console.log('실제 객체 감지 무조건 활성화됨');
-  };
+  }, []);
 
-  // 캔버스 클릭 이벤트 처리
-  const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    console.log('🎯 캔버스 클릭 이벤트 발생!');
-    
+  // 캔버스 클릭 이벤트 처리 (성능 최적화)
+  const handleCanvasClick = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) {
-      console.log('❌ canvasRef가 없음');
       return;
     }
 
     const canvas = canvasRef.current;
-    console.log('✅ canvasRef 확인됨');
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -130,39 +125,16 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
       y: (event.clientY - rect.top) * scaleY,
     };
 
-    console.log(`클릭 위치: (${clickPoint.x}, ${clickPoint.y})`);
-    console.log(`감지된 객체 수: ${detectedObjects.length}`);
-    console.log(`캔버스 크기: ${canvas.width}x${canvas.height}`);
-    console.log(`캔버스 rect: ${rect.width}x${rect.height}`);
-
-    // 모든 객체의 위치 출력 (디버깅용)
-    detectedObjects.forEach((obj, index) => {
-      console.log(`객체 ${index}: (${obj.x}, ${obj.y}) 크기: ${obj.width}x${obj.height}, 움직임: ${obj.isMoving}`);
-      console.log(`객체 ${index} 범위: x=${obj.x}~${obj.x + obj.width}, y=${obj.y}~${obj.y + obj.height}`);
-      console.log(`클릭이 범위 안에 있는가: x=${clickPoint.x >= obj.x && clickPoint.x <= obj.x + obj.width}, y=${clickPoint.y >= obj.y && clickPoint.y <= obj.y + obj.height}`);
-    });
-
     // 클릭된 객체 찾기
     const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
-    console.log(`클릭된 객체: ${clickedObject ? clickedObject.label : '없음'}`);
 
     if (clickedObject) {
-      console.log('✅ 실제 객체 클릭됨:', clickedObject);
-      console.log('🔄 onPersonClick 호출 중...');
-      // 어떤 트래킹 영역이든 클릭하면 즉시 페이지 이동
       onPersonClick(clickedObject);
-      console.log('✅ onPersonClick 호출 완료');
-    } else {
-      console.log('❌ 객체가 아닌 곳 클릭됨');
-      console.log('🔍 임시 해결책: 첫 번째 감지된 객체로 페이지 이동');
-      if (detectedObjects.length > 0) {
-        console.log('✅ 첫 번째 객체로 페이지 이동:', detectedObjects[0]);
-        console.log('🔄 onPersonClick 호출 중...');
-        onPersonClick(detectedObjects[0]);
-        console.log('✅ onPersonClick 호출 완료');
-      }
+    } else if (detectedObjects.length > 0) {
+      // 첫 번째 감지된 객체로 페이지 이동
+      onPersonClick(detectedObjects[0]);
     }
-  };
+  }, [detectedObjects, onPersonClick]);
 
   return (
     <div className={`relative ${className}`}>
@@ -197,4 +169,6 @@ export default function VideoTracker({ videoSrc, onPersonClick, className }: Vid
 
     </div>
   );
-}
+});
+
+export default VideoTracker;

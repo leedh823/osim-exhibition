@@ -171,39 +171,30 @@ export class RealObjectDetector {
   }
 
   findClickedObject(clickPoint: { x: number; y: number }, objects: DetectedObject[]): DetectedObject | null {
+    console.log('findClickedObject 호출:', { clickPoint, objectsCount: objects.length });
+    
     // 가장 최근에 그려진 객체부터 확인 (가장 위에 그려진 객체)
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i];
       const isInXRange = clickPoint.x >= obj.x && clickPoint.x <= obj.x + obj.width;
       const isInYRange = clickPoint.y >= obj.y && clickPoint.y <= obj.y + obj.height;
       
+      console.log(`객체 ${i} 체크:`, {
+        obj: { x: obj.x, y: obj.y, width: obj.width, height: obj.height },
+        clickPoint,
+        isInXRange,
+        isInYRange,
+        isInside: isInXRange && isInYRange
+      });
+      
       if (isInXRange && isInYRange) {
+        console.log('객체 클릭됨:', obj);
         return obj;
       }
     }
     
-    // 정확한 클릭이 안 되면 가장 가까운 객체 찾기
-    if (objects.length > 0) {
-      let closestObj = objects[0];
-      let minDistance = Infinity;
-      
-      objects.forEach((obj) => {
-        const centerX = obj.x + obj.width / 2;
-        const centerY = obj.y + obj.height / 2;
-        const distance = Math.sqrt(
-          Math.pow(clickPoint.x - centerX, 2) + 
-          Math.pow(clickPoint.y - centerY, 2)
-        );
-        
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestObj = obj;
-        }
-      });
-      
-      return closestObj;
-    }
-    
+    console.log('클릭된 객체 없음 - null 반환');
+    // 정확한 클릭이 안 되면 null 반환 (아무것도 선택하지 않음)
     return null;
   }
 }

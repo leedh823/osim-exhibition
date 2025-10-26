@@ -125,11 +125,17 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       y: (event.clientY - rect.top) * scaleY,
     };
 
+    console.log('클릭 위치:', clickPoint);
+    console.log('감지된 객체들:', detectedObjects);
+
     // 클릭된 객체 찾기
     const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
 
     if (clickedObject) {
+      console.log('클릭된 객체:', clickedObject);
       onPersonClick(clickedObject);
+    } else {
+      console.log('클릭된 객체 없음 - 페이지 이동하지 않음');
     }
     // 트래킹 영역이 아닌 곳을 클릭하면 아무것도 하지 않음
   }, [detectedObjects, onPersonClick]);

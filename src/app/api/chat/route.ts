@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
             { role: "system", content: systemPrompt },
             { role: "user", content: "다음 질문을 해주세요." }
           ],
-          max_tokens: 100,
+          max_tokens: 200,
           temperature: 0.7,
         });
         
@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
     } else if (turnCount === 5) {
       // 6턴: 분석 시작 알림
       response = "대답해주신 결과에 따라 CCTV 속 인물이 어떤 활동을 진행하고 있는 분석을 시작하겠습니다";
-    } else {
-      // 6턴: 최종 분석 결과 생성
+      
+      // 분석 시작 메시지와 함께 분석 결과도 함께 반환
       const conversationHistory = messages.map((msg: ChatMessage) => `${msg.role}: ${msg.content}`).join('\n');
       
       systemPrompt = `당신은 CCTV 영상 분석 전문가입니다. 사용자와의 대화를 바탕으로 두 가지 분석을 생성해주세요:
@@ -99,7 +99,7 @@ ${conversationHistory}
         const analysisData = JSON.parse(analysisText);
         
         return NextResponse.json({
-          content: "분석이 완료되었습니다.",
+          content: response,
           analysis: analysisData,
           isAnalysis: true
         });
@@ -111,11 +111,14 @@ ${conversationHistory}
         };
         
         return NextResponse.json({
-          content: "분석이 완료되었습니다.",
+          content: response,
           analysis: analysisData,
           isAnalysis: true
         });
       }
+    } else {
+      // 7턴 이상: 더 이상 처리하지 않음
+      response = "분석이 완료되었습니다.";
     }
 
     return NextResponse.json({

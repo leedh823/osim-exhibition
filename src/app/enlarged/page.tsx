@@ -177,6 +177,7 @@ export default function EnlargedVideo() {
   // 6턴 완료 시 분석 결과로 전환 (3초 후)
   useEffect(() => {
     if (showChat && currentTurn >= 6) {
+      // 6턴에서 분석 시작 메시지를 보낸 후 3초 뒤에 페이지 전환
       const timer = setTimeout(() => {
         router.push('/analysis');
       }, 3000);

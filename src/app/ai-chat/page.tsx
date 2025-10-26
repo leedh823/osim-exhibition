@@ -78,18 +78,13 @@ export default function AIChat() {
       }
     } catch (error) {
       console.error('AI 메시지 처리 오류:', error);
-      // 오류 시 더미 메시지 사용
-      const dummyQuestions = [
-        "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?",
-        "이 사람의 행동 패턴을 보면 어떤 상황에 처해 있다고 생각하나요?",
-        "이 인물의 다음 행동을 예측해본다면 무엇일까요?"
-      ];
       
-      const newMessage = {
+      // API 오류 시 사용자에게 알림
+      const errorMessage = {
         role: 'assistant',
-        content: dummyQuestions[currentTurn] || "분석을 시작하겠습니다..."
+        content: "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
       };
-      setChatMessages(prev => [...prev, newMessage]);
+      setChatMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +108,7 @@ export default function AIChat() {
     }
   }, [currentTurn, handleAIMessage, chatMessages.length]);
 
-  // 사용자 답변 후 AI 다음 질문 생성
+  // 사용자 답변 후 AI 다음 질문 생성 (1-5턴)
   useEffect(() => {
     if (currentTurn > 0 && currentTurn < 5 && chatMessages.length > 0) {
       // 사용자 메시지가 마지막인지 확인
@@ -127,12 +122,25 @@ export default function AIChat() {
     }
   }, [currentTurn, chatMessages, handleAIMessage]);
 
-  // 5턴 완료 시 분석 결과로 전환
+  // 5턴 완료 시 6번째에서 분석 시작
   useEffect(() => {
-    if (currentTurn >= 5) {
+    if (currentTurn === 5 && chatMessages.length > 0) {
+      const lastMessage = chatMessages[chatMessages.length - 1];
+      if (lastMessage.role === 'user') {
+        const timer = setTimeout(() => {
+          handleAIMessage();
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [currentTurn, chatMessages, handleAIMessage]);
+
+  // 6턴 완료 시 분석 결과로 전환 (3초 후)
+  useEffect(() => {
+    if (currentTurn >= 6) {
       const timer = setTimeout(() => {
         router.push('/analysis');
-      }, 2000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [currentTurn, router]);
@@ -195,25 +203,25 @@ export default function AIChat() {
         {/* 입력 영역 */}
         <div className="h-1/4 p-4 border-t border-white/20">
           <div className="flex gap-2">
-            <input 
-              type="text" 
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-1 p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:border-blue-400 focus:outline-none backdrop-blur-sm placeholder-white/60"
-              placeholder="답변을 입력하세요..."
-              disabled={currentTurn >= 5 || isLoading}
-            />
-            <button 
-              onClick={handleSendMessage}
-              disabled={!userInput.trim() || currentTurn >= 5 || isLoading}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? 'AI 응답 중...' : '전송'}
-            </button>
+                 <input 
+                   type="text" 
+                   value={userInput}
+                   onChange={(e) => setUserInput(e.target.value)}
+                   onKeyPress={handleKeyPress}
+                   className="flex-1 p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:border-blue-400 focus:outline-none backdrop-blur-sm placeholder-white/60"
+                   placeholder="답변을 입력하세요..."
+                   disabled={currentTurn >= 6 || isLoading}
+                 />
+                 <button 
+                   onClick={handleSendMessage}
+                   disabled={!userInput.trim() || currentTurn >= 6 || isLoading}
+                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+                 >
+                   {isLoading ? 'AI 응답 중...' : '전송'}
+                 </button>
           </div>
           
-          {currentTurn >= 5 && (
+          {currentTurn >= 6 && (
             <div className="text-center text-green-400 font-mono text-sm mt-2 animate-pulse">
               분석 결과를 생성하고 있습니다...
             </div>

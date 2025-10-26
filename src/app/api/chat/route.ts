@@ -32,8 +32,8 @@ export async function POST(request: NextRequest) {
         // 첫 번째 질문 (고정) - 인물 분석 중심
         response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
       } else if (turnCount === 4) {
-        // 5번째 질문 (고정) - 종합 질문
-        response = "이 사람이 어떤 사람인 것 같나요?";
+        // 5번째 질문 (고정) - 상세한 분석 질문
+        response = "이 사람이 어떤 사람인 것 같나요? 그리고 이 사람의 성격이나 특성은 어떤 것 같나요? 또한 이 사람이 지금 어떤 상황에 처해있는 것 같나요? 마지막으로 이 사람에 대해 어떤 느낌이나 인상을 받으셨나요?";
       } else {
         // 2-5턴: 사용자 답변에 따른 영상 관련 후속 질문 (얼굴 관련 제외, 중복 방지)
         const previousQuestions = messages

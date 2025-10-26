@@ -134,11 +134,11 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                     Tracked Person Analysis
                   </h4>
                   <div className="text-base font-normal leading-relaxed pl-4 mb-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    This person appears to be taking a break in front of a convenience store. The solitary posture suggests feelings of loneliness or fatigue. The urban lifestyle&apos;s exhaustion and daily monotony are evident in their demeanor.
+                    This person appears to be a working professional in their mid-30s, taking a brief rest in front of a convenience store. Their slumped shoulders and weary expression suggest the exhaustion of a long day. The neat business attire and briefcase indicate they work in an office environment, likely experiencing work-related stress or personal concerns. The urban lifestyle&apos;s daily fatigue and sense of isolation are evident in their demeanor.
                   </div>
                   <p className="text-sm font-normal mb-2" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>추적된 인물 분석</p>
                   <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    이 사람은 편의점 앞에서 휴식을 취하고 있는 것으로 보입니다. 혼자 앉아 있는 모습에서 고독감이나 피로감을 느끼고 있을 수 있습니다. 도시 생활의 피로와 일상의 무료함이 느껴지는 모습입니다.
+                    이 사람은 30대 중반의 직장인으로 보이며, 편의점 앞에서 잠시 휴식을 취하고 있습니다. 어깨가 축 늘어져 있는 자세와 한숨을 쉬는 듯한 모습에서 하루의 피로감이 느껴집니다. 깔끔한 정장 차림과 가방을 보면 사무직에 종사하는 것으로 추정되며, 현재 업무 스트레스나 개인적인 고민으로 인한 무기력감을 느끼고 있는 것 같습니다. 도시 생활의 일상적 피로와 고독감이 표정에 드러나 있습니다.
                   </div>
                 </div>
 
@@ -148,11 +148,11 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                     Viewer Analysis
                   </h4>
                   <div className="text-base font-normal leading-relaxed pl-4 mb-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    The viewer shows empathy towards this person&apos;s situation and is deeply contemplating the fatigue and loneliness of urban life. They demonstrate excellent empathy and caring abilities towards others.
+                    The viewer demonstrates deep empathy towards this person&apos;s situation and shows a sophisticated understanding of urban life&apos;s challenges. Their responses reveal a keen observational ability and emotional intelligence, suggesting they have experienced similar struggles or possess a high level of social awareness. They appear to be someone who values human connection and is critical of modern society&apos;s isolating tendencies.
                   </div>
                   <p className="text-sm font-normal mb-2" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>관람자 분석</p>
                   <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    관람자는 이 사람의 상황에 공감하고 있으며, 도시 생활의 피로와 고독감에 대해 깊이 생각하고 있습니다. 타인에 대한 배려심과 공감 능력이 뛰어난 것으로 보입니다.
+                    관람자는 이 사람의 상황에 깊은 공감을 보이며, 도시 생활의 현실적인 어려움을 이해하고 있습니다. 세심한 관찰력으로 인물의 미묘한 감정 변화까지 포착하는 능력이 뛰어나며, 타인의 고통에 대한 민감한 감수성을 가지고 있습니다. 사회적 약자나 힘든 상황에 있는 사람들에 대한 배려심이 깊고, 현대 사회의 개인주의적 경향에 대해 비판적 사고를 하는 것으로 보입니다.
                   </div>
                 </div>
               </div>

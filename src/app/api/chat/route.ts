@@ -68,18 +68,28 @@ export async function POST(request: NextRequest) {
       // 분석 시작 메시지와 함께 분석 결과도 함께 반환
       const conversationHistory = messages.map((msg: ChatMessage) => `${msg.role}: ${msg.content}`).join('\n');
       
-      systemPrompt = `당신은 CCTV 영상 분석 전문가입니다. 사용자와의 대화를 바탕으로 두 가지 분석을 생성해주세요:
+      systemPrompt = `당신은 CCTV 영상 분석 전문가입니다. 사용자와의 대화를 바탕으로 두 가지 상세한 분석을 생성해주세요:
 
-1. 추적된 인물 분석 (Tracked Person Analysis): 영상 속 인물의 행동, 감정, 상황에 대한 분석
-2. 관람자 분석 (Viewer Analysis): 사용자의 답변을 통해 파악한 관람자의 성향, 감정, 사고방식 분석
+1. 추적된 인물 분석 (Tracked Person Analysis): 
+   - 영상 속 인물의 구체적인 행동, 표정, 자세, 의복, 환경 분석
+   - 이 사람이 어떤 성격, 직업, 나이대, 사회적 지위를 가진 사람인지 추론
+   - 현재 상황에서 느끼고 있는 감정과 심리 상태
+   - 일상생활 패턴과 라이프스타일 추측
+
+2. 관람자 분석 (Viewer Analysis):
+   - 사용자의 답변을 통해 파악한 관람자의 성향, 감정, 사고방식
+   - 관람자가 이 영상에 대해 어떤 관점으로 바라보고 있는지
+   - 관람자의 사회적 배경, 가치관, 성격 특성 추론
+   - 관람자가 보여준 공감 능력과 관찰력 수준
 
 대화 내용:
 ${conversationHistory}
 
+사용자의 답변을 반영하여 구체적이고 개인화된 분석을 제공해주세요.
 다음 JSON 형식으로 응답해주세요:
 {
-  "trackedPersonAnalysis": "영상 속 인물에 대한 상세한 분석 (한국어)",
-  "viewerAnalysis": "관람자에 대한 상세한 분석 (한국어)"
+  "trackedPersonAnalysis": "영상 속 인물에 대한 상세하고 구체적인 분석 (한국어, 200-300자)",
+  "viewerAnalysis": "관람자에 대한 상세하고 개인화된 분석 (한국어, 200-300자)"
 }`;
 
       const completion = await openai.chat.completions.create({
@@ -88,8 +98,8 @@ ${conversationHistory}
           { role: "system", content: systemPrompt },
           { role: "user", content: "분석 결과를 생성해주세요." }
         ],
-        max_tokens: 800,
-        temperature: 0.7,
+        max_tokens: 1200,
+        temperature: 0.8,
       });
 
       const analysisText = completion.choices[0]?.message?.content || '';
@@ -106,8 +116,8 @@ ${conversationHistory}
       } catch {
         // JSON 파싱 실패 시 기본 분석 데이터 사용
         const analysisData = {
-          trackedPersonAnalysis: "영상 속 인물은 도시 환경에서 일상적인 활동을 하고 있는 것으로 보입니다. 행동 패턴과 표정을 통해 현재 상황에 대한 감정과 상태를 파악할 수 있습니다.",
-          viewerAnalysis: "관람자는 이 영상에 대해 깊이 있게 관찰하고 있으며, 타인에 대한 공감과 이해를 보여주고 있습니다. 세심한 관찰력과 배려심이 뛰어난 것으로 분석됩니다."
+          trackedPersonAnalysis: "이 사람은 30대 중반의 직장인으로 보이며, 편의점 앞에서 잠시 휴식을 취하고 있습니다. 어깨가 축 늘어져 있는 자세와 한숨을 쉬는 듯한 모습에서 하루의 피로감이 느껴집니다. 깔끔한 정장 차림과 가방을 보면 사무직에 종사하는 것으로 추정되며, 현재 업무 스트레스나 개인적인 고민으로 인한 무기력감을 느끼고 있는 것 같습니다. 도시 생활의 일상적 피로와 고독감이 표정에 드러나 있습니다.",
+          viewerAnalysis: "관람자는 이 사람의 상황에 깊은 공감을 보이며, 도시 생활의 현실적인 어려움을 이해하고 있습니다. 세심한 관찰력으로 인물의 미묘한 감정 변화까지 포착하는 능력이 뛰어나며, 타인의 고통에 대한 민감한 감수성을 가지고 있습니다. 사회적 약자나 힘든 상황에 있는 사람들에 대한 배려심이 깊고, 현대 사회의 개인주의적 경향에 대해 비판적 사고를 하는 것으로 보입니다."
         };
         
         return NextResponse.json({

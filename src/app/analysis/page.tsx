@@ -29,6 +29,7 @@ export default function Analysis() {
     if (storedAnalysis) {
       try {
         const analysisData = JSON.parse(storedAnalysis);
+        console.log('분석 데이터 로드:', analysisData);
         setAnalysisResults(analysisData);
       } catch (error) {
         console.error('분석 데이터 파싱 오류:', error);

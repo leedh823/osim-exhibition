@@ -134,11 +134,11 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                     Tracked Person Analysis
                   </h4>
                   <div className="text-base font-normal leading-relaxed pl-4 mb-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    Based on your observations, this person appears to be taking a break in front of a convenience store. Your detailed descriptions of their behavior and emotional state provide insights into their current situation and psychological state.
+                    {analysisData?.trackedPersonAnalysis || "Based on your observations, this person appears to be taking a break in front of a convenience store. Your detailed descriptions of their behavior and emotional state provide insights into their current situation and psychological state."}
                   </div>
                   <p className="text-sm font-normal mb-2" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>추적된 인물 분석</p>
                   <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    사용자가 관찰한 인물의 행동과 상황에 대한 분석이 여기에 표시됩니다. 사용자의 답변을 바탕으로 인물의 심리 상태와 현재 상황을 해석한 결과가 나타납니다.
+                    {analysisData?.trackedPersonAnalysis || "사용자가 관찰한 인물의 행동과 상황에 대한 분석이 여기에 표시됩니다. 사용자의 답변을 바탕으로 인물의 심리 상태와 현재 상황을 해석한 결과가 나타납니다."}
                   </div>
                 </div>
 
@@ -148,11 +148,11 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                     Viewer Analysis
                   </h4>
                   <div className="text-base font-normal leading-relaxed pl-4 mb-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    Your responses reveal your perspective and emotional reactions to this situation. Your observations and interpretations demonstrate your observational skills and empathy towards the person in the video.
+                    {analysisData?.viewerAnalysis || "Your responses reveal your perspective and emotional reactions to this situation. Your observations and interpretations demonstrate your observational skills and empathy towards the person in the video."}
                   </div>
                   <p className="text-sm font-normal mb-2" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>관람자 분석</p>
                   <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    사용자의 답변을 통해 드러난 관람자의 관점과 감정을 분석한 결과가 여기에 표시됩니다. 사용자가 보여준 관찰력과 해석 능력을 바탕으로 관람자의 성향을 파악한 결과가 나타납니다.
+                    {analysisData?.viewerAnalysis || "사용자의 답변을 통해 드러난 관람자의 관점과 감정을 분석한 결과가 여기에 표시됩니다. 사용자가 보여준 관찰력과 해석 능력을 바탕으로 관람자의 성향을 파악한 결과가 나타납니다."}
                   </div>
                 </div>
               </div>

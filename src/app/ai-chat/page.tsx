@@ -73,6 +73,7 @@ export default function AIChat() {
         
         // 분석 데이터가 있으면 저장
         if (data.analysis) {
+          console.log('분석 데이터 저장:', data.analysis);
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
           // 분석이 완료되면 3초 후 페이지 전환
           setTimeout(() => {

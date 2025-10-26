@@ -31,27 +31,33 @@ export async function POST(request: NextRequest) {
       if (turnCount === 0) {
         // 첫 번째 질문 (고정) - 인물 분석 중심
         response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
+      } else if (turnCount === 4) {
+        // 5번째 질문 (고정) - 종합 질문
+        response = "이 사람이 어떤 사람인 것 같나요?";
       } else {
         // 2-5턴: 사용자 답변에 따른 영상 관련 후속 질문 (얼굴 관련 제외, 중복 방지)
         const previousQuestions = messages
           .filter((msg: ChatMessage) => msg.role === 'assistant')
           .map((msg: ChatMessage) => msg.content);
         
-        systemPrompt = `당신은 CCTV 영상 속 인물을 분석하는 AI입니다. 사용자의 이전 답변을 바탕으로 인물 분석에 필요한 더 깊이 있는 질문을 해주세요. 
+        systemPrompt = `당신은 CCTV 영상 속 인물을 분석하는 AI입니다. 사용자의 이전 답변을 바탕으로 점점 더 깊이 있고 주관적인 답변을 유도하는 질문을 해주세요. 
         
         사용자의 답변: ${messages[messages.length - 1]?.content || ''}
         
         이전에 한 질문들: ${previousQuestions.join(', ')}
+        
+        현재 턴: ${turnCount + 1}번째 질문
         
         다음 조건을 만족하는 질문을 생성해주세요:
         1. 영상 속 인물의 행동, 움직임, 자세, 상황과 관련된 질문만
         2. 얼굴, 표정, 외모, 개인적 특성과 관련된 질문은 절대 하지 마세요
         3. 의복, 직업, 나이대 등 추측성 질문은 하지 마세요
         4. 이전에 한 질문과 중복되지 않는 새로운 질문
-        5. 인물의 현재 상황과 행동에 집중한 질문
-        6. 쉬운 단어와 간단한 문장으로 질문해주세요
-        7. '상호작용', '심리상태', '행동패턴' 등 어려운 단어는 피해주세요
-        8. 한 문장으로 자연스럽게 질문해주세요:`;
+        5. 점점 더 주관적이고 개인적인 생각을 유도하는 질문
+        6. 2-4번째 질문은 딥하고 깊이 있는 질문으로 설정
+        7. 사용자가 서술형으로 길게 답할 수 있도록 유도
+        8. 쉬운 단어와 간단한 문장으로 질문해주세요
+        9. 한 문장으로 자연스럽게 질문해주세요:`;
         
         const completion = await openai.chat.completions.create({
           model: "gpt-4",

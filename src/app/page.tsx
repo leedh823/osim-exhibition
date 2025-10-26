@@ -24,10 +24,6 @@ export default function TrackingExhibition() {
     }
   };
 
-  const handleScreenClick = () => {
-    router.push('/enlarged');
-  };
-
   return (
     <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
       {/* 비디오 프리로딩 (성능 최적화) */}
@@ -41,15 +37,6 @@ export default function TrackingExhibition() {
         onPersonClick={handlePersonClick}
         className="w-full h-full"
       />
-
-      {/* Fallback: AI 탐지가 작동하지 않을 때 화면 클릭 */}
-      <div 
-        className="absolute inset-0 w-full h-full z-5 cursor-pointer"
-        onClick={handleScreenClick}
-        style={{ pointerEvents: 'none' }}
-      >
-      </div>
-
     </div>
   );
 

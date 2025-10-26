@@ -74,6 +74,8 @@ export default function AIChat() {
         // 분석 데이터가 있으면 저장
         if (data.analysis) {
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
+          // 분석이 완료되면 currentTurn을 6으로 설정하여 페이지 전환 트리거
+          setCurrentTurn(6);
         }
       }
     } catch (error) {

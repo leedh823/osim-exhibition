@@ -34,13 +34,13 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const data = imageData.data;
     const boxes: DetectedObject[] = [];
 
-    // #F5DA31 색상 (RGB: 245, 218, 49)
+    // 노랑색 테두리 박스 색상 (RGB: 245, 218, 49)
     const targetR = 245;
     const targetG = 218;
     const targetB = 49;
-    const colorThreshold = 30; // 색상 허용 오차
-    const minBoxSize = 30;
-    const maxBoxSize = 500;
+    const colorThreshold = 50; // 색상 허용 오차 증가
+    const minBoxSize = 20; // 최소 크기 감소
+    const maxBoxSize = 800; // 최대 크기 증가
 
     console.log('노랑색 박스 감지 시작...', { canvasWidth: canvas.width, canvasHeight: canvas.height });
 
@@ -52,16 +52,16 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         const g = data[pixelIndex + 1];
         const b = data[pixelIndex + 2];
 
-        // #F5DA31 색상 감지
+        // 노랑색 테두리 박스 색상 감지
         if (Math.abs(r - targetR) < colorThreshold && 
             Math.abs(g - targetG) < colorThreshold && 
             Math.abs(b - targetB) < colorThreshold) {
           
-          // 박스 크기 측정
+          // 박스 크기 측정 (테두리 전체 감지)
           let boxWidth = 0;
           let boxHeight = 0;
           
-          // 가로 크기 측정
+          // 가로 크기 측정 (테두리 라인 따라)
           for (let dx = x; dx < Math.min(x + maxBoxSize, canvas.width); dx++) {
             const checkIndex = (y * canvas.width + dx) * 4;
             const checkR = data[checkIndex];
@@ -77,7 +77,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             }
           }
           
-          // 세로 크기 측정
+          // 세로 크기 측정 (테두리 라인 따라)
           for (let dy = y; dy < Math.min(y + maxBoxSize, canvas.height); dy++) {
             const checkIndex = (dy * canvas.width + x) * 4;
             const checkR = data[checkIndex];
@@ -106,7 +106,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
               isMoving: false
             };
             boxes.push(box);
-            console.log('노랑색 박스 감지됨:', box);
+            console.log('✅ 노랑색 테두리 박스 감지됨:', box);
           }
         }
       }
@@ -284,22 +284,23 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       y: (event.clientY - rect.top) * scaleY,
     };
 
-    console.log('클릭 위치:', clickPoint);
-    console.log('감지된 노랑색 박스들:', detectedObjects);
-    console.log('박스 개수:', detectedObjects.length);
+    console.log('🖱️ 클릭 위치:', clickPoint);
+    console.log('📦 감지된 노랑색 테두리 박스들:', detectedObjects);
+    console.log('📊 박스 개수:', detectedObjects.length);
 
     if (detectedObjects.length > 0) {
-      // 클릭된 노랑색 박스 찾기
+      // 클릭된 노랑색 테두리 박스 찾기
       const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
 
       if (clickedObject) {
-        console.log('✅ 클릭된 노랑색 박스:', clickedObject);
+        console.log('✅ 클릭된 노랑색 테두리 박스:', clickedObject);
+        console.log('🚀 다음 페이지로 이동합니다!');
         onPersonClick(clickedObject);
       } else {
-        console.log('❌ 클릭된 노랑색 박스 없음 - 페이지 이동하지 않음');
+        console.log('❌ 클릭된 노랑색 테두리 박스 없음 - 박스 내부를 클릭해주세요');
       }
     } else {
-      console.log('❌ 감지된 노랑색 박스가 없어서 클릭할 수 없음');
+      console.log('❌ 감지된 노랑색 테두리 박스가 없어서 클릭할 수 없음');
     }
     // 트래킹 영역이 아닌 곳을 클릭하면 아무것도 하지 않음
   }, [detectedObjects, onPersonClick]);

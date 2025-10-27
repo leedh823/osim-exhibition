@@ -161,7 +161,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       
       // AI 탐지가 활성화된 경우에만 객체 그리기
       if (!disableAIDetection) {
+        console.log('노랑색 박스 그리기 시작, 객체 수:', objects.length);
         realObjectDetector.drawObjects(ctx, objects);
+        console.log('노랑색 박스 그리기 완료');
       }
       
       // 정적 영역 그리기 (시각적 요소 없음)
@@ -243,15 +245,20 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     } else {
       // AI 객체 탐지 사용 시
       console.log('감지된 객체들:', detectedObjects);
+      console.log('객체 수:', detectedObjects.length);
       
-      // 클릭된 객체 찾기
-      const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
+      if (detectedObjects.length > 0) {
+        // 클릭된 객체 찾기
+        const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
 
-      if (clickedObject) {
-        console.log('클릭된 객체:', clickedObject);
-        onPersonClick(clickedObject);
+        if (clickedObject) {
+          console.log('클릭된 객체:', clickedObject);
+          onPersonClick(clickedObject);
+        } else {
+          console.log('클릭된 객체 없음 - 페이지 이동하지 않음');
+        }
       } else {
-        console.log('클릭된 객체 없음 - 페이지 이동하지 않음');
+        console.log('감지된 객체가 없어서 클릭할 수 없음');
       }
     }
   }, [detectedObjects, onPersonClick, usePredefinedAreas, predefinedAreas]);

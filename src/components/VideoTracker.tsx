@@ -9,12 +9,9 @@ interface VideoTrackerProps {
   className?: string;
   selectedPerson?: DetectedObject | null;
   followPerson?: boolean;
-  usePredefinedAreas?: boolean;
-  predefinedAreas?: DetectedObject[];
-  disableAIDetection?: boolean;
 }
 
-const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className, selectedPerson, followPerson = false, usePredefinedAreas = false, predefinedAreas = [], disableAIDetection = false }: VideoTrackerProps) {
+const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className, selectedPerson, followPerson = false }: VideoTrackerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
@@ -22,6 +19,93 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   const [isDetecting, setIsDetecting] = useState(false);
   const [zoomScale, setZoomScale] = useState(1);
   const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
+
+  // 노랑색 박스 감지 함수
+  const detectYellowBoxes = useCallback((video: HTMLVideoElement): DetectedObject[] => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return [];
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    const boxes: DetectedObject[] = [];
+
+    // 노랑색 픽셀 찾기 (RGB: 245, 218, 49)
+    const yellowThreshold = 50;
+    const minBoxSize = 50;
+    const maxBoxSize = 300;
+
+    for (let y = 0; y < canvas.height - minBoxSize; y += 10) {
+      for (let x = 0; x < canvas.width - minBoxSize; x += 10) {
+        const pixelIndex = (y * canvas.width + x) * 4;
+        const r = data[pixelIndex];
+        const g = data[pixelIndex + 1];
+        const b = data[pixelIndex + 2];
+
+        // 노랑색 픽셀 감지
+        if (Math.abs(r - 245) < yellowThreshold && 
+            Math.abs(g - 218) < yellowThreshold && 
+            Math.abs(b - 49) < yellowThreshold) {
+          
+          // 박스 크기 측정
+          let boxWidth = 0;
+          let boxHeight = 0;
+          
+          // 가로 크기 측정
+          for (let dx = x; dx < Math.min(x + maxBoxSize, canvas.width); dx++) {
+            const checkIndex = (y * canvas.width + dx) * 4;
+            const checkR = data[checkIndex];
+            const checkG = data[checkIndex + 1];
+            const checkB = data[checkIndex + 2];
+            
+            if (Math.abs(checkR - 245) < yellowThreshold && 
+                Math.abs(checkG - 218) < yellowThreshold && 
+                Math.abs(checkB - 49) < yellowThreshold) {
+              boxWidth = dx - x + 1;
+            } else {
+              break;
+            }
+          }
+          
+          // 세로 크기 측정
+          for (let dy = y; dy < Math.min(y + maxBoxSize, canvas.height); dy++) {
+            const checkIndex = (dy * canvas.width + x) * 4;
+            const checkR = data[checkIndex];
+            const checkG = data[checkIndex + 1];
+            const checkB = data[checkIndex + 2];
+            
+            if (Math.abs(checkR - 245) < yellowThreshold && 
+                Math.abs(checkG - 218) < yellowThreshold && 
+                Math.abs(checkB - 49) < yellowThreshold) {
+              boxHeight = dy - y + 1;
+            } else {
+              break;
+            }
+          }
+
+          // 최소 크기 이상인 경우에만 박스로 인식
+          if (boxWidth >= minBoxSize && boxHeight >= minBoxSize) {
+            boxes.push({
+              id: `yellow-box-${boxes.length}`,
+              x: x,
+              y: y,
+              width: boxWidth,
+              height: boxHeight,
+              label: 'person',
+              confidence: 0.9,
+              isMoving: false
+            });
+          }
+        }
+      }
+    }
+
+    return boxes;
+  }, []);
 
   // 실제 객체 감지 초기화
   useEffect(() => {
@@ -83,14 +167,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
   }, [followPerson, selectedPerson, detectedObjects]);
 
-  // 정적 영역 그리기 (시각적 요소 제거 - 영상에 이미 그려져 있음)
-  const drawPredefinedAreas = useCallback(() => {
-    // 영상에 이미 노랑색 테두리가 그려져 있으므로 추가로 그리지 않음
-    // 클릭 감지만을 위해 사용
-    return;
-  }, []);
 
-  // 실제 객체 감지 및 그리기 (성능 최적화)
+  // 노랑색 박스 감지 및 그리기
   const detectAndDrawObjects = useCallback(async () => {
     if (!videoRef.current || !canvasRef.current) {
       return;
@@ -109,33 +187,16 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     }
 
     try {
-      let objects: DetectedObject[] = [];
+      // 노랑색 박스 감지
+      console.log('노랑색 박스 감지 시작...');
+      const objects = detectYellowBoxes(video);
+      console.log('노랑색 박스 감지 결과:', objects);
       
-      // 디버깅 로그 추가
-      console.log('disableAIDetection:', disableAIDetection);
-      console.log('AI 탐지 실행 여부:', !disableAIDetection);
-      console.log('비디오 상태:', {
-        videoWidth: video.videoWidth,
-        videoHeight: video.videoHeight,
-        readyState: video.readyState,
-        paused: video.paused
-      });
-      
-      // AI 객체 탐지 비활성화 여부 확인
-      if (!disableAIDetection) {
-        console.log('AI 객체 탐지 시작...');
-        // 실제 객체 감지
-        objects = await realObjectDetector.detectObjects(video);
-        console.log('AI 객체 탐지 결과:', objects);
-        
-        // 객체가 변경된 경우에만 상태 업데이트
-        if (objects.length !== detectedObjects.length || 
-            objects.some((obj, index) => !detectedObjects[index] || obj.id !== detectedObjects[index].id)) {
-          console.log('객체 상태 업데이트:', objects);
-          setDetectedObjects(objects);
-        }
-      } else {
-        console.log('AI 객체 탐지 비활성화됨');
+      // 객체가 변경된 경우에만 상태 업데이트
+      if (objects.length !== detectedObjects.length || 
+          objects.some((obj, index) => !detectedObjects[index] || obj.id !== detectedObjects[index].id)) {
+        console.log('객체 상태 업데이트:', objects);
+        setDetectedObjects(objects);
       }
       
       // 줌 업데이트
@@ -159,25 +220,17 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       // 비디오 그리기
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // AI 탐지가 활성화된 경우에만 객체 그리기
-      if (!disableAIDetection) {
-        console.log('노랑색 박스 그리기 시작, 객체 수:', objects.length);
-        realObjectDetector.drawObjects(ctx, objects);
-        console.log('노랑색 박스 그리기 완료');
-      }
-      
-      // 정적 영역 그리기 (시각적 요소 없음)
-      drawPredefinedAreas();
+      // 감지된 노랑색 박스 그리기
+      console.log('노랑색 박스 그리기 시작, 객체 수:', objects.length);
+      realObjectDetector.drawObjects(ctx, objects);
+      console.log('노랑색 박스 그리기 완료');
       
       ctx.restore();
 
     } catch (error) {
-      // 성능 최적화: 에러 로깅 최소화
-      if (Math.random() < 0.01) { // 1% 확률로만 로깅
-        console.error('객체 감지 중 오류:', error);
-      }
+      console.error('노랑색 박스 감지 중 오류:', error);
     }
-  }, [detectedObjects, updatePersonZoom, zoomScale, zoomCenter.x, zoomCenter.y, drawPredefinedAreas, disableAIDetection]);
+  }, [detectedObjects, updatePersonZoom, zoomScale, zoomCenter.x, zoomCenter.y, detectYellowBoxes]);
 
   // 감지 루프 시작/중지 (성능 최적화)
   useEffect(() => {
@@ -206,7 +259,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     setIsDetecting(true);
   }, []);
 
-  // 캔버스 클릭 이벤트 처리 (성능 최적화)
+  // 캔버스 클릭 이벤트 처리
   const handleCanvasClick = useCallback((event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) {
       return;
@@ -223,45 +276,23 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
 
     console.log('클릭 위치:', clickPoint);
+    console.log('감지된 노랑색 박스들:', detectedObjects);
+    console.log('박스 수:', detectedObjects.length);
+    
+    if (detectedObjects.length > 0) {
+      // 클릭된 노랑색 박스 찾기
+      const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
 
-    // 정적 영역 사용 시
-    if (usePredefinedAreas) {
-      console.log('정적 영역들:', predefinedAreas);
-      
-      // 미리 정의된 영역 내 클릭 확인
-      const clickedArea = predefinedAreas.find(area => 
-        clickPoint.x >= area.x && 
-        clickPoint.x <= area.x + area.width &&
-        clickPoint.y >= area.y && 
-        clickPoint.y <= area.y + area.height
-      );
-
-      if (clickedArea) {
-        console.log('클릭된 정적 영역:', clickedArea);
-        onPersonClick(clickedArea);
+      if (clickedObject) {
+        console.log('클릭된 노랑색 박스:', clickedObject);
+        onPersonClick(clickedObject);
       } else {
-        console.log('클릭된 정적 영역 없음 - 페이지 이동하지 않음');
+        console.log('클릭된 노랑색 박스 없음 - 페이지 이동하지 않음');
       }
     } else {
-      // AI 객체 탐지 사용 시
-      console.log('감지된 객체들:', detectedObjects);
-      console.log('객체 수:', detectedObjects.length);
-      
-      if (detectedObjects.length > 0) {
-        // 클릭된 객체 찾기
-        const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
-
-        if (clickedObject) {
-          console.log('클릭된 객체:', clickedObject);
-          onPersonClick(clickedObject);
-        } else {
-          console.log('클릭된 객체 없음 - 페이지 이동하지 않음');
-        }
-      } else {
-        console.log('감지된 객체가 없어서 클릭할 수 없음');
-      }
+      console.log('감지된 노랑색 박스가 없어서 클릭할 수 없음');
     }
-  }, [detectedObjects, onPersonClick, usePredefinedAreas, predefinedAreas]);
+  }, [detectedObjects, onPersonClick]);
 
   return (
     <div className={`relative ${className}`}>

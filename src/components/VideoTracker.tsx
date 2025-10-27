@@ -25,12 +25,14 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   useEffect(() => {
     const initializeRealObjectDetection = async () => {
       try {
-        console.log('AI 객체 탐지 모델 초기화 시작...');
+        console.log('🚀 AI 객체 탐지 모델 초기화 시작...');
         await realObjectDetector.initialize();
-        console.log('AI 객체 탐지 모델 초기화 완료');
+        console.log('✅ AI 객체 탐지 모델 초기화 완료');
         setIsDetecting(true);
+        console.log('🎯 객체 탐지 시작됨');
       } catch (error) {
-        console.error('실제 객체 감지 초기화 실패:', error);
+        console.error('❌ 실제 객체 감지 초기화 실패:', error);
+        console.log('⚠️ AI 모델 없이 진행합니다');
         setIsDetecting(true);
       }
     };
@@ -102,15 +104,23 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     try {
       // 실제 객체 감지 (사람을 노랑색 박스로 인식)
-      console.log('AI 객체 탐지 시작...');
+      console.log('🔍 AI 객체 탐지 시작...', { 
+        videoWidth: video.videoWidth, 
+        videoHeight: video.videoHeight,
+        isDetecting 
+      });
+      
       const objects = await realObjectDetector.detectObjects(video);
-      console.log('AI 객체 탐지 결과 (사람을 노랑색 박스로 인식):', objects);
+      console.log('📊 AI 객체 탐지 결과 (사람을 노랑색 박스로 인식):', objects);
+      console.log('📈 감지된 객체 개수:', objects.length);
       
       // 객체가 변경된 경우에만 상태 업데이트
       if (objects.length !== detectedObjects.length || 
           objects.some((obj, index) => !detectedObjects[index] || obj.id !== detectedObjects[index].id)) {
-        console.log('객체 상태 업데이트:', objects);
+        console.log('🔄 객체 상태 업데이트:', objects);
         setDetectedObjects(objects);
+      } else {
+        console.log('⏸️ 객체 상태 변경 없음');
       }
       
       // 줌 업데이트
@@ -148,13 +158,17 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
   // 감지 루프 시작/중지 (성능 최적화)
   useEffect(() => {
+    console.log('🔄 감지 루프 상태:', { isDetecting });
+    
     if (isDetecting) {
+      console.log('▶️ 감지 루프 시작');
       const startDetection = () => {
         detectAndDrawObjects();
         animationRef.current = requestAnimationFrame(startDetection);
       };
       startDetection();
     } else {
+      console.log('⏹️ 감지 루프 중지');
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -169,7 +183,13 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
   // 비디오 로드 완료 시 감지 시작
   const handleVideoLoaded = useCallback(() => {
-    console.log('비디오 로드 완료, 감지 시작');
+    console.log('🎬 비디오 로드 완료, 감지 시작');
+    console.log('📺 비디오 정보:', {
+      videoWidth: videoRef.current?.videoWidth,
+      videoHeight: videoRef.current?.videoHeight,
+      duration: videoRef.current?.duration,
+      readyState: videoRef.current?.readyState
+    });
     setIsDetecting(true);
   }, []);
 

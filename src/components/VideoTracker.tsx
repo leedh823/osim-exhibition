@@ -7,14 +7,17 @@ interface VideoTrackerProps {
   videoSrc: string;
   onPersonClick: (person: DetectedObject) => void;
   className?: string;
+  selectedPerson?: DetectedObject | null;
+  followPerson?: boolean;
 }
 
-const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className }: VideoTrackerProps) {
+const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className, selectedPerson, followPerson = false }: VideoTrackerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
   const [isDetecting, setIsDetecting] = useState(false);
+  const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
 
   // 실제 객체 감지 초기화
   useEffect(() => {
@@ -39,6 +42,32 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       // realObjectDetector.dispose();
     };
   }, []);
+
+  // 선택된 사람을 따라가는 카메라 무빙
+  const updateCameraFollow = useCallback(() => {
+    if (!followPerson || !selectedPerson || !videoRef.current || !canvasRef.current) {
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+
+    // 선택된 사람의 현재 위치 계산
+    const personCenterX = selectedPerson.x + selectedPerson.width / 2;
+    const personCenterY = selectedPerson.y + selectedPerson.height / 2;
+
+    // 화면 중앙으로 이동시키기 위한 오프셋 계산
+    const targetOffsetX = (canvasWidth / 2) - personCenterX;
+    const targetOffsetY = (canvasHeight / 2) - personCenterY;
+
+    // 부드러운 카메라 무빙을 위한 보간
+    setCameraOffset(prev => ({
+      x: prev.x + (targetOffsetX - prev.x) * 0.1,
+      y: prev.y + (targetOffsetY - prev.y) * 0.1
+    }));
+
+  }, [followPerson, selectedPerson]);
 
   // 실제 객체 감지 및 그리기 (성능 최적화)
   const detectAndDrawObjects = useCallback(async () => {
@@ -68,12 +97,18 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         setDetectedObjects(objects);
       }
       
-      // 캔버스 클리어 및 비디오 그리기
+      // 카메라 무빙 업데이트
+      updateCameraFollow();
+      
+      // 캔버스 클리어 및 비디오 그리기 (카메라 오프셋 적용)
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(cameraOffset.x, cameraOffset.y);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // 감지된 객체 그리기
+      // 감지된 객체 그리기 (카메라 오프셋 적용)
       realObjectDetector.drawObjects(ctx, objects);
+      ctx.restore();
 
     } catch (error) {
       // 성능 최적화: 에러 로깅 최소화
@@ -81,7 +116,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         console.error('객체 감지 중 오류:', error);
       }
     }
-  }, [detectedObjects]);
+  }, [detectedObjects, updateCameraFollow, cameraOffset.x, cameraOffset.y]);
 
   // 감지 루프 시작/중지 (성능 최적화)
   useEffect(() => {

@@ -17,15 +17,7 @@ export default function EnlargedVideo() {
   const [currentTurn, setCurrentTurn] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<{
-    id: string;
-    label: string;
-    x: number;
-    y: number;
-    confidence: number;
-    isMoving: boolean;
-    speed?: number;
-  } | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<DetectedObject | null>(null);
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -172,6 +164,8 @@ export default function EnlargedVideo() {
         videoSrc="/2.mp4"
         onPersonClick={handlePersonClick}
         className="w-full h-full"
+        selectedPerson={selectedPerson}
+        followPerson={showChat}
       />
       
       

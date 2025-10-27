@@ -17,7 +17,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   const animationRef = useRef<number | undefined>(undefined);
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
   const [isDetecting, setIsDetecting] = useState(false);
-  const [cameraOffset, setCameraOffset] = useState({ x: 0, y: 0 });
+  const [zoomScale, setZoomScale] = useState(1);
+  const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
 
   // 실제 객체 감지 초기화
   useEffect(() => {
@@ -43,28 +44,33 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
   }, []);
 
-  // 선택된 사람을 따라가는 카메라 무빙
-  const updateCameraFollow = useCallback(() => {
+  // 선택된 사람을 줌으로 확대
+  const updatePersonZoom = useCallback(() => {
     if (!followPerson || !selectedPerson || !videoRef.current || !canvasRef.current) {
+      // 줌 해제
+      setZoomScale(1);
+      setZoomCenter({ x: 0, y: 0 });
       return;
     }
 
     const canvas = canvasRef.current;
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvas.height;
 
-    // 선택된 사람의 현재 위치 계산
+    // 선택된 사람의 중심점 계산
     const personCenterX = selectedPerson.x + selectedPerson.width / 2;
     const personCenterY = selectedPerson.y + selectedPerson.height / 2;
 
-    // 화면 중앙으로 이동시키기 위한 오프셋 계산
-    const targetOffsetX = (canvasWidth / 2) - personCenterX;
-    const targetOffsetY = (canvasHeight / 2) - personCenterY;
+    // 줌 스케일 설정 (2배 확대)
+    const targetZoomScale = 2;
+    
+    // 줌 중심점을 선택된 사람의 중심으로 설정
+    const targetZoomCenterX = personCenterX;
+    const targetZoomCenterY = personCenterY;
 
-    // 부드러운 카메라 무빙을 위한 보간
-    setCameraOffset(prev => ({
-      x: prev.x + (targetOffsetX - prev.x) * 0.1,
-      y: prev.y + (targetOffsetY - prev.y) * 0.1
+    // 부드러운 줌 전환을 위한 보간
+    setZoomScale(prev => prev + (targetZoomScale - prev) * 0.1);
+    setZoomCenter(prev => ({
+      x: prev.x + (targetZoomCenterX - prev.x) * 0.1,
+      y: prev.y + (targetZoomCenterY - prev.y) * 0.1
     }));
 
   }, [followPerson, selectedPerson]);
@@ -97,17 +103,30 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         setDetectedObjects(objects);
       }
       
-      // 카메라 무빙 업데이트
-      updateCameraFollow();
+      // 줌 업데이트
+      updatePersonZoom();
       
-      // 캔버스 클리어 및 비디오 그리기 (카메라 오프셋 적용)
+      // 캔버스 클리어
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // 줌 적용
       ctx.save();
-      ctx.translate(cameraOffset.x, cameraOffset.y);
+      
+      // 줌 중심점으로 이동
+      ctx.translate(zoomCenter.x, zoomCenter.y);
+      
+      // 줌 스케일 적용
+      ctx.scale(zoomScale, zoomScale);
+      
+      // 줌 중심점에서 원점으로 이동하여 비디오 그리기
+      ctx.translate(-zoomCenter.x, -zoomCenter.y);
+      
+      // 비디오 그리기
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // 감지된 객체 그리기 (카메라 오프셋 적용)
+      // 감지된 객체 그리기
       realObjectDetector.drawObjects(ctx, objects);
+      
       ctx.restore();
 
     } catch (error) {
@@ -116,7 +135,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         console.error('객체 감지 중 오류:', error);
       }
     }
-  }, [detectedObjects, updateCameraFollow, cameraOffset.x, cameraOffset.y]);
+  }, [detectedObjects, updatePersonZoom, zoomScale, zoomCenter.x, zoomCenter.y]);
 
   // 감지 루프 시작/중지 (성능 최적화)
   useEffect(() => {

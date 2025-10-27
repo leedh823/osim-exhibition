@@ -27,7 +27,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   useEffect(() => {
     const initializeRealObjectDetection = async () => {
       try {
+        console.log('AI 객체 탐지 모델 초기화 시작...');
         await realObjectDetector.initialize();
+        console.log('AI 객체 탐지 모델 초기화 완료');
         setIsDetecting(true);
       } catch (error) {
         console.error('실제 객체 감지 초기화 실패:', error);
@@ -109,16 +111,31 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     try {
       let objects: DetectedObject[] = [];
       
+      // 디버깅 로그 추가
+      console.log('disableAIDetection:', disableAIDetection);
+      console.log('AI 탐지 실행 여부:', !disableAIDetection);
+      console.log('비디오 상태:', {
+        videoWidth: video.videoWidth,
+        videoHeight: video.videoHeight,
+        readyState: video.readyState,
+        paused: video.paused
+      });
+      
       // AI 객체 탐지 비활성화 여부 확인
       if (!disableAIDetection) {
+        console.log('AI 객체 탐지 시작...');
         // 실제 객체 감지
         objects = await realObjectDetector.detectObjects(video);
+        console.log('AI 객체 탐지 결과:', objects);
         
         // 객체가 변경된 경우에만 상태 업데이트
         if (objects.length !== detectedObjects.length || 
             objects.some((obj, index) => !detectedObjects[index] || obj.id !== detectedObjects[index].id)) {
+          console.log('객체 상태 업데이트:', objects);
           setDetectedObjects(objects);
         }
+      } else {
+        console.log('AI 객체 탐지 비활성화됨');
       }
       
       // 줌 업데이트
@@ -183,6 +200,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
   // 비디오 로드 완료 시 감지 시작
   const handleVideoLoaded = useCallback(() => {
+    console.log('비디오 로드 완료, 감지 시작');
     setIsDetecting(true);
   }, []);
 

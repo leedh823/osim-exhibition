@@ -11,9 +11,10 @@ interface VideoTrackerProps {
   followPerson?: boolean;
   usePredefinedAreas?: boolean;
   predefinedAreas?: DetectedObject[];
+  disableAIDetection?: boolean;
 }
 
-const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className, selectedPerson, followPerson = false, usePredefinedAreas = false, predefinedAreas = [] }: VideoTrackerProps) {
+const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className, selectedPerson, followPerson = false, usePredefinedAreas = false, predefinedAreas = [], disableAIDetection = false }: VideoTrackerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
@@ -80,22 +81,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
   }, [followPerson, selectedPerson, detectedObjects]);
 
-  // 정적 영역 그리기
-  const drawPredefinedAreas = useCallback((ctx: CanvasRenderingContext2D) => {
-    if (!usePredefinedAreas || predefinedAreas.length === 0) return;
-
-    predefinedAreas.forEach(area => {
-      // 노랑색 박스 그리기
-      ctx.strokeStyle = '#FFD700';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(area.x, area.y, area.width, area.height);
-      
-      // 라벨 그리기
-      ctx.fillStyle = '#FFD700';
-      ctx.font = '16px Arial';
-      ctx.fillText(area.label, area.x, area.y - 5);
-    });
-  }, [usePredefinedAreas, predefinedAreas]);
+  // 정적 영역 그리기 (시각적 요소 제거 - 영상에 이미 그려져 있음)
+  const drawPredefinedAreas = useCallback(() => {
+    // 영상에 이미 노랑색 테두리가 그려져 있으므로 추가로 그리지 않음
+    // 클릭 감지만을 위해 사용
+    return;
+  }, []);
 
   // 실제 객체 감지 및 그리기 (성능 최적화)
   const detectAndDrawObjects = useCallback(async () => {
@@ -116,13 +107,18 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     }
 
     try {
-      // 실제 객체 감지
-      const objects = await realObjectDetector.detectObjects(video);
+      let objects: DetectedObject[] = [];
       
-      // 객체가 변경된 경우에만 상태 업데이트
-      if (objects.length !== detectedObjects.length || 
-          objects.some((obj, index) => !detectedObjects[index] || obj.id !== detectedObjects[index].id)) {
-        setDetectedObjects(objects);
+      // AI 객체 탐지 비활성화 여부 확인
+      if (!disableAIDetection) {
+        // 실제 객체 감지
+        objects = await realObjectDetector.detectObjects(video);
+        
+        // 객체가 변경된 경우에만 상태 업데이트
+        if (objects.length !== detectedObjects.length || 
+            objects.some((obj, index) => !detectedObjects[index] || obj.id !== detectedObjects[index].id)) {
+          setDetectedObjects(objects);
+        }
       }
       
       // 줌 업데이트
@@ -146,11 +142,13 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       // 비디오 그리기
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      // 감지된 객체 그리기
-      realObjectDetector.drawObjects(ctx, objects);
+      // AI 탐지가 활성화된 경우에만 객체 그리기
+      if (!disableAIDetection) {
+        realObjectDetector.drawObjects(ctx, objects);
+      }
       
-      // 정적 영역 그리기
-      drawPredefinedAreas(ctx);
+      // 정적 영역 그리기 (시각적 요소 없음)
+      drawPredefinedAreas();
       
       ctx.restore();
 
@@ -160,7 +158,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         console.error('객체 감지 중 오류:', error);
       }
     }
-  }, [detectedObjects, updatePersonZoom, zoomScale, zoomCenter.x, zoomCenter.y, drawPredefinedAreas]);
+  }, [detectedObjects, updatePersonZoom, zoomScale, zoomCenter.x, zoomCenter.y, drawPredefinedAreas, disableAIDetection]);
 
   // 감지 루프 시작/중지 (성능 최적화)
   useEffect(() => {

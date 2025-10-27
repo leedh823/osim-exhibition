@@ -62,6 +62,7 @@ export default function TrackingExhibition() {
         className="w-full h-full"
         usePredefinedAreas={true}
         predefinedAreas={predefinedAreas}
+        disableAIDetection={true}
       />
     </div>
   );

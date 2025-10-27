@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import VideoTracker from '@/components/VideoTracker';
+import { DetectedObject } from '@/utils/realObjectDetection';
 
 interface ChatMessage {
   role: string;
@@ -10,7 +12,6 @@ interface ChatMessage {
 
 export default function EnlargedVideo() {
   const router = useRouter();
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [showChat, setShowChat] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [currentTurn, setCurrentTurn] = useState(0);
@@ -25,50 +26,6 @@ export default function EnlargedVideo() {
     isMoving: boolean;
     speed?: number;
   } | null>(null);
-
-  // 2번 영상 재생 (화면 로딩 완료 후에만 재생, 끝나면 다시 재생)
-  useEffect(() => {
-    if (videoRef.current) {
-      const video = videoRef.current;
-      
-      const handleCanPlayThrough = () => {
-        console.log('2번 영상 로딩 완료 - 재생 시작');
-        video.play().catch(console.error);
-      };
-      
-      const handleEnded = () => {
-        console.log('2번 영상 재생 완료 - 다시 재생');
-        video.currentTime = 0;
-        video.play().catch(console.error);
-      };
-      
-      const handlePlay = () => {
-        console.log('2번 영상 재생 중...');
-      };
-      
-      const handleLoadStart = () => {
-        console.log('2번 영상 로딩 시작...');
-      };
-      
-      const handleLoadedData = () => {
-        console.log('2번 영상 데이터 로딩 완료');
-      };
-      
-      video.addEventListener('loadstart', handleLoadStart);
-      video.addEventListener('loadeddata', handleLoadedData);
-      video.addEventListener('canplaythrough', handleCanPlayThrough);
-      video.addEventListener('ended', handleEnded);
-      video.addEventListener('play', handlePlay);
-      
-      return () => {
-        video.removeEventListener('loadstart', handleLoadStart);
-        video.removeEventListener('loadeddata', handleLoadedData);
-        video.removeEventListener('canplaythrough', handleCanPlayThrough);
-        video.removeEventListener('ended', handleEnded);
-        video.removeEventListener('play', handlePlay);
-      };
-    }
-  }, []);
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -200,31 +157,28 @@ export default function EnlargedVideo() {
     }
   };
 
-  const handleVideoClick = () => {
-    console.log('2번 영상 클릭됨! 채팅 오버레이 표시');
+  // 트래킹 영역 클릭 시 AI 채팅 시작
+  const handlePersonClick = (person: DetectedObject) => {
+    console.log('트래킹 영역 클릭됨! AI 채팅 시작');
+    setSelectedPerson(person);
     setShowChat(true);
   };
 
+
   return (
     <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
-      {/* 영상 */}
-      <video 
-        ref={videoRef}
-        className="w-full h-full object-cover cursor-pointer"
-        muted
-        playsInline
-        controls={false}
-        onClick={handleVideoClick}
-        onError={(e) => console.log('2.mp4 로딩 에러:', e)}
-      >
-        <source src="/2.mp4" type="video/mp4" />
-      </video>
+      {/* AI 객체 탐지 비디오 트래커 */}
+      <VideoTracker
+        videoSrc="/2.mp4"
+        onPersonClick={handlePersonClick}
+        className="w-full h-full"
+      />
       
       
       {/* 클릭 안내 */}
       {!showChat && (
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-mono text-lg animate-pulse z-10">
-          CLICK TO START AI CHAT
+          CLICK YELLOW AREA TO START AI CHAT
         </div>
       )}
 

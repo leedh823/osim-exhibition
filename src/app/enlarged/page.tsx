@@ -165,7 +165,7 @@ export default function EnlargedVideo() {
         onPersonClick={handlePersonClick}
         className="w-full h-full"
         selectedPerson={selectedPerson}
-        followPerson={showChat}
+        followPerson={false}
       />
       
       

@@ -17,8 +17,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   const animationRef = useRef<number | undefined>(undefined);
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
   const [isDetecting, setIsDetecting] = useState(false);
-  const [zoomScale, setZoomScale] = useState(1);
-  const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
+  // 줌 기능 제거 (2번 화면에서 불필요)
+  // const [zoomScale, setZoomScale] = useState(1);
+  // const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
 
   // 2개의 노랑색 박스 감지 함수
   const detectYellowBoxes = useCallback((video: HTMLVideoElement): DetectedObject[] => {
@@ -153,39 +154,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
   }, []);
 
-  // 선택된 사람을 줌으로 확대 (실시간 트래킹)
-  const updatePersonZoom = useCallback(() => {
-    if (!followPerson || !selectedPerson || !videoRef.current || !canvasRef.current) {
-      // 줌 해제
-      setZoomScale(1);
-      setZoomCenter({ x: 0, y: 0 });
-      return;
-    }
-
-    // 현재 감지된 객체들에서 선택된 사람 찾기 (실시간 트래킹)
-    const currentPerson = detectedObjects.find(obj => obj.id === selectedPerson.id);
-    
-    if (currentPerson) {
-      // 실시간 위치로 줌 중심점 업데이트
-      const personCenterX = currentPerson.x + currentPerson.width / 2;
-      const personCenterY = currentPerson.y + currentPerson.height / 2;
-
-      // 줌 스케일 설정 (2배 확대)
-      const targetZoomScale = 2;
-      
-      // 부드러운 줌 전환을 위한 보간
-      setZoomScale(prev => prev + (targetZoomScale - prev) * 0.1);
-      setZoomCenter(prev => ({
-        x: prev.x + (personCenterX - prev.x) * 0.1,
-        y: prev.y + (personCenterY - prev.y) * 0.1
-      }));
-    } else {
-      // 선택된 사람이 감지되지 않으면 줌 해제
-      setZoomScale(1);
-      setZoomCenter({ x: 0, y: 0 });
-    }
-
-  }, [followPerson, selectedPerson, detectedObjects]);
+  // 줌 기능 제거 (2번 화면에서 불필요)
+  // const updatePersonZoom = useCallback(() => {
+  //   // 줌 관련 로직 제거
+  // }, [followPerson, selectedPerson, detectedObjects]);
 
 
   // 실제 객체 감지 및 그리기 (성능 최적화)
@@ -227,25 +199,16 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         console.log('⏸️ 객체 상태 변경 없음');
       }
       
-      // 줌 업데이트
-      updatePersonZoom();
+      // 줌 기능 제거 (2번 화면에서 불필요)
+      // updatePersonZoom();
       
       // 캔버스 클리어
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // 줌 적용
+      // 줌 기능 제거 - 일반 비디오 그리기
       ctx.save();
       
-      // 줌 중심점으로 이동
-      ctx.translate(zoomCenter.x, zoomCenter.y);
-      
-      // 줌 스케일 적용
-      ctx.scale(zoomScale, zoomScale);
-      
-      // 줌 중심점에서 원점으로 이동하여 비디오 그리기
-      ctx.translate(-zoomCenter.x, -zoomCenter.y);
-      
-      // 비디오 그리기
+      // 비디오 그리기 (줌 없이)
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
       // 감지된 노랑색 박스 그리기
@@ -258,7 +221,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     } catch (error) {
       console.error('객체 감지 중 오류:', error);
     }
-  }, [detectedObjects, updatePersonZoom, zoomScale, zoomCenter.x, zoomCenter.y, detectYellowBoxes]);
+  }, [detectedObjects, detectYellowBoxes]);
 
   // 감지 루프 시작/중지 (성능 최적화)
   useEffect(() => {

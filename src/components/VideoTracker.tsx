@@ -38,33 +38,39 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const targetR = 245;
     const targetG = 218;
     const targetB = 49;
-    const colorThreshold = 50;
-    const minBoxSize = 50; // 최소 박스 크기
+    const colorThreshold = 80; // 색상 허용 오차 증가 (50 → 80)
+    const minBoxSize = 30; // 최소 박스 크기 감소 (50 → 30)
 
     console.log('🔍 2개의 노랑색 박스 감지 시작...', { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height 
     });
 
-    // 노랑색 픽셀 찾기 (더 정확한 스캔)
-    for (let y = 0; y < canvas.height - minBoxSize; y += 5) {
-      for (let x = 0; x < canvas.width - minBoxSize; x += 5) {
+    // 노랑색 픽셀 찾기 (더 정밀한 스캔)
+    for (let y = 0; y < canvas.height - minBoxSize; y += 2) {
+      for (let x = 0; x < canvas.width - minBoxSize; x += 2) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
         const g = data[pixelIndex + 1];
         const b = data[pixelIndex + 2];
 
         // 노랑색 감지
-        if (Math.abs(r - targetR) < colorThreshold && 
-            Math.abs(g - targetG) < colorThreshold && 
-            Math.abs(b - targetB) < colorThreshold) {
+        const rDiff = Math.abs(r - targetR);
+        const gDiff = Math.abs(g - targetG);
+        const bDiff = Math.abs(b - targetB);
+        
+        if (rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold) {
+          // 디버깅: 노랑색 픽셀 발견 시 로그
+          if (boxes.length < 2) { // 처음 몇 개만 로그
+            console.log('🟡 노랑색 픽셀 발견:', { x, y, r, g, b, rDiff, gDiff, bDiff });
+          }
           
           // 노랑색 박스 크기 측정
           let boxWidth = 0;
           let boxHeight = 0;
           
-          // 가로 크기 측정
-          for (let dx = x; dx < Math.min(x + 500, canvas.width); dx++) {
+          // 가로 크기 측정 (범위 확대)
+          for (let dx = x; dx < Math.min(x + 800, canvas.width); dx++) {
             const checkIndex = (y * canvas.width + dx) * 4;
             const checkR = data[checkIndex];
             const checkG = data[checkIndex + 1];
@@ -79,8 +85,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             }
           }
           
-          // 세로 크기 측정
-          for (let dy = y; dy < Math.min(y + 500, canvas.height); dy++) {
+          // 세로 크기 측정 (범위 확대)
+          for (let dy = y; dy < Math.min(y + 800, canvas.height); dy++) {
             const checkIndex = (dy * canvas.width + x) * 4;
             const checkR = data[checkIndex];
             const checkG = data[checkIndex + 1];
@@ -97,6 +103,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
           // 박스 크기가 충분하고, 기존 박스와 겹치지 않으면 추가
           if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
+            console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
             const newBox = {
               id: `yellow-box-${boxes.length + 1}`,
               x: x,
@@ -108,17 +115,20 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
               isMoving: true
             };
 
-            // 기존 박스와 겹치는지 확인
-            const isOverlapping = boxes.some(existingBox => 
-              !(newBox.x > existingBox.x + existingBox.width || 
-                newBox.x + newBox.width < existingBox.x ||
-                newBox.y > existingBox.y + existingBox.height || 
-                newBox.y + newBox.height < existingBox.y)
-            );
+            // 기존 박스와 겹치는지 확인 (완화된 조건)
+            const isOverlapping = boxes.some(existingBox => {
+              const overlapX = !(newBox.x > existingBox.x + existingBox.width || 
+                                newBox.x + newBox.width < existingBox.x);
+              const overlapY = !(newBox.y > existingBox.y + existingBox.height || 
+                                newBox.y + newBox.height < existingBox.y);
+              return overlapX && overlapY;
+            });
 
             if (!isOverlapping) {
               boxes.push(newBox);
               console.log(`✅ 노랑색 박스 ${boxes.length} 감지됨:`, newBox);
+            } else {
+              console.log('⚠️ 박스 겹침으로 인해 제외:', newBox);
             }
           }
         }

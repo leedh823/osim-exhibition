@@ -9,9 +9,11 @@ interface VideoTrackerProps {
   className?: string;
   selectedPerson?: DetectedObject | null;
   followPerson?: boolean;
+  usePredefinedAreas?: boolean;
+  predefinedAreas?: DetectedObject[];
 }
 
-const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className, selectedPerson, followPerson = false }: VideoTrackerProps) {
+const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className, selectedPerson, followPerson = false, usePredefinedAreas = false, predefinedAreas = [] }: VideoTrackerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
@@ -44,7 +46,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
   }, []);
 
-  // 선택된 사람을 줌으로 확대
+  // 선택된 사람을 줌으로 확대 (실시간 트래킹)
   const updatePersonZoom = useCallback(() => {
     if (!followPerson || !selectedPerson || !videoRef.current || !canvasRef.current) {
       // 줌 해제
@@ -53,27 +55,47 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       return;
     }
 
-    const canvas = canvasRef.current;
-
-    // 선택된 사람의 중심점 계산
-    const personCenterX = selectedPerson.x + selectedPerson.width / 2;
-    const personCenterY = selectedPerson.y + selectedPerson.height / 2;
-
-    // 줌 스케일 설정 (2배 확대)
-    const targetZoomScale = 2;
+    // 현재 감지된 객체들에서 선택된 사람 찾기 (실시간 트래킹)
+    const currentPerson = detectedObjects.find(obj => obj.id === selectedPerson.id);
     
-    // 줌 중심점을 선택된 사람의 중심으로 설정
-    const targetZoomCenterX = personCenterX;
-    const targetZoomCenterY = personCenterY;
+    if (currentPerson) {
+      // 실시간 위치로 줌 중심점 업데이트
+      const personCenterX = currentPerson.x + currentPerson.width / 2;
+      const personCenterY = currentPerson.y + currentPerson.height / 2;
 
-    // 부드러운 줌 전환을 위한 보간
-    setZoomScale(prev => prev + (targetZoomScale - prev) * 0.1);
-    setZoomCenter(prev => ({
-      x: prev.x + (targetZoomCenterX - prev.x) * 0.1,
-      y: prev.y + (targetZoomCenterY - prev.y) * 0.1
-    }));
+      // 줌 스케일 설정 (2배 확대)
+      const targetZoomScale = 2;
+      
+      // 부드러운 줌 전환을 위한 보간
+      setZoomScale(prev => prev + (targetZoomScale - prev) * 0.1);
+      setZoomCenter(prev => ({
+        x: prev.x + (personCenterX - prev.x) * 0.1,
+        y: prev.y + (personCenterY - prev.y) * 0.1
+      }));
+    } else {
+      // 선택된 사람이 감지되지 않으면 줌 해제
+      setZoomScale(1);
+      setZoomCenter({ x: 0, y: 0 });
+    }
 
-  }, [followPerson, selectedPerson]);
+  }, [followPerson, selectedPerson, detectedObjects]);
+
+  // 정적 영역 그리기
+  const drawPredefinedAreas = useCallback((ctx: CanvasRenderingContext2D) => {
+    if (!usePredefinedAreas || predefinedAreas.length === 0) return;
+
+    predefinedAreas.forEach(area => {
+      // 노랑색 박스 그리기
+      ctx.strokeStyle = '#FFD700';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(area.x, area.y, area.width, area.height);
+      
+      // 라벨 그리기
+      ctx.fillStyle = '#FFD700';
+      ctx.font = '16px Arial';
+      ctx.fillText(area.label, area.x, area.y - 5);
+    });
+  }, [usePredefinedAreas, predefinedAreas]);
 
   // 실제 객체 감지 및 그리기 (성능 최적화)
   const detectAndDrawObjects = useCallback(async () => {
@@ -127,6 +149,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       // 감지된 객체 그리기
       realObjectDetector.drawObjects(ctx, objects);
       
+      // 정적 영역 그리기
+      drawPredefinedAreas(ctx);
+      
       ctx.restore();
 
     } catch (error) {
@@ -135,7 +160,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         console.error('객체 감지 중 오류:', error);
       }
     }
-  }, [detectedObjects, updatePersonZoom, zoomScale, zoomCenter.x, zoomCenter.y]);
+  }, [detectedObjects, updatePersonZoom, zoomScale, zoomCenter.x, zoomCenter.y, drawPredefinedAreas]);
 
   // 감지 루프 시작/중지 (성능 최적화)
   useEffect(() => {
@@ -180,19 +205,40 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
 
     console.log('클릭 위치:', clickPoint);
-    console.log('감지된 객체들:', detectedObjects);
 
-    // 클릭된 객체 찾기
-    const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
+    // 정적 영역 사용 시
+    if (usePredefinedAreas) {
+      console.log('정적 영역들:', predefinedAreas);
+      
+      // 미리 정의된 영역 내 클릭 확인
+      const clickedArea = predefinedAreas.find(area => 
+        clickPoint.x >= area.x && 
+        clickPoint.x <= area.x + area.width &&
+        clickPoint.y >= area.y && 
+        clickPoint.y <= area.y + area.height
+      );
 
-    if (clickedObject) {
-      console.log('클릭된 객체:', clickedObject);
-      onPersonClick(clickedObject);
+      if (clickedArea) {
+        console.log('클릭된 정적 영역:', clickedArea);
+        onPersonClick(clickedArea);
+      } else {
+        console.log('클릭된 정적 영역 없음 - 페이지 이동하지 않음');
+      }
     } else {
-      console.log('클릭된 객체 없음 - 페이지 이동하지 않음');
+      // AI 객체 탐지 사용 시
+      console.log('감지된 객체들:', detectedObjects);
+      
+      // 클릭된 객체 찾기
+      const clickedObject = realObjectDetector.findClickedObject(clickPoint, detectedObjects);
+
+      if (clickedObject) {
+        console.log('클릭된 객체:', clickedObject);
+        onPersonClick(clickedObject);
+      } else {
+        console.log('클릭된 객체 없음 - 페이지 이동하지 않음');
+      }
     }
-    // 트래킹 영역이 아닌 곳을 클릭하면 아무것도 하지 않음
-  }, [detectedObjects, onPersonClick]);
+  }, [detectedObjects, onPersonClick, usePredefinedAreas, predefinedAreas]);
 
   return (
     <div className={`relative ${className}`}>

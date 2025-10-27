@@ -93,7 +93,7 @@ export default function AIChat() {
     } finally {
       setIsLoading(false);
     }
-  }, [chatMessages, currentTurn, selectedPerson]);
+  }, [chatMessages, currentTurn, selectedPerson, router]);
 
   // 선택된 인물 정보 로드
   useEffect(() => {

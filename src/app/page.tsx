@@ -80,6 +80,8 @@ export default function Landing() {
       const dy = (e.clientY - cy) / rect.height;
       gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
       gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
+      // panels parallax
+      gsap.to('.panel .parallax-item', { x: dx * 30, y: dy * 30, duration: 0.35, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
 
@@ -122,10 +124,10 @@ export default function Landing() {
         <div className="container mx-auto px-8 py-24">
           <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Words become images.</h2>
           {/* floating thumbs */}
-          <div className="absolute top-10 left-8 w-24 h-24 rounded-md bg-black/5 shadow float-medium" />
-          <div className="absolute top-24 right-10 w-28 h-40 rounded-md bg-black/5 shadow float-slow" />
-          <div className="absolute bottom-24 left-24 w-40 h-28 rounded-md bg-black/5 shadow float-slow" />
-          <div className="absolute bottom-16 right-32 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
+          <div className="parallax-item absolute top-10 left-8 w-24 h-24 rounded-md bg-black/5 shadow float-medium" />
+          <div className="parallax-item absolute top-24 right-10 w-28 h-40 rounded-md bg-black/5 shadow float-slow" />
+          <div className="parallax-item absolute bottom-24 left-24 w-40 h-28 rounded-md bg-black/5 shadow float-slow" />
+          <div className="parallax-item absolute bottom-16 right-32 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
         </div>
       </section>
 
@@ -133,10 +135,10 @@ export default function Landing() {
       <section id="panel-2" className="panel relative min-h-[90vh] bg-white text-black">
         <div className="container mx-auto px-8 py-24">
           <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Each image carries its seed.</h2>
-          <div className="absolute top-16 left-20 w-28 h-36 rounded-md bg-black/5 shadow float-slow" />
-          <div className="absolute top-10 right-24 w-20 h-20 rounded-md bg-black/5 shadow float-medium" />
-          <div className="absolute bottom-28 right-16 w-36 h-28 rounded-md bg-black/5 shadow float-slow" />
-          <div className="absolute bottom-16 left-10 w-24 h-24 rounded-md bg-black/5 shadow float-medium" />
+          <div className="parallax-item absolute top-16 left-20 w-28 h-36 rounded-md bg-black/5 shadow float-slow" />
+          <div className="parallax-item absolute top-10 right-24 w-20 h-20 rounded-md bg-black/5 shadow float-medium" />
+          <div className="parallax-item absolute bottom-28 right-16 w-36 h-28 rounded-md bg-black/5 shadow float-slow" />
+          <div className="parallax-item absolute bottom-16 left-10 w-24 h-24 rounded-md bg-black/5 shadow float-medium" />
         </div>
       </section>
 
@@ -144,10 +146,10 @@ export default function Landing() {
       <section id="panel-3" className="panel relative min-h-[90vh] bg-white text-black">
         <div className="container mx-auto px-8 py-24">
           <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Hover on an image surface what that sparked it.</h2>
-          <div className="absolute top-16 left-8 w-20 h-28 rounded-md bg-black/5 shadow float-slow" />
-          <div className="absolute top-12 right-16 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
-          <div className="absolute bottom-24 left-28 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
-          <div className="absolute bottom-20 right-28 w-40 h-28 rounded-md bg-black/5 shadow float-slow" />
+          <div className="parallax-item absolute top-16 left-8 w-20 h-28 rounded-md bg-black/5 shadow float-slow" />
+          <div className="parallax-item absolute top-12 right-16 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
+          <div className="parallax-item absolute bottom-24 left-28 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
+          <div className="parallax-item absolute bottom-20 right-28 w-40 h-28 rounded-md bg-black/5 shadow float-slow" />
         </div>
       </section>
 
@@ -157,17 +159,22 @@ export default function Landing() {
         <h2 className="section-title text-xl md:text-2xl mb-6 text-black/90">Words become images</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(9)].map((_, i) => (
-            <div
-              key={i}
-              className="card group relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm focus-visible:ring-2 focus-visible:ring-black/40"
-              tabIndex={0}
-              role="button"
-              aria-label={`갤러리 아이템 ${i + 1}`}
-            >
-              <div className="absolute inset-0 grid place-items-center text-black/50">16:9</div>
-              <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity p-4 text-sm">
-                <p className="text-black">Prompt</p>
-                <p className="mt-1 text-black/70">“...”</p>
+            <div key={i} className="relative">
+              <div
+                className="card group relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm focus-visible:ring-2 focus-visible:ring-black/40"
+                tabIndex={0}
+                role="button"
+                aria-label={`갤러리 아이템 ${i + 1}`}
+              >
+                <div className="absolute inset-0 grid place-items-center text-black/50">16:9</div>
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity p-4 text-sm pointer-events-none">
+                  <p className="text-black">Prompt</p>
+                  <p className="mt-1 text-black/70">“...”</p>
+                </div>
+              </div>
+              {/* bottom tooltip */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-2 rounded-md bg-black text-white text-xs opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0">
+                Prompt: Example description for item {i + 1}
               </div>
             </div>
           ))}

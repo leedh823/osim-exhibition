@@ -229,7 +229,7 @@ export default function Landing() {
         {blocks.map((block, idx) => (
           <div
             key={idx}
-            className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible ${idx === 2 ? 'bg-black text-white' : 'bg-white text-black'}`}
+            className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible bg-white text-black`}
           >
             {/* 패널3 상단 경계 부드럽게(흰 → 검정) */}
             {idx === 2 && (

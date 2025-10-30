@@ -86,7 +86,7 @@ export default function Landing() {
 
         // 전역 배경 변경 없음
       });
-      // 2번 후반부부터 전역 오버레이를 올리고, 3번 초반에서 완전히 전환
+      // 2번 후반부부터 전역 오버레이를 올리고(뷰포트 전체), 같은 구간에 pageRoot 배경도 흰→검정으로 동기화
       const secondPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(2)');
       const globalOverlay = document.getElementById('global-overlay');
       if (secondPanel && globalOverlay) {
@@ -95,17 +95,16 @@ export default function Landing() {
           ease: 'none',
           scrollTrigger: { trigger: secondPanel, start: 'center 30%', end: 'bottom top', scrub: true },
         });
+        gsap.fromTo('#pageRoot', { backgroundColor: '#ffffff' }, {
+          backgroundColor: '#000000',
+          ease: 'none',
+          scrollTrigger: { trigger: secondPanel, start: 'center 30%', end: 'bottom top', scrub: true },
+        });
       }
       // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정 전환(오버레이 + 자체 배경 동기화) + 타이틀 컬러 전환
       const thirdPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(3)');
       if (thirdPanel && globalOverlay) {
-        // 패널3 자체 배경을 흰 → 검정으로 전환
-        gsap.fromTo(
-          thirdPanel,
-          { backgroundColor: '#ffffff', color: '#000000' },
-          { backgroundColor: '#000000', color: '#ffffff', ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 90%', end: 'top 60%', scrub: true } }
-        );
-        // 전역 오버레이는 패널3 초반에서 서서히 제거(한 번만 검정으로 바뀌도록)
+        // 오버레이는 패널3 초반에서 서서히 제거(이미 pageRoot는 검정)
         gsap.to(globalOverlay, {
           opacity: 0,
           ease: 'none',
@@ -225,7 +224,7 @@ export default function Landing() {
   return (
     <div ref={rootRef} id="pageRoot" className="bg-white text-black">
       {/* Global overlay: fades black across the whole viewport when transitioning 2 → 3 */}
-      <div id="global-overlay" className="pointer-events-none fixed inset-0 bg-black opacity-0 z-[5]" />
+      <div id="global-overlay" className="pointer-events-none fixed inset-0 bg-black opacity-0 z-[1000]" />
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
         <img

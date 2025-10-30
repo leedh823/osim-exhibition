@@ -12,10 +12,11 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      // 초기 위치를 화면 중앙(0,0)에서 시작
-      gsap.set(['.parallax', '.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
+      // 초기 위치: 이미지 Y를 30vh 아래로 내리고(요청), 나머지는 0
+      gsap.set('.parallax', { x: 0, y: '30vh', rotateX: 0, rotateY: 0 });
+      gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       // Split titles(after hero) into per-letter spans for stagger animation
-      document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title').forEach((titleEl) => {
+      document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title, #exhibit .section-title, #exhibit .exhibit-subtitle').forEach((titleEl) => {
         if (titleEl.getAttribute('data-split') === 'true') return;
         const text = titleEl.innerText;
         const letters = text.split('').map((ch, idx) => {
@@ -25,41 +26,23 @@ export default function Landing() {
         titleEl.innerHTML = letters;
         titleEl.setAttribute('data-split', 'true');
       });
-      // Hero: 스크롤 시 이미지 확대 → 흰색 화면 전환 → 내러티브 등장
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#hero',
-          start: 'top top',
-          end: '+=180%',
-          pin: true,
-          scrub: true,
-        },
-      });
-      tl.fromTo(
-        '.parallax',
-        { scale: 1 },
-        { scale: prefersReduced ? 1.05 : 1.6, ease: 'none' }
-      );
-      tl.to('.white-overlay', { opacity: 1, ease: 'none' }, 0.5);
-      tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.5);
-
-      // Hero zoom-to-white then gallery reveal
+      // Hero: 고정(pin) + 확대(500%) → 끝 구간에서 흰 전환
       const heroTl = gsap.timeline({
         scrollTrigger: {
           trigger: '#hero',
           start: 'top top',
-          end: '+=180%',
+          end: '+=320%',
           pin: true,
           scrub: true,
+          anticipatePin: 1,
         },
       });
-      heroTl.fromTo(
-        '#hero .parallax',
-        { scale: 1 },
-        { scale: 1.4, ease: 'none' }
-      );
-      heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none' }, 0.6);
-      heroTl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.8);
+      // 전체 구간을 1로 보고 진행(스케일 1 → 5)
+      heroTl.fromTo('#hero .parallax', { scale: 1 }, { scale: 5, ease: 'none', duration: 1 }, 0);
+      // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작 + 이미지 투명 처리 + 히어로 배경도 흰색
+      heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none', duration: 0.4 }, 0.6);
+      heroTl.to('#hero .parallax', { opacity: 0, duration: 0.4, ease: 'none' }, 0.6);
+      heroTl.to(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000', ease: 'none', duration: 0.4 }, 0.6);
 
       // Narratives reveal
       gsap.fromTo(
@@ -67,9 +50,23 @@ export default function Landing() {
         { opacity: 0 },
         {
           opacity: 1,
-          scrollTrigger: { trigger: '#narratives', start: 'top 95%', end: 'top 70%', scrub: true },
+          scrollTrigger: { trigger: '#narratives', start: 'top bottom', end: 'top center', scrub: true },
         }
       );
+      // 섹션 중앙 기준으로 배경/텍스트 색 토글(안전한 onEnter/onLeave)
+      ScrollTrigger.create({
+        trigger: '#narratives',
+        start: 'center center',
+        end: 'bottom top',
+        onEnter: () => {
+          gsap.set(document.body, { backgroundColor: '#000000' });
+          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#000000', color: '#ffffff' });
+        },
+        onLeaveBack: () => {
+          gsap.set(document.body, { backgroundColor: '#ffffff' });
+          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000' });
+        },
+      });
       // Titles(after hero): per-letter appear/disappear with different start per block
       gsap.utils.toArray<HTMLElement>('#narratives .section-title').forEach((el, idx) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
@@ -98,16 +95,34 @@ export default function Landing() {
           ease: 'power2.inOut',
           scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 15%', scrub: true },
         });
+
+        // 텍스트가 화면 중앙에 올 때 배경을 검정, 텍스트를 흰색으로 전환
+        gsap.to(['#pageRoot', '#hero'], {
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'center center',
+            end: '+=1',
+            toggleActions: 'play reverse play reverse',
+          },
+        });
       });
-      gsap.fromTo(
-        '#gallery .section-title',
-        { y: 16, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'top 70%', scrub: true },
-        }
-      );
+      gsap.fromTo('#gallery .section-title', { y: 16, opacity: 0 }, {
+        y: 0,
+        opacity: 1,
+        scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'top 70%', scrub: true },
+      });
+      // 갤러리 진입 시 확실하게 흰 배경 복귀
+      ScrollTrigger.create({
+        trigger: '#gallery',
+        start: 'top bottom',
+        onEnter: () => {
+          gsap.set(document.body, { backgroundColor: '#ffffff' });
+          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000' });
+        },
+      });
       gsap.fromTo(
         '.card',
         { y: prefersReduced ? 10 : 40, opacity: 0 },
@@ -118,6 +133,19 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'bottom 70%', scrub: true },
         }
       );
+
+      // Exhibition title: 다른 텍스트와 동일하게 글자 단위 등장
+      gsap.utils.toArray<HTMLElement>('#exhibit .section-title, #exhibit .exhibit-subtitle').forEach((el) => {
+        const letters = el.querySelectorAll<HTMLElement>('.letter');
+        gsap.set(letters, { opacity: 0 });
+        gsap.fromTo(letters, { y: 30, opacity: 0 }, {
+          y: 0,
+          opacity: 1,
+          stagger: 0.03,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: '#exhibit', start: 'top 85%', end: 'top 60%', scrub: true },
+        });
+      });
     }, rootRef);
 
     // 히어로 패럴랙스
@@ -131,12 +159,12 @@ export default function Landing() {
       const scale = Math.min(rect.width, rect.height) || 1;
       const dx = (e.clientX - cx) / scale;
       const dy = (e.clientY - cy) / scale;
-      // 감도 감소 + 3D 틸트
+      // 중앙에서 크게 벗어나지 않도록 감도 고정(≈25px)
       gsap.to('.parallax', {
-        x: dx * 60,
-        y: dy * 60,
-        rotateY: -dx * 8,
-        rotateX: dy * 6,
+        x: dx * 25,
+        y: dy * 25,
+        rotateY: -dx * 1.5,
+        rotateX: dy * 1,
         transformPerspective: 800,
         transformOrigin: 'center center',
         duration: 0.25,
@@ -192,7 +220,7 @@ export default function Landing() {
   ];
 
   return (
-    <div ref={rootRef} id="pageRoot" className="bg-black text-white">
+    <div ref={rootRef} id="pageRoot" className="bg-white text-black">
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
         <img
@@ -201,18 +229,18 @@ export default function Landing() {
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
             width: '100vw',
-            height: '115vh',
+            height: '120vh',
             objectFit: 'cover',
-            objectPosition: 'center 90%',
+            objectPosition: 'center 70%',
             transform: 'translateZ(0)',
-            marginTop: '40vh'
+            marginTop: '0'
           }}
         />
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}
-      <section id="narratives" className="relative bg-white text-black overflow-visible" style={{ opacity: 0 }}>
+      <section id="narratives" className="relative bg-transparent text-current overflow-visible" style={{ opacity: 0 }}>
         {blocks.map((block, idx) => (
           <div key={idx} className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
             <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>
@@ -230,6 +258,14 @@ export default function Landing() {
             ))}
           </div>
         ))}
+      </section>
+
+      {/* Exhibition Title (전시 이름) */}
+      <section id="exhibit" className="min-h-[80vh] bg-transparent flex items-center justify-center px-8">
+        <div className="text-center">
+          <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
+          <p className="section-title exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
+        </div>
       </section>
 
 

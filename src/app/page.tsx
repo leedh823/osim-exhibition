@@ -41,6 +41,16 @@ export default function Landing() {
         ease: 'none',
         scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=220%', scrub: true },
       });
+
+      // 갤러리 섹션 간단 리빌
+      gsap.fromTo(
+        '#gallery',
+        { opacity: 0 },
+        {
+          opacity: 1,
+          scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'top 70%', scrub: true },
+        }
+      );
     }, rootRef);
 
     // 히어로 패럴랙스
@@ -99,7 +109,17 @@ export default function Landing() {
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
       </section>
 
-      {/* (삭제) 내러티브 섹션 제거 → 바로 갤러리/Generate 표시 */}
+      {/* Gallery */}
+      <section id="gallery" className="min-h-[120vh] bg-white text-black px-8 py-16">
+        <h2 className="section-title text-2xl md:text-4xl mb-8">Gallery</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(9)].map((_, i) => (
+            <div key={i} className="card relative aspect-video rounded-lg bg-white border border-black/10 shadow-sm grid place-items-center text-black/50">
+              16:9
+            </div>
+          ))}
+        </div>
+      </section>
 
 
       {/* Generate: 네모 박스 + CTA */}

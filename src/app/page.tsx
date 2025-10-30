@@ -201,11 +201,11 @@ export default function Landing() {
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
             width: '100vw',
-            height: '115vh',
+            height: '120vh',
             objectFit: 'cover',
-            objectPosition: 'center 90%',
+            objectPosition: 'center 85%',
             transform: 'translateZ(0)',
-            marginTop: '40vh'
+            marginTop: '0'
           }}
         />
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />

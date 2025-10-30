@@ -12,8 +12,9 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      // 초기 위치를 화면 중앙(0,0)에서 시작
-      gsap.set(['.parallax', '.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
+      // 초기 위치: 이미지 Y를 30vh 아래로 내리고(요청), 나머지는 0
+      gsap.set('.parallax', { x: 0, y: '30vh', rotateX: 0, rotateY: 0 });
+      gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       // Split titles(after hero) into per-letter spans for stagger animation
       document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title').forEach((titleEl) => {
         if (titleEl.getAttribute('data-split') === 'true') return;
@@ -25,34 +26,22 @@ export default function Landing() {
         titleEl.innerHTML = letters;
         titleEl.setAttribute('data-split', 'true');
       });
-      // Hero: 단일 타임라인으로 고정 확대 후 흰 전환(스크롤 중 아래 컨텐츠 노출 방지)
-      gsap.fromTo(
-        '#hero .parallax',
-        { scale: 1 },
-        {
-          scale: prefersReduced ? 1.1 : 3,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '#hero',
-            start: 'top top',
-            end: '+=300%',
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-          },
-        }
-      );
-      gsap.to('#hero .white-overlay', {
-        opacity: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=300%', scrub: true },
+      // Hero: 고정(pin) + 확대(500%) → 끝 구간에서 흰 전환
+      const heroTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: '+=320%',
+          pin: true,
+          scrub: true,
+          anticipatePin: 1,
+        },
       });
-      gsap.to('#pageRoot', {
-        backgroundColor: '#ffffff',
-        color: '#000000',
-        ease: 'none',
-        scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=300%', scrub: true },
-      });
+      // 전체 구간을 1로 보고 진행(스케일 1 → 5)
+      heroTl.fromTo('#hero .parallax', { scale: 1 }, { scale: 5, ease: 'none', duration: 1 }, 0);
+      // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작
+      heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none', duration: 0.4 }, 0.6);
+      heroTl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none', duration: 0.4 }, 0.6);
 
       // Narratives reveal
       gsap.fromTo(
@@ -196,7 +185,7 @@ export default function Landing() {
             width: '100vw',
             height: '120vh',
             objectFit: 'cover',
-            objectPosition: 'center 75%',
+            objectPosition: 'center 70%',
             transform: 'translateZ(0)',
             marginTop: '0'
           }}

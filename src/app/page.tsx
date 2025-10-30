@@ -47,28 +47,32 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
-      // Titles(after hero): rise from bottom; letters stagger in/out near center
-      gsap.utils.toArray<HTMLElement>('.panel .section-title, #gallery .section-title').forEach((el) => {
+      // Titles(after hero): per-letter appear/disappear with different start per panel
+      gsap.utils.toArray<HTMLElement>('.panel .section-title').forEach((el, idx) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
-        // appear from bottom of viewport
+        // reset to avoid first-letter missing when re-entering
+        gsap.set(letters, { opacity: 0 });
+        const appearFromY = idx === 0 ? 40 : 20; // panel 2,3 slightly below center
+        const appearStart = idx === 0 ? 'bottom 95%' : 'center 105%';
+        const appearEnd = idx === 0 ? 'center 70%' : 'center 85%';
         gsap.fromTo(
           letters,
-          { y: 40, opacity: 0 },
+          { y: appearFromY, opacity: 0 },
           {
             y: 0,
             opacity: 1,
             stagger: 0.03,
             ease: 'power2.out',
-            scrollTrigger: { trigger: el, start: 'bottom 95%', end: 'center 70%', scrub: true },
+            scrollTrigger: { trigger: el, start: appearStart, end: appearEnd, scrub: true },
           }
         );
-        // fade out near upper-middle (letter-by-letter)
+        // fade out higher than before
         gsap.to(letters, {
-          y: -20,
+          y: -24,
           opacity: 0,
           stagger: 0.05,
           ease: 'power2.inOut',
-          scrollTrigger: { trigger: el, start: 'center 40%', end: 'top 35%', scrub: true },
+          scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 15%', scrub: true },
         });
       });
       gsap.fromTo(
@@ -104,7 +108,7 @@ export default function Landing() {
       gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
       gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
       // 페이지 내 이미지/박스 블록 전체 패럴랙스(텍스트 제외)
-      gsap.to('.parallax-item', { x: dx * 24, y: dy * 24, duration: 0.35, ease: 'power2.out' });
+      gsap.to('.parallax-item', { x: dx * 40, y: dy * 40, duration: 0.35, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
 
@@ -144,7 +148,7 @@ export default function Landing() {
 
       {/* Narrative 1 */}
       <section id="panel-1" className="panel relative min-h-[90vh] bg-white text-black">
-        <div className="container mx-auto px-8 py-24">
+        <div className="container mx-auto px-8 min-h-[90vh] flex flex-col items-center justify-center">
           <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Words become images.</h2>
           {/* floating thumbs with hover tooltip */}
           <div className="group parallax-item absolute top-10 left-8">
@@ -168,7 +172,7 @@ export default function Landing() {
 
       {/* Narrative 2 */}
       <section id="panel-2" className="panel relative min-h-[90vh] bg-white text-black">
-        <div className="container mx-auto px-8 py-24">
+        <div className="container mx-auto px-8 min-h-[90vh] flex flex-col items-center justify-center">
           <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Each image carries its seed.</h2>
           <div className="group parallax-item absolute top-16 left-20">
             <div className="w-28 h-36 rounded-md bg-black/5 shadow" />
@@ -191,7 +195,7 @@ export default function Landing() {
 
       {/* Narrative 3 */}
       <section id="panel-3" className="panel relative min-h-[90vh] bg-white text-black">
-        <div className="container mx-auto px-8 py-24">
+        <div className="container mx-auto px-8 min-h-[90vh] flex flex-col items-center justify-center">
           <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Hover on an image surface what that sparked it.</h2>
           {/* gray boxes with hover indicator + prompt (패널3 전용) */}
           <div className="group parallax-item absolute top-16 left-8">

@@ -104,7 +104,7 @@ export default function Landing() {
       gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
       gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
       // 페이지 내 이미지/박스 블록 전체 패럴랙스(텍스트 제외)
-      gsap.to('.panel .parallax-item, #gallery .card', { x: dx * 24, y: dy * 24, duration: 0.35, ease: 'power2.out' });
+      gsap.to('.parallax-item', { x: dx * 24, y: dy * 24, duration: 0.35, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
 
@@ -201,23 +201,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 갤러리: 16:9 네모 박스 플레이스홀더 */}
-      <section id="gallery" className="min-h-[140vh] p-8 bg-white text-black opacity-0">
-        
-        <h2 className="section-title text-xl md:text-2xl mb-6 text-black/90">Words become images</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(9)].map((_, i) => (
-            <div key={i} className="relative">
-              <div
-                className="card relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm"
-                aria-label={`갤러리 아이템 ${i + 1}`}
-              >
-                <div className="absolute inset-0 grid place-items-center text-black/50">16:9</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Generate: 네모 박스 + CTA */}
       <section id="generate" className="min-h-[100vh] bg-white px-8 py-20">

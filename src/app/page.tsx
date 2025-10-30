@@ -145,7 +145,7 @@ export default function Landing() {
       {/* Narrative 1 */}
       <section id="panel-1" className="panel relative min-h-[90vh] bg-white text-black">
         <div className="container mx-auto px-8 py-24">
-          <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Words become images.</h2>
+          <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Words become images.</h2>
           {/* floating thumbs */}
           <div className="parallax-item absolute top-10 left-8 w-24 h-24 rounded-md bg-black/5 shadow float-medium" />
           <div className="parallax-item absolute top-24 right-10 w-28 h-40 rounded-md bg-black/5 shadow float-slow" />
@@ -157,7 +157,7 @@ export default function Landing() {
       {/* Narrative 2 */}
       <section id="panel-2" className="panel relative min-h-[90vh] bg-white text-black">
         <div className="container mx-auto px-8 py-24">
-          <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Each image carries its seed.</h2>
+          <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Each image carries its seed.</h2>
           <div className="parallax-item absolute top-16 left-20 w-28 h-36 rounded-md bg-black/5 shadow float-slow" />
           <div className="parallax-item absolute top-10 right-24 w-20 h-20 rounded-md bg-black/5 shadow float-medium" />
           <div className="parallax-item absolute bottom-28 right-16 w-36 h-28 rounded-md bg-black/5 shadow float-slow" />
@@ -168,7 +168,7 @@ export default function Landing() {
       {/* Narrative 3 */}
       <section id="panel-3" className="panel relative min-h-[90vh] bg-white text-black">
         <div className="container mx-auto px-8 py-24">
-          <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Hover on an image surface what that sparked it.</h2>
+          <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Hover on an image surface what that sparked it.</h2>
           {/* gray boxes with hover indicator + prompt (패널3 전용) */}
           <div className="group parallax-item absolute top-16 left-8">
             <div className="w-20 h-28 rounded-md bg-black/5 shadow" />

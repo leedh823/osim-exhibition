@@ -227,12 +227,12 @@ export default function Landing() {
         {blocks.map((block, idx) => (
           <div
             key={idx}
-            className={`panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible ${idx === 2 ? 'bg-black text-white' : 'bg-white text-black'}`}
+            className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible ${idx === 2 ? 'bg-black text-white' : 'bg-white text-black'}`}
           >
             <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>
             {block.boxes.map((b, i) => (
-              <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible`}>
-                <div className="w-full h-full rounded-md bg-black/5 shadow" />
+              <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible z-10`}>
+                <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
                 {/* 아래 라인이 그려진 뒤 텍스트가 중앙에서 뜨는 효과 */}
                 <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[260px] max-w-[70vw]">
                   <div className={`mx-auto h-[3px] rounded-full w-0 group-hover:w-24 transition-all duration-300 ${idx === 2 ? 'bg-white/30' : 'bg-black/20'}`}></div>

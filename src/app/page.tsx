@@ -208,17 +208,20 @@ export default function Landing() {
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}
-      <section id="narratives" className="relative bg-transparent text-current overflow-visible" style={{ opacity: 0 }}>
+      <section id="narratives" className="relative bg-white text-black overflow-visible" style={{ opacity: 0 }}>
         {blocks.map((block, idx) => (
-          <div key={idx} className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
+          <div
+            key={idx}
+            className={`panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible ${idx === 2 ? 'bg-black text-white' : 'bg-white text-black'}`}
+          >
             <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>
             {block.boxes.map((b, i) => (
               <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible`}>
                 <div className="w-full h-full rounded-md bg-black/5 shadow" />
                 {/* 아래 라인이 그려진 뒤 텍스트가 중앙에서 뜨는 효과 */}
                 <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[260px] max-w-[70vw]">
-                  <div className="mx-auto h-[3px] bg-black/20 rounded-full w-0 group-hover:w-24 transition-all duration-300"></div>
-                  <div className="mt-2 px-4 py-3 rounded-xl bg-white border border-black/10 shadow text-sm text-black opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center">
+                  <div className={`mx-auto h-[3px] rounded-full w-0 group-hover:w-24 transition-all duration-300 ${idx === 2 ? 'bg-white/30' : 'bg-black/20'}`}></div>
+                  <div className={`mt-2 px-4 py-3 rounded-xl border shadow text-sm opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center ${idx === 2 ? 'bg-black text-white border-white/20' : 'bg-white text-black border-black/10'}`}>
                     {b.tooltip}
                   </div>
                 </div>

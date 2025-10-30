@@ -12,16 +12,37 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      // 첫 화면부터 흰색: 갤러리 등장 애니메이션만 적용
+      // Hero: pin + scrub 타임라인 복구 (카메라 줌 + 화이트 페이드 + 타이틀 페이드)
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: '+=200%',
+          pin: true,
+          scrub: true,
+        },
+      });
+      tl.to('#hero', { scale: prefersReduced ? 1.03 : 1.12, transformOrigin: 'center center', ease: 'none' }, 0);
+      tl.to('.white-overlay', { opacity: 1, ease: 'none' }, 0.2);
+      tl.fromTo('#hero h1', { opacity: 1, y: 0 }, { opacity: 0, y: prefersReduced ? -10 : -40, ease: 'none' }, 0);
+      tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.35);
+
+      // Gallery reveal
+      gsap.fromTo(
+        '#gallery',
+        { opacity: 0 },
+        {
+          opacity: 1,
+          scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
+        }
+      );
       gsap.fromTo(
         '#gallery .section-title',
         { y: 16, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          duration: prefersReduced ? 0.3 : 0.6,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
+          scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'top 70%', scrub: true },
         }
       );
       gsap.fromTo(
@@ -35,7 +56,8 @@ export default function Landing() {
         }
       );
     }, rootRef);
-    // 히어로 패럴랙스 마우스 반응(포털 복구)
+
+    // 히어로 패럴랙스
     const el = rootRef.current;
     const handler = (e: MouseEvent) => {
       if (!el) return;
@@ -44,8 +66,8 @@ export default function Landing() {
       const cy = rect.top + rect.height / 2;
       const dx = (e.clientX - cx) / rect.width;
       const dy = (e.clientY - cy) / rect.height;
-      gsap.to('.parallax', { x: dx * 50, y: dy * 50, duration: 0.25, ease: 'power3.out' });
-      gsap.to('.portal-core', { x: dx * 35, y: dy * 35, duration: 0.3, ease: 'power3.out' });
+      gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
+      gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
     };
     window.addEventListener('mousemove', handler);
 
@@ -56,7 +78,7 @@ export default function Landing() {
   }, []);
 
   return (
-    <div ref={rootRef} id="pageRoot" className="bg-white text-black">
+    <div ref={rootRef} id="pageRoot" className="bg-black text-white">
       {/* Hero: 포털(화이트) */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center">
         {(() => {
@@ -78,7 +100,7 @@ export default function Landing() {
       </section>
 
       {/* 갤러리: 16:9 네모 박스 플레이스홀더 */}
-      <section id="gallery" className="min-h-[140vh] p-8 bg-white text-black">
+      <section id="gallery" className="min-h-[140vh] p-8 bg-white text-black opacity-0">
         
         <h2 className="section-title text-xl md:text-2xl mb-6 text-black/90">Words become images</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

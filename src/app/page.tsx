@@ -96,7 +96,7 @@ export default function Landing() {
             backgroundColor: '#000000',
             color: '#ffffff',
             ease: 'none',
-            scrollTrigger: { trigger: thirdPanel, start: 'top 80%', end: 'top 40%', scrub: true },
+            scrollTrigger: { trigger: thirdPanel, start: 'top 95%', end: 'top 40%', scrub: true },
           }
         );
       }
@@ -224,11 +224,17 @@ export default function Landing() {
 
       {/* Narratives (one section, data-driven blocks) */}
       <section id="narratives" className="relative bg-white text-black overflow-visible" style={{ opacity: 0 }}>
+        {/* Hero(검정) → Narratives(흰) 경계 부드럽게 */}
+        <div className="pointer-events-none absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black/60 to-transparent" />
         {blocks.map((block, idx) => (
           <div
             key={idx}
             className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible ${idx === 2 ? 'bg-black text-white' : 'bg-white text-black'}`}
           >
+            {/* 패널3 상단 경계 부드럽게(흰 → 검정) */}
+            {idx === 2 && (
+              <div className="pointer-events-none absolute -top-16 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent" />
+            )}
             <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>
             {block.boxes.map((b, i) => (
               <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible z-10`}>

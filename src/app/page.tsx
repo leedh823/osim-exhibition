@@ -40,6 +40,24 @@ export default function Landing() {
       tl.fromTo('#hero h1', { opacity: 1, y: 0 }, { opacity: 0, y: prefersReduced ? -10 : -40, ease: 'none' }, 0);
       tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.35);
 
+      // Hero zoom-to-white then gallery reveal
+      const heroTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: '+=180%',
+          pin: true,
+          scrub: true,
+        },
+      });
+      heroTl.fromTo(
+        '#hero .parallax',
+        { scale: 1 },
+        { scale: 1.4, ease: 'none' }
+      );
+      heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none' }, 0.6);
+      heroTl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.8);
+
       // Gallery reveal
       gsap.fromTo(
         '#gallery',
@@ -175,7 +193,7 @@ export default function Landing() {
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
         <img
-          src="/image/1.png"
+          src="/image/2.png"
           alt="hero"
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
@@ -187,6 +205,7 @@ export default function Landing() {
             marginTop: '40vh'
           }}
         />
+        <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}

@@ -25,20 +25,23 @@ export default function Landing() {
         titleEl.innerHTML = letters;
         titleEl.setAttribute('data-split', 'true');
       });
-      // Hero: pin + scrub 타임라인 복구 (카메라 줌 + 화이트 페이드 + 타이틀 페이드)
+      // Hero: 스크롤 시 이미지 확대 → 흰색 화면 전환 → 내러티브 등장
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: '#hero',
           start: 'top top',
-          end: '+=200%',
+          end: '+=180%',
           pin: true,
           scrub: true,
         },
       });
-      tl.to('#hero', { scale: prefersReduced ? 1.03 : 1.12, transformOrigin: 'center center', ease: 'none' }, 0);
-      tl.to('.white-overlay', { opacity: 1, ease: 'none' }, 0.2);
-      tl.fromTo('#hero h1', { opacity: 1, y: 0 }, { opacity: 0, y: prefersReduced ? -10 : -40, ease: 'none' }, 0);
-      tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.35);
+      tl.fromTo(
+        '.parallax',
+        { scale: 1 },
+        { scale: prefersReduced ? 1.05 : 1.6, ease: 'none' }
+      );
+      tl.to('.white-overlay', { opacity: 1, ease: 'none' }, 0.5);
+      tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.5);
 
       // Hero zoom-to-white then gallery reveal
       const heroTl = gsap.timeline({
@@ -58,13 +61,13 @@ export default function Landing() {
       heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none' }, 0.6);
       heroTl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.8);
 
-      // Gallery reveal
+      // Narratives reveal
       gsap.fromTo(
-        '#gallery',
+        '#narratives',
         { opacity: 0 },
         {
           opacity: 1,
-          scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
+          scrollTrigger: { trigger: '#narratives', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
       // Titles(after hero): per-letter appear/disappear with different start per block
@@ -209,7 +212,7 @@ export default function Landing() {
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}
-      <section id="narratives" className="relative bg-white text-black overflow-visible">
+      <section id="narratives" className="relative bg-white text-black overflow-visible" style={{ opacity: 0 }}>
         {blocks.map((block, idx) => (
           <div key={idx} className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
             <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>

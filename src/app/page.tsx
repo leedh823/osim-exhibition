@@ -16,7 +16,7 @@ export default function Landing() {
       ScrollTrigger.create({
         trigger: '#hero',
         start: 'top top',
-        end: '+=200%',
+        end: '+=220%',
         pin: true,
         scrub: true,
       });
@@ -28,7 +28,7 @@ export default function Landing() {
       tl.fromTo(
         '.portal-core',
         { scale: prefersReduced ? 0.98 : 0.9, filter: prefersReduced ? 'blur(2px)' : 'blur(6px)', opacity: 0.9, '--maskInner': 62, '--maskOuter': 68 },
-        { scale: prefersReduced ? 1.08 : 1.45, filter: 'blur(0px)', opacity: 1, '--maskInner': 105, '--maskOuter': 120, ease: 'none' }
+        { scale: prefersReduced ? 1.10 : 1.52, filter: 'blur(0px)', opacity: 1, '--maskInner': 110, '--maskOuter': 130, ease: 'none' }
       );
 
       // 히어로 텍스트를 어둠 속으로 사라지게
@@ -43,6 +43,14 @@ export default function Landing() {
       );
 
       // 갤러리 섹션 타이틀/그리드 페이드 인
+      gsap.fromTo(
+        '#gallery',
+        { opacity: 0 },
+        {
+          opacity: 1,
+          scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
+        }
+      );
       gsap.fromTo(
         '#gallery .section-title',
         { y: 20, opacity: 0 },
@@ -112,7 +120,7 @@ export default function Landing() {
       </section>
 
       {/* 갤러리: 16:9 네모 박스 플레이스홀더 */}
-      <section id="gallery" className="min-h-[140vh] p-8 bg-[#0b0b0b]">
+      <section id="gallery" className="min-h-[140vh] p-8 bg-[#0b0b0b] opacity-0">
         <h2 className="section-title text-xl md:text-2xl mb-6 text-white/90">Words become images</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(9)].map((_, i) => (

@@ -13,7 +13,7 @@ export default function Landing() {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
       // Split titles(after hero) into per-letter spans for stagger animation
-      document.querySelectorAll<HTMLElement>('.panel .section-title, #gallery .section-title').forEach((titleEl) => {
+      document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title').forEach((titleEl) => {
         if (titleEl.getAttribute('data-split') === 'true') return;
         const text = titleEl.innerText;
         const letters = text.split('').map((ch, idx) => {
@@ -47,8 +47,8 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
-      // Titles(after hero): per-letter appear/disappear with different start per panel
-      gsap.utils.toArray<HTMLElement>('.panel .section-title').forEach((el, idx) => {
+      // Titles(after hero): per-letter appear/disappear with different start per block
+      gsap.utils.toArray<HTMLElement>('#narratives .section-title').forEach((el, idx) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
         // reset to avoid first-letter missing when re-entering
         gsap.set(letters, { opacity: 0 });
@@ -147,9 +147,10 @@ export default function Landing() {
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
       </section>
 
-      {/* Narrative 1 */}
-      <section id="panel-1" className="panel relative min-h-[90vh] bg-white text-black overflow-visible">
-        <div className="container mx-auto px-8 min-h-[90vh] flex flex-col items-center justify-center overflow-visible">
+      {/* Narratives (one section, three blocks) */}
+      <section id="narratives" className="relative bg-white text-black overflow-visible">
+        {/* Block 1 */}
+        <div className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
           <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Words become images.</h2>
           {/* floating thumbs with hover tooltip */}
           <div className="group parallax-item absolute top-10 left-8 overflow-visible">
@@ -169,11 +170,8 @@ export default function Landing() {
             <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
           </div>
         </div>
-      </section>
-
-      {/* Narrative 2 */}
-      <section id="panel-2" className="panel relative min-h-[90vh] bg-white text-black overflow-visible">
-        <div className="container mx-auto px-8 min-h-[90vh] flex flex-col items-center justify-center overflow-visible">
+        {/* Block 2 */}
+        <div className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
           <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Each image carries its seed.</h2>
           <div className="group parallax-item absolute top-16 left-20 overflow-visible">
             <div className="w-28 h-36 rounded-md bg-black/5 shadow" />
@@ -192,11 +190,8 @@ export default function Landing() {
             <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
           </div>
         </div>
-      </section>
-
-      {/* Narrative 3 */}
-      <section id="panel-3" className="panel relative min-h-[90vh] bg-white text-black overflow-visible">
-        <div className="container mx-auto px-8 min-h-[90vh] flex flex-col items-center justify-center overflow-visible">
+        {/* Block 3 */}
+        <div className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
           <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Hover on an image surface what that sparked it.</h2>
           {/* gray boxes with hover indicator + prompt (패널3 전용) */}
           <div className="group parallax-item absolute top-16 left-8">

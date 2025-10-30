@@ -12,6 +12,8 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
+      // 초기 위치를 화면 중앙(0,0)에서 시작
+      gsap.set(['.parallax', '.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       // Split titles(after hero) into per-letter spans for stagger animation
       document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title').forEach((titleEl) => {
         if (titleEl.getAttribute('data-split') === 'true') return;
@@ -108,10 +110,20 @@ export default function Landing() {
       const scale = Math.min(rect.width, rect.height) || 1;
       const dx = (e.clientX - cx) / scale;
       const dy = (e.clientY - cy) / scale;
-      gsap.to('.parallax', { x: dx * 120, y: dy * 120, duration: 0.2, ease: 'power3.out' });
-      gsap.to('.portal-core', { x: dx * 90, y: dy * 90, duration: 0.25, ease: 'power3.out' });
+      // 감도 감소 + 3D 틸트
+      gsap.to('.parallax', {
+        x: dx * 60,
+        y: dy * 60,
+        rotateY: -dx * 8,
+        rotateX: dy * 6,
+        transformPerspective: 800,
+        transformOrigin: 'center center',
+        duration: 0.25,
+        ease: 'power3.out',
+      });
+      gsap.to('.portal-core', { x: dx * 45, y: dy * 45, duration: 0.25, ease: 'power3.out' });
       // 페이지 내 이미지/박스 블록 전체 패럴랙스(텍스트 제외) — 좌우/상하 동일 스케일로 증폭
-      gsap.to('.parallax-item', { x: dx * 100, y: dy * 100, duration: 0.25, ease: 'power2.out' });
+      gsap.to('.parallax-item', { x: dx * 80, y: dy * 80, duration: 0.25, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
 
@@ -162,7 +174,7 @@ export default function Landing() {
     <div ref={rootRef} id="pageRoot" className="bg-black text-white">
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
-        <img src="/image/1.png" alt="hero" className="parallax max-w-none w-auto h-[120vh] object-cover opacity-90" />
+        <img src="/image/1.png" alt="hero" className="parallax max-w-none w-auto h-[120vh] object-cover opacity-90 will-change-transform" />
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}

@@ -86,19 +86,26 @@ export default function Landing() {
 
         // 전역 배경 변경 없음
       });
-      // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정, 텍스트는 검정 → 흰으로 전환
+      // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정 전환(오버레이 사용) + 타이틀 컬러 전환
       const thirdPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(3)');
       if (thirdPanel) {
         gsap.fromTo(
-          thirdPanel,
-          { backgroundColor: '#ffffff', color: '#000000' },
+          thirdPanel.querySelector('.panel3-overlay'),
+          { opacity: 0 },
           {
-            backgroundColor: '#000000',
-            color: '#ffffff',
+            opacity: 1,
             ease: 'none',
-            scrollTrigger: { trigger: thirdPanel, start: 'top 95%', end: 'top 40%', scrub: true },
+            scrollTrigger: { trigger: thirdPanel, start: 'top 92%', end: 'bottom 35%', scrub: true },
           }
         );
+        const panel3Title = thirdPanel.querySelector<HTMLElement>('.panel3-title');
+        if (panel3Title) {
+          gsap.fromTo(
+            panel3Title,
+            { color: '#000000' },
+            { color: '#ffffff', ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 92%', end: 'bottom 35%', scrub: true } }
+          );
+        }
       }
       gsap.fromTo('#gallery .section-title', { y: 16, opacity: 0 }, {
         y: 0,
@@ -235,7 +242,10 @@ export default function Landing() {
             {idx === 2 && (
               <div className="pointer-events-none absolute -top-16 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent" />
             )}
-            <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>
+            <h2 className={`section-title relative z-10 text-3xl md:text-5xl text-center mb-10 ${idx === 2 ? 'panel3-title' : ''}`}>{block.title}</h2>
+            {idx === 2 && (
+              <div className="panel3-overlay pointer-events-none absolute inset-0 bg-black opacity-0 z-0" />
+            )}
             {block.boxes.map((b, i) => (
               <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible z-10`}>
                 <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />

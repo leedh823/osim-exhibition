@@ -109,7 +109,7 @@ export default function Landing() {
           scrollTrigger: { trigger: thirdPanelForOverlay, start: 'top 80%', end: 'top 60%', scrub: true },
         });
       }
-      // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정 전환(오버레이 사용) + 타이틀 컬러 전환
+      // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정 전환(오버레이 + 자체 배경 동기화) + 타이틀 컬러 전환
       const thirdPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(3)');
       if (thirdPanel) {
         gsap.fromTo(
@@ -120,6 +120,12 @@ export default function Landing() {
             ease: 'none',
             scrollTrigger: { trigger: thirdPanel, start: 'top 92%', end: 'bottom 35%', scrub: true },
           }
+        );
+        // 패널3 자체 배경도 같은 구간에서 흰 → 검은색으로 변화(오버레이 제거 후 이음새 없도록)
+        gsap.fromTo(
+          thirdPanel,
+          { backgroundColor: '#ffffff', color: '#000000' },
+          { backgroundColor: '#000000', color: '#ffffff', ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 92%', end: 'top 60%', scrub: true } }
         );
         const panel3Title = thirdPanel.querySelector<HTMLElement>('.panel3-title');
         if (panel3Title) {
@@ -259,7 +265,7 @@ export default function Landing() {
         {blocks.map((block, idx) => (
           <div
             key={idx}
-            className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible ${idx === 2 ? 'bg-black text-white' : 'bg-white text-black'}`}
+            className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible ${idx === 2 ? 'bg-white text-black' : 'bg-white text-black'}`}
           >
             {/* 패널3 상단 경계 부드럽게(흰 → 검정) */}
             {idx === 2 && (

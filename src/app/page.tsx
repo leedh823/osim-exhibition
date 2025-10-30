@@ -250,7 +250,7 @@ export default function Landing() {
             key={idx}
             className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
-            <h2 className={`section-title relative z-10 text-3xl md:text-5xl text-center mb-10 ${idx === 2 ? 'panel3-title' : ''}`}>{block.title}</h2>
+            <h2 className={`section-title relative z-10 text-3xl md:text-5xl text-center mb-10 ${idx === 2 ? 'panel3-title text-white' : 'text-black'}`}>{block.title}</h2>
             {block.boxes.map((b, i) => (
               <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible z-10`}>
                 <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
@@ -275,21 +275,21 @@ export default function Landing() {
         </div>
       </section>
 
-
-      {/* Generate: 네모 박스 + CTA */}
-      <section id="generate" className="min-h-[100vh] bg-white px-8 py-20">
-        <h2 className="text-2xl md:text-4xl mb-8">Generate</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="group relative h-40 rounded-lg bg-[#111] border border-white/10 flex items-center justify-center hover:border-white/30 transition-colors">
-              <span className="text-white/80 group-hover:text-white">Box {i + 1}</span>
-            </div>
-          ))}
-        </div>
-        <div className="mt-10 flex items-center justify-center">
-          <a href="/start" className="px-6 py-3 rounded-full bg-black text-white hover:bg-gray-800 transition-colors">
-            Start Exhibition
-          </a>
+      {/* Cards(3) + CTA */}
+      <section id="cards" className="bg-white px-6 py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1,2,3].map((i) => (
+              <div key={i} className="rounded-2xl border border-black/10 bg-white shadow-sm p-8 min-h-[200px] flex items-center justify-center text-xl">
+                Card {i}
+              </div>
+            ))}
+          </div>
+          <div className="mt-10 flex items-center justify-center">
+            <a href="/start" className="px-8 py-4 rounded-full bg-black text-white hover:bg-gray-800 transition-colors text-lg">
+              시작하기
+            </a>
+          </div>
         </div>
       </section>
     </div>

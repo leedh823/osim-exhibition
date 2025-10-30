@@ -180,11 +180,11 @@ export default function Landing() {
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
             width: '120vw',
-            height: '120vh',
+            height: '130vh',
             objectFit: 'cover',
-            objectPosition: 'center 70%', // 이미지를 더 아래로 내려 상단을 더 확보
+            objectPosition: 'center 85%', // 상단을 더 많이 보이도록 시야를 아래로
             transform: 'translateZ(0)',
-            marginTop: '6vh'
+            marginTop: '30vh'
           }}
         />
       </section>

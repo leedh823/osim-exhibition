@@ -250,9 +250,9 @@ export default function Landing() {
             key={idx}
             className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
-            <h2 className={`section-title relative z-10 text-3xl md:text-5xl text-center mb-10 ${idx === 2 ? 'panel3-title text-white' : 'text-black'}`}>{block.title}</h2>
+            <h2 className={`section-title relative ${idx === 2 ? 'z-[1101] text-white' : 'z-10 text-black'} text-3xl md:text-5xl text-center mb-10`}>{block.title}</h2>
             {block.boxes.map((b, i) => (
-              <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible z-10`}>
+              <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible ${idx === 2 ? 'z-[1101]' : 'z-10'}`}>
                 <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
                 {/* 아래 라인이 그려진 뒤 텍스트가 중앙에서 뜨는 효과 */}
                 <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[260px] max-w-[70vw]">
@@ -268,7 +268,7 @@ export default function Landing() {
       </section>
 
       {/* Exhibition Title (전시 이름) */}
-      <section id="exhibit" className="min-h-[80vh] bg-white text-black flex items-center justify-center px-8">
+      <section id="exhibit" className="relative z-[1101] min-h-[80vh] bg-white text-black flex items-center justify-center px-8">
         <div className="text-center">
           <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
           <p className="section-title exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
@@ -276,7 +276,7 @@ export default function Landing() {
       </section>
 
       {/* Cards(3) + CTA */}
-      <section id="cards" className="bg-white px-6 py-16">
+      <section id="cards" className="relative z-[1101] bg-white px-6 py-16">
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1,2,3].map((i) => (

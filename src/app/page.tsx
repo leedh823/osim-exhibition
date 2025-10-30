@@ -124,28 +124,34 @@ export default function Landing() {
     {
       title: 'Words become images.',
       boxes: [
-        { style: 'top-10 left-8 w-24 h-24', tooltip: 'Prompt: sample A' },
-        { style: 'top-24 right-10 w-28 h-40', tooltip: 'Prompt: sample B' },
-        { style: 'bottom-24 left-24 w-40 h-28', tooltip: 'Prompt: sample C' },
-        { style: 'bottom-16 right-32 w-28 h-28', tooltip: 'Prompt: sample D' },
+        { style: 'top-14 left-10 w-24 h-24', tooltip: 'Prompt: sample A' },
+        { style: 'top-28 right-16 w-28 h-40', tooltip: 'Prompt: sample B' },
+        { style: 'bottom-28 left-28 w-40 h-28', tooltip: 'Prompt: sample C' },
+        { style: 'bottom-16 right-40 w-28 h-28', tooltip: 'Prompt: sample D' },
+        { style: 'top-1/3 left-1/4 w-16 h-16', tooltip: 'Prompt: sample E' },
+        { style: 'top-1/3 right-1/5 w-16 h-24', tooltip: 'Prompt: sample F' },
       ],
     },
     {
       title: 'Each image carries its seed.',
       boxes: [
-        { style: 'top-16 left-20 w-28 h-36', tooltip: 'Prompt: sample E' },
-        { style: 'top-10 right-24 w-20 h-20', tooltip: 'Prompt: sample F' },
-        { style: 'bottom-28 right-16 w-36 h-28', tooltip: 'Prompt: sample G' },
-        { style: 'bottom-16 left-10 w-24 h-24', tooltip: 'Prompt: sample H' },
+        { style: 'top-20 left-24 w-28 h-36', tooltip: 'Prompt: sample G' },
+        { style: 'top-12 right-28 w-20 h-20', tooltip: 'Prompt: sample H' },
+        { style: 'bottom-28 right-20 w-36 h-28', tooltip: 'Prompt: sample I' },
+        { style: 'bottom-20 left-16 w-24 h-24', tooltip: 'Prompt: sample J' },
+        { style: 'top-1/2 left-[12%] w-14 h-14', tooltip: 'Prompt: sample K' },
+        { style: 'top-[45%] right-[15%] w-20 h-14', tooltip: 'Prompt: sample L' },
       ],
     },
     {
       title: 'Hover on an image surface what that sparked it.',
       boxes: [
-        { style: 'top-16 left-8 w-20 h-28', tooltip: 'Prompt: sample I' },
-        { style: 'top-12 right-16 w-28 h-28', tooltip: 'Prompt: sample J' },
-        { style: 'bottom-24 left-28 w-28 h-28', tooltip: 'Prompt: sample K' },
-        { style: 'bottom-20 right-28 w-40 h-28', tooltip: 'Prompt: sample L' },
+        { style: 'top-16 left-10 w-20 h-28', tooltip: 'Prompt: sample M' },
+        { style: 'top-12 right-20 w-28 h-28', tooltip: 'Prompt: sample N' },
+        { style: 'bottom-24 left-32 w-28 h-28', tooltip: 'Prompt: sample O' },
+        { style: 'bottom-20 right-32 w-40 h-28', tooltip: 'Prompt: sample P' },
+        { style: 'top-[42%] left-[8%] w-16 h-16', tooltip: 'Prompt: sample Q' },
+        { style: 'top-[38%] right-[10%] w-16 h-20', tooltip: 'Prompt: sample R' },
       ],
     },
   ];
@@ -186,7 +192,13 @@ export default function Landing() {
             {block.boxes.map((b, i) => (
               <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible`}>
                 <div className="rounded-md bg-black/5 shadow" />
-                <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">{b.tooltip}</div>
+                {/* 아래 라인이 그려진 뒤 텍스트가 중앙에서 뜨는 효과 */}
+                <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[260px] max-w-[70vw]">
+                  <div className="mx-auto h-[3px] bg-black/20 rounded-full w-0 group-hover:w-24 transition-all duration-300"></div>
+                  <div className="mt-2 px-4 py-3 rounded-xl bg-white border border-black/10 shadow text-sm text-black opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center">
+                    {b.tooltip}
+                  </div>
+                </div>
               </div>
             ))}
           </div>

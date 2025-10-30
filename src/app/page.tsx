@@ -12,18 +12,15 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      // Hero pin (동굴 진입) - 모션 축소에서도 pin은 유지
-      ScrollTrigger.create({
-        trigger: '#hero',
-        start: 'top top',
-        end: '+=220%',
-        pin: true,
-        scrub: true,
-      });
-
-      // 포털 코어 마스크/스케일로 동굴 진입감
+      // 단일 타임라인: pin + scrub + 애니메이션
       const tl = gsap.timeline({
-        scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: '+=200%',
+          pin: true,
+          scrub: true,
+        },
       });
       tl.fromTo(
         '.portal-core',
@@ -32,15 +29,7 @@ export default function Landing() {
       );
 
       // 히어로 텍스트를 어둠 속으로 사라지게
-      gsap.fromTo(
-        '#hero h1',
-        { opacity: 1, y: 0 },
-        {
-          opacity: 0,
-          y: prefersReduced ? -10 : -40,
-          scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
-        }
-      );
+      tl.fromTo('#hero h1', { opacity: 1, y: 0 }, { opacity: 0, y: prefersReduced ? -10 : -40, ease: 'none' }, 0);
 
       // 갤러리 섹션 타이틀/그리드 페이드 인
       gsap.fromTo(
@@ -88,6 +77,19 @@ export default function Landing() {
       gsap.to('.portal-core', { x: dx * 20, y: dy * 20, duration: 0.5, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
+
+    // 보수적 리프레시와 폴백(갤러리 보이기)
+    ScrollTrigger.refresh();
+    setTimeout(() => {
+      try {
+        ScrollTrigger.refresh();
+      } catch {}
+      const gallery = document.getElementById('gallery');
+      if (gallery) {
+        // ScrollTrigger가 초기화되지 않는 드문 경우를 대비해 최소한 보이도록
+        gallery.style.opacity = gallery.style.opacity || '1';
+      }
+    }, 100);
 
     return () => {
       window.removeEventListener('mousemove', handler);

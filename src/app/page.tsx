@@ -179,12 +179,12 @@ export default function Landing() {
           alt="hero"
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
-            width: '120vw',
-            height: '130vh',
+            width: '110vw',
+            height: '120vh',
             objectFit: 'cover',
-            objectPosition: 'center 85%', // 상단을 더 많이 보이도록 시야를 아래로
+            objectPosition: 'center 90%',
             transform: 'translateZ(0)',
-            marginTop: '30vh'
+            marginTop: '40vh'
           }}
         />
       </section>

@@ -73,8 +73,8 @@ export default function Landing() {
       const cy = rect.top + rect.height / 2;
       const dx = (e.clientX - cx) / rect.width;
       const dy = (e.clientY - cy) / rect.height;
-      gsap.to('.parallax', { x: dx * 30, y: dy * 30, duration: 0.4, ease: 'power2.out' });
-      gsap.to('.portal-core', { x: dx * 20, y: dy * 20, duration: 0.5, ease: 'power2.out' });
+      gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
+      gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
     };
     window.addEventListener('mousemove', handler);
 

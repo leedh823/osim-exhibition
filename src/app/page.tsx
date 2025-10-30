@@ -207,23 +207,12 @@ export default function Landing() {
         <h2 className="section-title text-xl md:text-2xl mb-6 text-black/90">Words become images</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(9)].map((_, i) => (
-            <div key={i} className="group relative">
+            <div key={i} className="relative">
               <div
-                className="card relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm focus-visible:ring-2 focus-visible:ring-black/40"
-                tabIndex={0}
-                role="button"
+                className="card relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm"
                 aria-label={`갤러리 아이템 ${i + 1}`}
               >
                 <div className="absolute inset-0 grid place-items-center text-black/50">16:9</div>
-                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity p-4 text-sm pointer-events-none">
-                  <p className="text-black">Prompt</p>
-                  <p className="mt-1 text-black/70">“...”</p>
-                </div>
-              </div>
-              {/* bottom indicator box + prompt; appears on hover/focus */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0">
-                <div className="w-24 h-3 rounded-md bg-black/10" />
-                <div className="px-3 py-2 rounded-md bg-black text-white text-xs">Prompt: sample text {i + 1}</div>
               </div>
             </div>
           ))}

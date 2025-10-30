@@ -47,7 +47,7 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
-      // Narrative titles: rise from bottom; letters stagger in; then fade slightly above center
+      // Narrative titles: rise from bottom; letters stagger in; then letters stagger out slightly above center
       gsap.utils.toArray<HTMLElement>('.panel .section-title').forEach((el) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
         // appear from bottom of viewport
@@ -62,10 +62,11 @@ export default function Landing() {
             scrollTrigger: { trigger: el, start: 'bottom 95%', end: 'center 70%', scrub: true },
           }
         );
-        // fade out near upper-middle
-        gsap.to(el, {
+        // fade out near upper-middle (letter-by-letter)
+        gsap.to(letters, {
           y: -20,
           opacity: 0,
+          stagger: 0.02,
           ease: 'power2.inOut',
           scrollTrigger: { trigger: el, start: 'center 40%', end: 'top 35%', scrub: true },
         });
@@ -194,9 +195,10 @@ export default function Landing() {
                   <p className="mt-1 text-black/70">“...”</p>
                 </div>
               </div>
-              {/* bottom tooltip controlled by parent group */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-2 rounded-md bg-black text-white text-xs opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0">
-                Prompt: Example description for item {i + 1}
+              {/* bottom indicator box + prompt; appears on hover/focus */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0">
+                <div className="w-24 h-3 rounded-md bg-black/10" />
+                <div className="px-3 py-2 rounded-md bg-black text-white text-xs">Prompt: sample text {i + 1}</div>
               </div>
             </div>
           ))}

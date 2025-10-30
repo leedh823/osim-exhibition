@@ -91,18 +91,20 @@ export default function Landing() {
     <div ref={rootRef} className="bg-black text-white">
       {/* Hero: 동굴(포털) */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center">
-        <div
-          className="portal-core parallax absolute w-[60vmin] h-[60vmin] rounded-full"
-          style={{
+        {(() => {
+          const portalStyle = {
             background: 'conic-gradient(from 0deg, #0b0b0b, #141414 50%, #0b0b0b)',
             // CSS 변수로 마스크 크기를 제어하여 원 안으로 들어가는 효과
-            ['--maskInner' as any]: 62,
-            ['--maskOuter' as any]: 68,
+            ['--maskInner']: 62,
+            ['--maskOuter']: 68,
             maskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
             WebkitMaskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
             boxShadow: '0 0 120px 40px rgba(0,0,0,0.6) inset',
-          }}
-        />
+          } as React.CSSProperties & Record<'--maskInner' | '--maskOuter', number>;
+          return (
+            <div className="portal-core parallax absolute w-[60vmin] h-[60vmin] rounded-full" style={portalStyle} />
+          );
+        })()}
         <h1 className="parallax relative z-10 text-3xl md:text-5xl" style={{ letterSpacing: '0.04em' }}>
           Enter the Portal
         </h1>

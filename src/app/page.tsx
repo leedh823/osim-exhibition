@@ -119,6 +119,37 @@ export default function Landing() {
     };
   }, []);
 
+  // 데이터 주도 블록 정의: 타이틀과 박스(좌표/크기/툴팁)
+  const blocks = [
+    {
+      title: 'Words become images.',
+      boxes: [
+        { style: 'top-10 left-8 w-24 h-24', tooltip: 'Prompt: sample A' },
+        { style: 'top-24 right-10 w-28 h-40', tooltip: 'Prompt: sample B' },
+        { style: 'bottom-24 left-24 w-40 h-28', tooltip: 'Prompt: sample C' },
+        { style: 'bottom-16 right-32 w-28 h-28', tooltip: 'Prompt: sample D' },
+      ],
+    },
+    {
+      title: 'Each image carries its seed.',
+      boxes: [
+        { style: 'top-16 left-20 w-28 h-36', tooltip: 'Prompt: sample E' },
+        { style: 'top-10 right-24 w-20 h-20', tooltip: 'Prompt: sample F' },
+        { style: 'bottom-28 right-16 w-36 h-28', tooltip: 'Prompt: sample G' },
+        { style: 'bottom-16 left-10 w-24 h-24', tooltip: 'Prompt: sample H' },
+      ],
+    },
+    {
+      title: 'Hover on an image surface what that sparked it.',
+      boxes: [
+        { style: 'top-16 left-8 w-20 h-28', tooltip: 'Prompt: sample I' },
+        { style: 'top-12 right-16 w-28 h-28', tooltip: 'Prompt: sample J' },
+        { style: 'bottom-24 left-28 w-28 h-28', tooltip: 'Prompt: sample K' },
+        { style: 'bottom-20 right-28 w-40 h-28', tooltip: 'Prompt: sample L' },
+      ],
+    },
+  ];
+
   return (
     <div ref={rootRef} id="pageRoot" className="bg-black text-white">
       {/* Hero: 포털(화이트) */}
@@ -147,82 +178,19 @@ export default function Landing() {
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
       </section>
 
-      {/* Narratives (one section, three blocks) */}
+      {/* Narratives (one section, data-driven blocks) */}
       <section id="narratives" className="relative bg-white text-black overflow-visible">
-        {/* Block 1 */}
-        <div className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
-          <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Words become images.</h2>
-          {/* floating thumbs with hover tooltip */}
-          <div className="group parallax-item absolute top-10 left-8 overflow-visible">
-            <div className="w-24 h-24 rounded-md bg-black/5 shadow" />
-            <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
+        {blocks.map((block, idx) => (
+          <div key={idx} className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
+            <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>
+            {block.boxes.map((b, i) => (
+              <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible`}>
+                <div className="rounded-md bg-black/5 shadow" />
+                <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">{b.tooltip}</div>
+              </div>
+            ))}
           </div>
-          <div className="group parallax-item absolute top-24 right-10 overflow-visible">
-            <div className="w-28 h-40 rounded-md bg-black/5 shadow" />
-            <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
-          </div>
-          <div className="group parallax-item absolute bottom-24 left-24 overflow-visible">
-            <div className="w-40 h-28 rounded-md bg-black/5 shadow" />
-            <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
-          </div>
-          <div className="group parallax-item absolute bottom-16 right-32 overflow-visible">
-            <div className="w-28 h-28 rounded-md bg-black/5 shadow" />
-            <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
-          </div>
-        </div>
-        {/* Block 2 */}
-        <div className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
-          <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Each image carries its seed.</h2>
-          <div className="group parallax-item absolute top-16 left-20 overflow-visible">
-            <div className="w-28 h-36 rounded-md bg-black/5 shadow" />
-            <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
-          </div>
-          <div className="group parallax-item absolute top-10 right-24 overflow-visible">
-            <div className="w-20 h-20 rounded-md bg-black/5 shadow" />
-            <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
-          </div>
-          <div className="group parallax-item absolute bottom-28 right-16 overflow-visible">
-            <div className="w-36 h-28 rounded-md bg-black/5 shadow" />
-            <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
-          </div>
-          <div className="group parallax-item absolute bottom-16 left-10 overflow-visible">
-            <div className="w-24 h-24 rounded-md bg-black/5 shadow" />
-            <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 px-4 py-2 rounded-xl bg-white border border-black/10 shadow text-xs text-black opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">Prompt: sample text</div>
-          </div>
-        </div>
-        {/* Block 3 */}
-        <div className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
-          <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">Hover on an image surface what that sparked it.</h2>
-          {/* gray boxes with hover indicator + prompt (패널3 전용) */}
-          <div className="group parallax-item absolute top-16 left-8">
-            <div className="w-20 h-28 rounded-md bg-black/5 shadow" />
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">
-              <div className="w-16 h-3 rounded-md bg-black/10" />
-              <div className="px-3 py-2 rounded-md bg-black text-white text-xs">Prompt: sample text A</div>
-            </div>
-          </div>
-          <div className="group parallax-item absolute top-12 right-16">
-            <div className="w-28 h-28 rounded-md bg-black/5 shadow" />
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">
-              <div className="w-16 h-3 rounded-md bg-black/10" />
-              <div className="px-3 py-2 rounded-md bg-black text-white text-xs">Prompt: sample text B</div>
-            </div>
-          </div>
-          <div className="group parallax-item absolute bottom-24 left-28">
-            <div className="w-28 h-28 rounded-md bg-black/5 shadow" />
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">
-              <div className="w-16 h-3 rounded-md bg-black/10" />
-              <div className="px-3 py-2 rounded-md bg-black text-white text-xs">Prompt: sample text C</div>
-            </div>
-          </div>
-          <div className="group parallax-item absolute bottom-20 right-28">
-            <div className="w-40 h-28 rounded-md bg-black/5 shadow" />
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">
-              <div className="w-16 h-3 rounded-md bg-black/10" />
-              <div className="px-3 py-2 rounded-md bg-black text-white text-xs">Prompt: sample text D</div>
-            </div>
-          </div>
-        </div>
+        ))}
       </section>
 
 

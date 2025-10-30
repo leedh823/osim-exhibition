@@ -99,7 +99,18 @@ export default function Landing() {
       // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정 전환(오버레이 + 자체 배경 동기화) + 타이틀 컬러 전환
       const thirdPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(3)');
       if (thirdPanel && globalOverlay) {
-        gsap.fromTo(globalOverlay, { opacity: 0 }, { opacity: 1, ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 90%', end: 'top 60%', scrub: true } });
+        // 패널3 자체 배경을 흰 → 검정으로 전환
+        gsap.fromTo(
+          thirdPanel,
+          { backgroundColor: '#ffffff', color: '#000000' },
+          { backgroundColor: '#000000', color: '#ffffff', ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 90%', end: 'top 60%', scrub: true } }
+        );
+        // 전역 오버레이는 패널3 초반에서 서서히 제거(한 번만 검정으로 바뀌도록)
+        gsap.to(globalOverlay, {
+          opacity: 0,
+          ease: 'none',
+          scrollTrigger: { trigger: thirdPanel, start: 'top 80%', end: 'top 60%', scrub: true },
+        });
         const panel3Title = thirdPanel.querySelector<HTMLElement>('.panel3-title');
         if (panel3Title) {
           gsap.fromTo(
@@ -258,7 +269,7 @@ export default function Landing() {
       </section>
 
       {/* Exhibition Title (전시 이름) */}
-      <section id="exhibit" className="min-h-[80vh] bg-black text-white flex items-center justify-center px-8">
+      <section id="exhibit" className="min-h-[80vh] bg-white text-black flex items-center justify-center px-8">
         <div className="text-center">
           <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
           <p className="section-title exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
@@ -267,7 +278,7 @@ export default function Landing() {
 
 
       {/* Generate: 네모 박스 + CTA */}
-      <section id="generate" className="min-h-[100vh] bg-transparent px-8 py-20">
+      <section id="generate" className="min-h-[100vh] bg-white px-8 py-20">
         <h2 className="text-2xl md:text-4xl mb-8">Generate</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[...Array(4)].map((_, i) => (

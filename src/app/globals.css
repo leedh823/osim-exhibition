@@ -240,6 +240,23 @@ button:active {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
+/* Hero floating decorations */
+@keyframes float-slow {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.float-slow { animation: float-slow 6s ease-in-out infinite; }
+
+@keyframes float-medium {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+  100% { transform: translateY(0); }
+}
+
+.float-medium { animation: float-medium 8s ease-in-out infinite; }
+
 /* 가로형 16:9 비율 강제 */
 .aspect-16-9 {
   aspect-ratio: 16 / 9;

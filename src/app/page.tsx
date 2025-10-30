@@ -94,9 +94,15 @@ export default function Landing() {
             <div className="portal-core parallax absolute w-[60vmin] h-[60vmin] rounded-full" style={portalStyle} />
           );
         })()}
+        {/* Floating decorative thumbs (placeholders) */}
+        <div className="absolute top-8 left-8 w-28 h-28 rounded-md bg-white/80 shadow float-medium" />
+        <div className="absolute top-14 right-6 w-40 h-56 rounded-md bg-white/80 shadow float-slow" />
+        <div className="absolute bottom-16 left-24 w-44 h-32 rounded-md bg-white/80 shadow float-slow" />
+        <div className="absolute bottom-20 right-24 w-36 h-36 rounded-md bg-white/80 shadow float-medium" />
         <h1 className="parallax relative z-10 text-4xl md:text-6xl" style={{ letterSpacing: '0.02em' }}>
           Words become images.
         </h1>
+        <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
       </section>
 
       {/* 갤러리: 16:9 네모 박스 플레이스홀더 */}
@@ -107,7 +113,7 @@ export default function Landing() {
           {[...Array(9)].map((_, i) => (
             <div
               key={i}
-              className="card group relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm"
+              className="card group relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm focus-visible:ring-2 focus-visible:ring-black/40"
               tabIndex={0}
               role="button"
               aria-label={`갤러리 아이템 ${i + 1}`}

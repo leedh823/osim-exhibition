@@ -86,53 +86,26 @@ export default function Landing() {
 
         // 전역 배경 변경 없음
       });
-      // 2번 패널이 사라질 때부터 3번 텍스트 등장 직전까지: 전체 배경을 그라데이션으로 검정화
+      // 2번 후반부부터 전역 오버레이를 올리고, 3번 초반에서 완전히 전환
       const secondPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(2)');
-      const overlay = document.querySelector<HTMLElement>('#narratives .between-overlay');
-      if (secondPanel && overlay) {
-        gsap.fromTo(
-          overlay,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            ease: 'none',
-            scrollTrigger: { trigger: secondPanel, start: 'center 30%', end: 'bottom top', scrub: true },
-          }
-        );
-      }
-      // 3번 타이틀 등장 시 오버레이 제거(아래 패널3 자체가 검정 배경)
-      const thirdPanelForOverlay = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(3)');
-      if (thirdPanelForOverlay && overlay) {
-        gsap.to(overlay, {
-          opacity: 0,
+      const globalOverlay = document.getElementById('global-overlay');
+      if (secondPanel && globalOverlay) {
+        gsap.fromTo(globalOverlay, { opacity: 0 }, {
+          opacity: 1,
           ease: 'none',
-          scrollTrigger: { trigger: thirdPanelForOverlay, start: 'top 80%', end: 'top 60%', scrub: true },
+          scrollTrigger: { trigger: secondPanel, start: 'center 30%', end: 'bottom top', scrub: true },
         });
       }
       // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정 전환(오버레이 + 자체 배경 동기화) + 타이틀 컬러 전환
       const thirdPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(3)');
-      if (thirdPanel) {
-        gsap.fromTo(
-          thirdPanel.querySelector('.panel3-overlay'),
-          { opacity: 0 },
-          {
-            opacity: 1,
-            ease: 'none',
-            scrollTrigger: { trigger: thirdPanel, start: 'top 92%', end: 'bottom 35%', scrub: true },
-          }
-        );
-        // 패널3 자체 배경도 같은 구간에서 흰 → 검은색으로 변화(오버레이 제거 후 이음새 없도록)
-        gsap.fromTo(
-          thirdPanel,
-          { backgroundColor: '#ffffff', color: '#000000' },
-          { backgroundColor: '#000000', color: '#ffffff', ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 92%', end: 'top 60%', scrub: true } }
-        );
+      if (thirdPanel && globalOverlay) {
+        gsap.fromTo(globalOverlay, { opacity: 0 }, { opacity: 1, ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 90%', end: 'top 60%', scrub: true } });
         const panel3Title = thirdPanel.querySelector<HTMLElement>('.panel3-title');
         if (panel3Title) {
           gsap.fromTo(
             panel3Title,
             { color: '#000000' },
-            { color: '#ffffff', ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 92%', end: 'bottom 35%', scrub: true } }
+            { color: '#ffffff', ease: 'none', scrollTrigger: { trigger: thirdPanel, start: 'top 90%', end: 'top 60%', scrub: true } }
           );
         }
       }
@@ -240,6 +213,8 @@ export default function Landing() {
 
   return (
     <div ref={rootRef} id="pageRoot" className="bg-white text-black">
+      {/* Global overlay: fades black across the whole viewport when transitioning 2 → 3 */}
+      <div id="global-overlay" className="pointer-events-none fixed inset-0 bg-black opacity-0 z-[5]" />
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
         <img
@@ -259,22 +234,13 @@ export default function Landing() {
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}
-      <section id="narratives" className="relative bg-white text-black overflow-visible" style={{ opacity: 0 }}>
-        {/* 2번→3번 사이: 화면 전체 그라데이션으로 천천히 검정으로 전환 */}
-        <div className="between-overlay pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0 z-0" />
+      <section id="narratives" className="relative overflow-visible" style={{ opacity: 0 }}>
         {blocks.map((block, idx) => (
           <div
             key={idx}
-            className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible ${idx === 2 ? 'bg-white text-black' : 'bg-white text-black'}`}
+            className={`panel-block relative min-h-[90vh] w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
-            {/* 패널3 상단 경계 부드럽게(흰 → 검정) */}
-            {idx === 2 && (
-              <div className="pointer-events-none absolute -top-16 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent" />
-            )}
             <h2 className={`section-title relative z-10 text-3xl md:text-5xl text-center mb-10 ${idx === 2 ? 'panel3-title' : ''}`}>{block.title}</h2>
-            {idx === 2 && (
-              <div className="panel3-overlay pointer-events-none absolute inset-0 bg-black opacity-0 z-0" />
-            )}
             {block.boxes.map((b, i) => (
               <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible z-10`}>
                 <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />

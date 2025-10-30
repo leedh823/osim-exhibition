@@ -25,51 +25,7 @@ export default function Landing() {
         titleEl.innerHTML = letters;
         titleEl.setAttribute('data-split', 'true');
       });
-      // Hero: 스크롤 시 이미지 확대 → 흰색 화면 전환 → 내러티브 등장
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#hero',
-          start: 'top top',
-          end: '+=180%',
-          pin: true,
-          scrub: true,
-        },
-      });
-      tl.fromTo(
-        '.parallax',
-        { scale: 1 },
-        { scale: prefersReduced ? 1.05 : 1.6, ease: 'none' }
-      );
-      tl.to('.white-overlay', { opacity: 1, ease: 'none' }, 0.5);
-      tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.5);
-
-      // Hero zoom-to-white then gallery reveal
-      const heroTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#hero',
-          start: 'top top',
-          end: '+=180%',
-          pin: true,
-          scrub: true,
-        },
-      });
-      heroTl.fromTo(
-        '#hero .parallax',
-        { scale: 1 },
-        { scale: 1.4, ease: 'none' }
-      );
-      heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none' }, 0.6);
-      heroTl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.8);
-
-      // Narratives reveal
-      gsap.fromTo(
-        '#narratives',
-        { opacity: 0 },
-        {
-          opacity: 1,
-          scrollTrigger: { trigger: '#narratives', start: 'top 95%', end: 'top 70%', scrub: true },
-        }
-      );
+      // (복구) 히어로는 스크롤 고정 확대 없이 마우스 패럴랙스만 유지
       // Titles(after hero): per-letter appear/disappear with different start per block
       gsap.utils.toArray<HTMLElement>('#narratives .section-title').forEach((el, idx) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
@@ -201,18 +157,17 @@ export default function Landing() {
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
             width: '100vw',
-            height: '120vh',
+            height: '115vh',
             objectFit: 'cover',
-            objectPosition: 'center 85%',
+            objectPosition: 'center 90%',
             transform: 'translateZ(0)',
-            marginTop: '0'
+            marginTop: '40vh'
           }}
         />
-        <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}
-      <section id="narratives" className="relative bg-white text-black overflow-visible" style={{ opacity: 0 }}>
+      <section id="narratives" className="relative bg-white text-black overflow-visible">
         {blocks.map((block, idx) => (
           <div key={idx} className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
             <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>

@@ -36,17 +36,13 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
-      // Narrative sections reveal
+      // Narrative titles: appear then fade near center (not scrolling all the way up)
       gsap.utils.toArray<HTMLElement>('.panel .section-title').forEach((el) => {
-        gsap.fromTo(
-          el,
-          { y: 24, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 60%', scrub: true },
-          }
-        );
+        const tlTitle = gsap.timeline({
+          scrollTrigger: { trigger: el, start: 'top 70%', end: 'top 40%', scrub: true },
+        });
+        tlTitle.fromTo(el, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' });
+        tlTitle.to(el, { y: -20, opacity: 0, duration: 0.5, ease: 'power2.inOut' });
       });
       gsap.fromTo(
         '#gallery .section-title',
@@ -80,8 +76,8 @@ export default function Landing() {
       const dy = (e.clientY - cy) / rect.height;
       gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
       gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
-      // panels parallax
-      gsap.to('.panel .parallax-item', { x: dx * 30, y: dy * 30, duration: 0.35, ease: 'power2.out' });
+      // panels + gallery parallax
+      gsap.to('.panel .parallax-item, #gallery .card', { x: dx * 24, y: dy * 24, duration: 0.35, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
 
@@ -159,9 +155,9 @@ export default function Landing() {
         <h2 className="section-title text-xl md:text-2xl mb-6 text-black/90">Words become images</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(9)].map((_, i) => (
-            <div key={i} className="relative">
+            <div key={i} className="group relative">
               <div
-                className="card group relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm focus-visible:ring-2 focus-visible:ring-black/40"
+                className="card relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm focus-visible:ring-2 focus-visible:ring-black/40"
                 tabIndex={0}
                 role="button"
                 aria-label={`갤러리 아이템 ${i + 1}`}
@@ -172,7 +168,7 @@ export default function Landing() {
                   <p className="mt-1 text-black/70">“...”</p>
                 </div>
               </div>
-              {/* bottom tooltip */}
+              {/* bottom tooltip controlled by parent group */}
               <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-2 rounded-md bg-black text-white text-xs opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0">
                 Prompt: Example description for item {i + 1}
               </div>

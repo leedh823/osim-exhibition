@@ -53,6 +53,18 @@ export default function Landing() {
           scrollTrigger: { trigger: '#narratives', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
+      // Narratives 진입 시 전체 배경을 검정, 텍스트를 흰색으로 전환
+      gsap.to('#pageRoot', {
+        backgroundColor: '#000000',
+        color: '#ffffff',
+        ease: 'none',
+        scrollTrigger: { trigger: '#narratives', start: 'top 90%', end: 'bottom 10%', scrub: true },
+      });
+      gsap.to('#hero', {
+        backgroundColor: '#000000',
+        ease: 'none',
+        scrollTrigger: { trigger: '#narratives', start: 'top 90%', end: 'bottom 10%', scrub: true },
+      });
       // Titles(after hero): per-letter appear/disappear with different start per block
       gsap.utils.toArray<HTMLElement>('#narratives .section-title').forEach((el, idx) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
@@ -91,6 +103,13 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'top 70%', scrub: true },
         }
       );
+      // 갤러리 진입 시 배경을 다시 흰색으로 복귀
+      gsap.to('#pageRoot', {
+        backgroundColor: '#ffffff',
+        color: '#000000',
+        ease: 'none',
+        scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
+      });
       gsap.fromTo(
         '.card',
         { y: prefersReduced ? 10 : 40, opacity: 0 },
@@ -101,6 +120,20 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'bottom 70%', scrub: true },
         }
       );
+
+      // Exhibition title 등장
+      gsap.fromTo('#exhibit .exhibit-title', { y: 30, opacity: 0 }, {
+        y: 0,
+        opacity: 1,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: '#exhibit', start: 'top 85%', end: 'top 60%', scrub: true },
+      });
+      gsap.fromTo('#exhibit .exhibit-subtitle', { y: 20, opacity: 0 }, {
+        y: 0,
+        opacity: 1,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: '#exhibit', start: 'top 80%', end: 'top 55%', scrub: true },
+      });
     }, rootRef);
 
     // 히어로 패럴랙스
@@ -195,7 +228,7 @@ export default function Landing() {
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}
-      <section id="narratives" className="relative bg-white text-black overflow-visible" style={{ opacity: 0 }}>
+      <section id="narratives" className="relative bg-transparent text-current overflow-visible" style={{ opacity: 0 }}>
         {blocks.map((block, idx) => (
           <div key={idx} className="panel-block relative min-h-[90vh] container mx-auto px-8 flex flex-col items-center justify-center overflow-visible">
             <h2 className="section-title relative z-10 text-3xl md:text-5xl text-center mb-10">{block.title}</h2>
@@ -213,6 +246,14 @@ export default function Landing() {
             ))}
           </div>
         ))}
+      </section>
+
+      {/* Exhibition Title (전시 이름) */}
+      <section id="exhibit" className="min-h-[80vh] bg-transparent flex items-center justify-center px-8">
+        <div className="text-center">
+          <h2 className="exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
+          <p className="exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
+        </div>
       </section>
 
 

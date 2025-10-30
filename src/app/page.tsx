@@ -25,41 +25,34 @@ export default function Landing() {
         titleEl.innerHTML = letters;
         titleEl.setAttribute('data-split', 'true');
       });
-      // Hero: 스크롤 시 이미지 확대 → 흰색 화면 전환 → 내러티브 등장
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#hero',
-          start: 'top top',
-          end: '+=180%',
-          pin: true,
-          scrub: true,
-        },
-      });
-      tl.fromTo(
-        '.parallax',
-        { scale: 1 },
-        { scale: prefersReduced ? 1.05 : 1.6, ease: 'none' }
-      );
-      tl.to('.white-overlay', { opacity: 1, ease: 'none' }, 0.5);
-      tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.5);
-
-      // Hero zoom-to-white then gallery reveal
-      const heroTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#hero',
-          start: 'top top',
-          end: '+=180%',
-          pin: true,
-          scrub: true,
-        },
-      });
-      heroTl.fromTo(
+      // Hero: 단일 타임라인으로 고정 확대 후 흰 전환(스크롤 중 아래 컨텐츠 노출 방지)
+      gsap.fromTo(
         '#hero .parallax',
         { scale: 1 },
-        { scale: 1.4, ease: 'none' }
+        {
+          scale: prefersReduced ? 1.1 : 3,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#hero',
+            start: 'top top',
+            end: '+=300%',
+            pin: true,
+            scrub: true,
+            anticipatePin: 1,
+          },
+        }
       );
-      heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none' }, 0.6);
-      heroTl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.8);
+      gsap.to('#hero .white-overlay', {
+        opacity: 1,
+        ease: 'none',
+        scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=300%', scrub: true },
+      });
+      gsap.to('#pageRoot', {
+        backgroundColor: '#ffffff',
+        color: '#000000',
+        ease: 'none',
+        scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=300%', scrub: true },
+      });
 
       // Narratives reveal
       gsap.fromTo(
@@ -201,11 +194,11 @@ export default function Landing() {
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
             width: '100vw',
-            height: '115vh',
+            height: '120vh',
             objectFit: 'cover',
-            objectPosition: 'center 90%',
+            objectPosition: 'center 75%',
             transform: 'translateZ(0)',
-            marginTop: '40vh'
+            marginTop: '0'
           }}
         />
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />

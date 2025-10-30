@@ -35,14 +35,47 @@ export default function Landing() {
         }
       );
     }, rootRef);
+    // 히어로 패럴랙스 마우스 반응(포털 복구)
+    const el = rootRef.current;
+    const handler = (e: MouseEvent) => {
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) / rect.width;
+      const dy = (e.clientY - cy) / rect.height;
+      gsap.to('.parallax', { x: dx * 50, y: dy * 50, duration: 0.25, ease: 'power3.out' });
+      gsap.to('.portal-core', { x: dx * 35, y: dy * 35, duration: 0.3, ease: 'power3.out' });
+    };
+    window.addEventListener('mousemove', handler);
 
     return () => {
+      window.removeEventListener('mousemove', handler);
       ctx.revert();
     };
   }, []);
 
   return (
     <div ref={rootRef} id="pageRoot" className="bg-white text-black">
+      {/* Hero: 포털(화이트) */}
+      <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center">
+        {(() => {
+          const portalStyle = {
+            background: '#ffffff',
+            ['--maskInner']: 62,
+            ['--maskOuter']: 68,
+            maskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
+            WebkitMaskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
+            boxShadow: '0 0 80px 20px rgba(0,0,0,0.08)',
+          } as React.CSSProperties & Record<'--maskInner' | '--maskOuter', number>;
+          return (
+            <div className="portal-core parallax absolute w-[60vmin] h-[60vmin] rounded-full" style={portalStyle} />
+          );
+        })()}
+        <h1 className="parallax relative z-10 text-4xl md:text-6xl" style={{ letterSpacing: '0.02em' }}>
+          Words become images.
+        </h1>
+      </section>
 
       {/* 갤러리: 16:9 네모 박스 플레이스홀더 */}
       <section id="gallery" className="min-h-[140vh] p-8 bg-white text-black">

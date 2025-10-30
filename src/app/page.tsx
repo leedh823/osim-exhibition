@@ -39,9 +39,9 @@ export default function Landing() {
       });
       // 전체 구간을 1로 보고 진행(스케일 1 → 5)
       heroTl.fromTo('#hero .parallax', { scale: 1 }, { scale: 5, ease: 'none', duration: 1 }, 0);
-      // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작
+      // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작 + 히어로 배경도 함께 전환(경계색 제거)
       heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none', duration: 0.4 }, 0.6);
-      heroTl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none', duration: 0.4 }, 0.6);
+      heroTl.to(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000', ease: 'none', duration: 0.4 }, 0.6);
 
       // Narratives reveal
       gsap.fromTo(
@@ -113,12 +113,12 @@ export default function Landing() {
       const scale = Math.min(rect.width, rect.height) || 1;
       const dx = (e.clientX - cx) / scale;
       const dy = (e.clientY - cy) / scale;
-      // 감도 감소 + 3D 틸트
+      // 중앙에서 크게 벗어나지 않도록 감도 축소
       gsap.to('.parallax', {
-        x: dx * 60,
-        y: dy * 60,
-        rotateY: -dx * 8,
-        rotateX: dy * 6,
+        x: dx * 15,
+        y: dy * 15,
+        rotateY: -dx * 2,
+        rotateX: dy * 1,
         transformPerspective: 800,
         transformOrigin: 'center center',
         duration: 0.25,

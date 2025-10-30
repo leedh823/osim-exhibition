@@ -104,12 +104,14 @@ export default function Landing() {
       const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      const dx = (e.clientX - cx) / rect.width;
-      const dy = (e.clientY - cy) / rect.height;
-      gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
-      gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
-      // 페이지 내 이미지/박스 블록 전체 패럴랙스(텍스트 제외)
-      gsap.to('.parallax-item', { x: dx * 40, y: dy * 40, duration: 0.35, ease: 'power2.out' });
+      // 동일 범위의 이동감을 위해 정규화 스케일을 최소변으로 통일
+      const scale = Math.min(rect.width, rect.height) || 1;
+      const dx = (e.clientX - cx) / scale;
+      const dy = (e.clientY - cy) / scale;
+      gsap.to('.parallax', { x: dx * 120, y: dy * 120, duration: 0.2, ease: 'power3.out' });
+      gsap.to('.portal-core', { x: dx * 90, y: dy * 90, duration: 0.25, ease: 'power3.out' });
+      // 페이지 내 이미지/박스 블록 전체 패럴랙스(텍스트 제외) — 좌우/상하 동일 스케일로 증폭
+      gsap.to('.parallax-item', { x: dx * 100, y: dy * 100, duration: 0.25, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
 

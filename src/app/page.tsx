@@ -16,7 +16,7 @@ export default function Landing() {
       gsap.set('.parallax', { x: 0, y: '30vh', rotateX: 0, rotateY: 0 });
       gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       // Split titles(after hero) into per-letter spans for stagger animation
-      document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title').forEach((titleEl) => {
+      document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title, #exhibit .section-title, #exhibit .exhibit-subtitle').forEach((titleEl) => {
         if (titleEl.getAttribute('data-split') === 'true') return;
         const text = titleEl.innerText;
         const letters = text.split('').map((ch, idx) => {
@@ -50,20 +50,22 @@ export default function Landing() {
         { opacity: 0 },
         {
           opacity: 1,
-          scrollTrigger: { trigger: '#narratives', start: 'top 95%', end: 'top 70%', scrub: true },
+          scrollTrigger: { trigger: '#narratives', start: 'top bottom', end: 'top center', scrub: true },
         }
       );
-      // Narratives 진입 시 전체 배경을 검정, 텍스트를 흰색으로 전환
-      gsap.to('#pageRoot', {
-        backgroundColor: '#000000',
-        color: '#ffffff',
-        ease: 'none',
-        scrollTrigger: { trigger: '#narratives', start: 'top 90%', end: 'bottom 10%', scrub: true },
-      });
-      gsap.to('#hero', {
-        backgroundColor: '#000000',
-        ease: 'none',
-        scrollTrigger: { trigger: '#narratives', start: 'top 90%', end: 'bottom 10%', scrub: true },
+      // 섹션 중앙 기준으로 배경/텍스트 색 토글(안전한 onEnter/onLeave)
+      ScrollTrigger.create({
+        trigger: '#narratives',
+        start: 'center center',
+        end: 'bottom top',
+        onEnter: () => {
+          gsap.set(document.body, { backgroundColor: '#000000' });
+          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#000000', color: '#ffffff' });
+        },
+        onLeaveBack: () => {
+          gsap.set(document.body, { backgroundColor: '#ffffff' });
+          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000' });
+        },
       });
       // Titles(after hero): per-letter appear/disappear with different start per block
       gsap.utils.toArray<HTMLElement>('#narratives .section-title').forEach((el, idx) => {
@@ -93,22 +95,33 @@ export default function Landing() {
           ease: 'power2.inOut',
           scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 15%', scrub: true },
         });
+
+        // 텍스트가 화면 중앙에 올 때 배경을 검정, 텍스트를 흰색으로 전환
+        gsap.to(['#pageRoot', '#hero'], {
+          backgroundColor: '#000000',
+          color: '#ffffff',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'center center',
+            end: '+=1',
+            toggleActions: 'play reverse play reverse',
+          },
+        });
       });
-      gsap.fromTo(
-        '#gallery .section-title',
-        { y: 16, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'top 70%', scrub: true },
-        }
-      );
-      // 갤러리 진입 시 배경을 다시 흰색으로 복귀
-      gsap.to('#pageRoot', {
-        backgroundColor: '#ffffff',
-        color: '#000000',
-        ease: 'none',
-        scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
+      gsap.fromTo('#gallery .section-title', { y: 16, opacity: 0 }, {
+        y: 0,
+        opacity: 1,
+        scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'top 70%', scrub: true },
+      });
+      // 갤러리 진입 시 확실하게 흰 배경 복귀
+      ScrollTrigger.create({
+        trigger: '#gallery',
+        start: 'top bottom',
+        onEnter: () => {
+          gsap.set(document.body, { backgroundColor: '#ffffff' });
+          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000' });
+        },
       });
       gsap.fromTo(
         '.card',
@@ -121,18 +134,17 @@ export default function Landing() {
         }
       );
 
-      // Exhibition title 등장
-      gsap.fromTo('#exhibit .exhibit-title', { y: 30, opacity: 0 }, {
-        y: 0,
-        opacity: 1,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: '#exhibit', start: 'top 85%', end: 'top 60%', scrub: true },
-      });
-      gsap.fromTo('#exhibit .exhibit-subtitle', { y: 20, opacity: 0 }, {
-        y: 0,
-        opacity: 1,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: '#exhibit', start: 'top 80%', end: 'top 55%', scrub: true },
+      // Exhibition title: 다른 텍스트와 동일하게 글자 단위 등장
+      gsap.utils.toArray<HTMLElement>('#exhibit .section-title, #exhibit .exhibit-subtitle').forEach((el) => {
+        const letters = el.querySelectorAll<HTMLElement>('.letter');
+        gsap.set(letters, { opacity: 0 });
+        gsap.fromTo(letters, { y: 30, opacity: 0 }, {
+          y: 0,
+          opacity: 1,
+          stagger: 0.03,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: '#exhibit', start: 'top 85%', end: 'top 60%', scrub: true },
+        });
       });
     }, rootRef);
 
@@ -251,8 +263,8 @@ export default function Landing() {
       {/* Exhibition Title (전시 이름) */}
       <section id="exhibit" className="min-h-[80vh] bg-transparent flex items-center justify-center px-8">
         <div className="text-center">
-          <h2 className="exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
-          <p className="exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
+          <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
+          <p className="section-title exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
         </div>
       </section>
 

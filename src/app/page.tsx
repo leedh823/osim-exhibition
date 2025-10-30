@@ -36,6 +36,18 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
+      // Narrative sections reveal
+      gsap.utils.toArray<HTMLElement>('.panel .section-title').forEach((el) => {
+        gsap.fromTo(
+          el,
+          { y: 24, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 60%', scrub: true },
+          }
+        );
+      });
       gsap.fromTo(
         '#gallery .section-title',
         { y: 16, opacity: 0 },
@@ -103,6 +115,40 @@ export default function Landing() {
           Words become images.
         </h1>
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
+      </section>
+
+      {/* Narrative 1 */}
+      <section id="panel-1" className="panel relative min-h-[90vh] bg-white text-black">
+        <div className="container mx-auto px-8 py-24">
+          <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Words become images.</h2>
+          {/* floating thumbs */}
+          <div className="absolute top-10 left-8 w-24 h-24 rounded-md bg-black/5 shadow float-medium" />
+          <div className="absolute top-24 right-10 w-28 h-40 rounded-md bg-black/5 shadow float-slow" />
+          <div className="absolute bottom-24 left-24 w-40 h-28 rounded-md bg-black/5 shadow float-slow" />
+          <div className="absolute bottom-16 right-32 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
+        </div>
+      </section>
+
+      {/* Narrative 2 */}
+      <section id="panel-2" className="panel relative min-h-[90vh] bg-white text-black">
+        <div className="container mx-auto px-8 py-24">
+          <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Each image carries its seed.</h2>
+          <div className="absolute top-16 left-20 w-28 h-36 rounded-md bg-black/5 shadow float-slow" />
+          <div className="absolute top-10 right-24 w-20 h-20 rounded-md bg-black/5 shadow float-medium" />
+          <div className="absolute bottom-28 right-16 w-36 h-28 rounded-md bg-black/5 shadow float-slow" />
+          <div className="absolute bottom-16 left-10 w-24 h-24 rounded-md bg-black/5 shadow float-medium" />
+        </div>
+      </section>
+
+      {/* Narrative 3 */}
+      <section id="panel-3" className="panel relative min-h-[90vh] bg-white text-black">
+        <div className="container mx-auto px-8 py-24">
+          <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Hover on an image surface what that sparked it.</h2>
+          <div className="absolute top-16 left-8 w-20 h-28 rounded-md bg-black/5 shadow float-slow" />
+          <div className="absolute top-12 right-16 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
+          <div className="absolute bottom-24 left-28 w-28 h-28 rounded-md bg-black/5 shadow float-medium" />
+          <div className="absolute bottom-20 right-28 w-40 h-28 rounded-md bg-black/5 shadow float-slow" />
+        </div>
       </section>
 
       {/* 갤러리: 16:9 네모 박스 플레이스홀더 */}

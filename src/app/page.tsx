@@ -66,9 +66,9 @@ export default function Landing() {
         gsap.to(letters, {
           y: -20,
           opacity: 0,
-          stagger: 0.02,
+          stagger: 0.05,
           ease: 'power2.inOut',
-          scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 20%', scrub: true },
+          scrollTrigger: { trigger: el, start: 'center 40%', end: 'top 35%', scrub: true },
         });
       });
       gsap.fromTo(
@@ -103,8 +103,8 @@ export default function Landing() {
       const dy = (e.clientY - cy) / rect.height;
       gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
       gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
-      // parallax only on narrative panel-3 (요청: 갤러리에는 패럴랙스 제외)
-      gsap.to('#panel-3 .parallax-item', { x: dx * 24, y: dy * 24, duration: 0.35, ease: 'power2.out' });
+      // 페이지 내 이미지/박스 블록 전체 패럴랙스(텍스트 제외)
+      gsap.to('.panel .parallax-item, #gallery .card', { x: dx * 24, y: dy * 24, duration: 0.35, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
 

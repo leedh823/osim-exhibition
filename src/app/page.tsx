@@ -22,11 +22,9 @@ export default function Landing() {
           scrub: true,
         },
       });
-      tl.fromTo(
-        '.portal-core',
-        { scale: prefersReduced ? 0.98 : 0.9, filter: prefersReduced ? 'blur(2px)' : 'blur(6px)', opacity: 0.9, '--maskInner': 62, '--maskOuter': 68 },
-        { scale: prefersReduced ? 1.10 : 1.6, filter: 'blur(0px)', opacity: 1, '--maskInner': 140, '--maskOuter': 170, ease: 'none' }
-      );
+      // 화면 확대(카메라 푸시) + 화이트 페이드 전환
+      tl.to('#hero', { scale: prefersReduced ? 1.03 : 1.12, transformOrigin: 'center center', ease: 'none' }, 0);
+      tl.to('.white-overlay', { opacity: 1, ease: 'none' }, 0.2);
       // 배경을 검정 → 흰색으로 전환
       tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.35);
 
@@ -102,7 +100,7 @@ export default function Landing() {
   return (
     <div ref={rootRef} id="pageRoot" className="bg-black text-white">
       {/* Hero: 동굴(포털) */}
-      <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center">
+      <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center will-change-transform">
         {(() => {
           const portalStyle = {
             background: '#ffffff',
@@ -117,6 +115,7 @@ export default function Landing() {
             <div className="portal-core parallax absolute w-[60vmin] h-[60vmin] rounded-full" style={portalStyle} />
           );
         })()}
+        <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
         <h1 className="parallax relative z-10 text-3xl md:text-5xl" style={{ letterSpacing: '0.04em' }}>
           Enter the Portal
         </h1>

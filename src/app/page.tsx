@@ -39,8 +39,9 @@ export default function Landing() {
       });
       // 전체 구간을 1로 보고 진행(스케일 1 → 5)
       heroTl.fromTo('#hero .parallax', { scale: 1 }, { scale: 5, ease: 'none', duration: 1 }, 0);
-      // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작 + 히어로 배경도 함께 전환(경계색 제거)
+      // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작 + 이미지 투명 처리 + 히어로 배경도 흰색
       heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none', duration: 0.4 }, 0.6);
+      heroTl.to('#hero .parallax', { opacity: 0, duration: 0.4, ease: 'none' }, 0.6);
       heroTl.to(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000', ease: 'none', duration: 0.4 }, 0.6);
 
       // Narratives reveal
@@ -113,11 +114,11 @@ export default function Landing() {
       const scale = Math.min(rect.width, rect.height) || 1;
       const dx = (e.clientX - cx) / scale;
       const dy = (e.clientY - cy) / scale;
-      // 중앙에서 크게 벗어나지 않도록 감도 축소
+      // 중앙에서 크게 벗어나지 않도록 감도 고정(≈25px)
       gsap.to('.parallax', {
-        x: dx * 15,
-        y: dy * 15,
-        rotateY: -dx * 2,
+        x: dx * 25,
+        y: dy * 25,
+        rotateY: -dx * 1.5,
         rotateX: dy * 1,
         transformPerspective: 800,
         transformOrigin: 'center center',
@@ -174,7 +175,7 @@ export default function Landing() {
   ];
 
   return (
-    <div ref={rootRef} id="pageRoot" className="bg-black text-white">
+    <div ref={rootRef} id="pageRoot" className="bg-white text-black">
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
         <img

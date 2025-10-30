@@ -12,27 +12,32 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      if (prefersReduced) {
-        // 모션 축소 환경: 애니메이션 생략/약화
-        return;
-      }
-      // Hero pin (동굴 진입)
+      // Hero pin (동굴 진입) - 모션 축소에서도 pin은 유지
       ScrollTrigger.create({
         trigger: '#hero',
         start: 'top top',
-        end: '+=150%',
+        end: '+=200%',
         pin: true,
         scrub: true,
       });
 
       // 포털 코어 스케일/블러 변화로 동굴 진입감
+      const fromState = { scale: prefersReduced ? 0.98 : 0.9, filter: prefersReduced ? 'blur(2px)' : 'blur(6px)', opacity: 0.9 };
+      const toState = {
+        scale: prefersReduced ? 1.05 : 1.35,
+        filter: 'blur(0px)',
+        opacity: 1,
+        scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
+      } as gsap.TweenVars;
+      gsap.fromTo('.portal-core', fromState, toState);
+
+      // 히어로 텍스트를 어둠 속으로 사라지게
       gsap.fromTo(
-        '.portal-core',
-        { scale: 0.9, filter: 'blur(6px)', opacity: 0.9 },
+        '#hero h1',
+        { opacity: 1, y: 0 },
         {
-          scale: 1.25,
-          filter: 'blur(0px)',
-          opacity: 1,
+          opacity: 0,
+          y: prefersReduced ? -10 : -40,
           scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
         }
       );
@@ -51,7 +56,7 @@ export default function Landing() {
       // 갤러리 카드 등장(16:9 네모 박스)
       gsap.fromTo(
         '.card',
-        { y: 60, opacity: 0 },
+        { y: prefersReduced ? 20 : 60, opacity: 0 },
         {
           y: 0,
           opacity: 1,

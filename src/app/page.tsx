@@ -162,7 +162,7 @@ export default function Landing() {
     <div ref={rootRef} id="pageRoot" className="bg-black text-white">
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
-        <img src="/image/1" alt="hero" className="parallax max-w-none w-auto h-[120vh] object-cover opacity-90" />
+        <img src="/image/1.png" alt="hero" className="parallax max-w-none w-auto h-[120vh] object-cover opacity-90" />
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}

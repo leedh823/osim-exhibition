@@ -12,6 +12,17 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
+      // Split narrative titles into per-letter spans for stagger animation
+      document.querySelectorAll<HTMLElement>('.panel .section-title').forEach((titleEl) => {
+        if (titleEl.getAttribute('data-split') === 'true') return;
+        const text = titleEl.innerText;
+        const letters = text.split('').map((ch, idx) => {
+          const safe = ch === ' ' ? '&nbsp;' : ch;
+          return `<span class="letter inline-block will-change-transform">${safe}</span>`;
+        }).join('');
+        titleEl.innerHTML = letters;
+        titleEl.setAttribute('data-split', 'true');
+      });
       // Hero: pin + scrub 타임라인 복구 (카메라 줌 + 화이트 페이드 + 타이틀 페이드)
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -36,13 +47,28 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
-      // Narrative titles: appear then fade near center (not scrolling all the way up)
+      // Narrative titles: rise from bottom; letters stagger in; then fade slightly above center
       gsap.utils.toArray<HTMLElement>('.panel .section-title').forEach((el) => {
-        const tlTitle = gsap.timeline({
-          scrollTrigger: { trigger: el, start: 'top 70%', end: 'top 40%', scrub: true },
+        const letters = el.querySelectorAll<HTMLElement>('.letter');
+        // appear from bottom of viewport
+        gsap.fromTo(
+          letters,
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            stagger: 0.03,
+            ease: 'power2.out',
+            scrollTrigger: { trigger: el, start: 'bottom 95%', end: 'center 70%', scrub: true },
+          }
+        );
+        // fade out near upper-middle
+        gsap.to(el, {
+          y: -20,
+          opacity: 0,
+          ease: 'power2.inOut',
+          scrollTrigger: { trigger: el, start: 'center 40%', end: 'top 35%', scrub: true },
         });
-        tlTitle.fromTo(el, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' });
-        tlTitle.to(el, { y: -20, opacity: 0, duration: 0.5, ease: 'power2.inOut' });
       });
       gsap.fromTo(
         '#gallery .section-title',

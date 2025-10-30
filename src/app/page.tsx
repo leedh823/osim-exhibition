@@ -12,8 +12,8 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      // Split narrative titles into per-letter spans for stagger animation
-      document.querySelectorAll<HTMLElement>('.panel .section-title').forEach((titleEl) => {
+      // Split titles(after hero) into per-letter spans for stagger animation
+      document.querySelectorAll<HTMLElement>('.panel .section-title, #gallery .section-title').forEach((titleEl) => {
         if (titleEl.getAttribute('data-split') === 'true') return;
         const text = titleEl.innerText;
         const letters = text.split('').map((ch, idx) => {
@@ -47,8 +47,8 @@ export default function Landing() {
           scrollTrigger: { trigger: '#gallery', start: 'top 95%', end: 'top 70%', scrub: true },
         }
       );
-      // Narrative titles: rise from bottom; letters stagger in; then letters stagger out slightly above center
-      gsap.utils.toArray<HTMLElement>('.panel .section-title').forEach((el) => {
+      // Titles(after hero): rise from bottom; letters stagger in/out near center
+      gsap.utils.toArray<HTMLElement>('.panel .section-title, #gallery .section-title').forEach((el) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
         // appear from bottom of viewport
         gsap.fromTo(
@@ -103,7 +103,7 @@ export default function Landing() {
       const dy = (e.clientY - cy) / rect.height;
       gsap.to('.parallax', { x: dx * 60, y: dy * 60, duration: 0.25, ease: 'power3.out' });
       gsap.to('.portal-core', { x: dx * 40, y: dy * 40, duration: 0.3, ease: 'power3.out' });
-      // parallax only on the third narrative panel
+      // parallax only on narrative panel-3 (요청: 갤러리에는 패럴랙스 제외)
       gsap.to('#panel-3 .parallax-item', { x: dx * 24, y: dy * 24, duration: 0.35, ease: 'power2.out' });
     };
     window.addEventListener('mousemove', handler);
@@ -169,7 +169,7 @@ export default function Landing() {
       <section id="panel-3" className="panel relative min-h-[90vh] bg-white text-black">
         <div className="container mx-auto px-8 py-24">
           <h2 className="section-title text-3xl md:text-5xl text-center mb-10">Hover on an image surface what that sparked it.</h2>
-          {/* gray boxes with hover indicator + prompt */}
+          {/* gray boxes with hover indicator + prompt (패널3 전용) */}
           <div className="group parallax-item absolute top-16 left-8">
             <div className="w-20 h-28 rounded-md bg-black/5 shadow" />
             <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-200 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0">

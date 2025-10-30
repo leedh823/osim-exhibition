@@ -174,7 +174,18 @@ export default function Landing() {
     <div ref={rootRef} id="pageRoot" className="bg-black text-white">
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
-        <img src="/image/1.png" alt="hero" className="parallax max-w-none w-auto h-[120vh] object-cover opacity-90 will-change-transform" />
+        <img
+          src="/image/1.png"
+          alt="hero"
+          className="parallax max-w-none opacity-90 will-change-transform"
+          style={{
+            width: '140vw',
+            height: '140vh',
+            objectFit: 'cover',
+            objectPosition: 'center 30%', // 상단 영역이 더 보이도록
+            transform: 'translateZ(0)'
+          }}
+        />
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}

@@ -179,8 +179,8 @@ export default function Landing() {
           alt="hero"
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
-            width: '110vw',
-            height: '120vh',
+            width: '100vw',
+            height: '115vh',
             objectFit: 'cover',
             objectPosition: 'center 90%',
             transform: 'translateZ(0)',

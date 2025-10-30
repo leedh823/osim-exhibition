@@ -25,8 +25,10 @@ export default function Landing() {
       tl.fromTo(
         '.portal-core',
         { scale: prefersReduced ? 0.98 : 0.9, filter: prefersReduced ? 'blur(2px)' : 'blur(6px)', opacity: 0.9, '--maskInner': 62, '--maskOuter': 68 },
-        { scale: prefersReduced ? 1.10 : 1.52, filter: 'blur(0px)', opacity: 1, '--maskInner': 110, '--maskOuter': 130, ease: 'none' }
+        { scale: prefersReduced ? 1.10 : 1.6, filter: 'blur(0px)', opacity: 1, '--maskInner': 140, '--maskOuter': 170, ease: 'none' }
       );
+      // 배경을 검정 → 흰색으로 전환
+      tl.to('#pageRoot', { backgroundColor: '#ffffff', color: '#000000', ease: 'none' }, 0.35);
 
       // 히어로 텍스트를 어둠 속으로 사라지게
       tl.fromTo('#hero h1', { opacity: 1, y: 0 }, { opacity: 0, y: prefersReduced ? -10 : -40, ease: 'none' }, 0);
@@ -98,18 +100,18 @@ export default function Landing() {
   }, []);
 
   return (
-    <div ref={rootRef} className="bg-black text-white">
+    <div ref={rootRef} id="pageRoot" className="bg-black text-white">
       {/* Hero: 동굴(포털) */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center">
         {(() => {
           const portalStyle = {
-            background: 'conic-gradient(from 0deg, #0b0b0b, #141414 50%, #0b0b0b)',
+            background: '#ffffff',
             // CSS 변수로 마스크 크기를 제어하여 원 안으로 들어가는 효과
             ['--maskInner']: 62,
             ['--maskOuter']: 68,
             maskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
             WebkitMaskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
-            boxShadow: '0 0 120px 40px rgba(0,0,0,0.6) inset',
+            boxShadow: '0 0 80px 20px rgba(255,255,255,0.25)',
           } as React.CSSProperties & Record<'--maskInner' | '--maskOuter', number>;
           return (
             <div className="portal-core parallax absolute w-[60vmin] h-[60vmin] rounded-full" style={portalStyle} />
@@ -122,21 +124,21 @@ export default function Landing() {
       </section>
 
       {/* 갤러리: 16:9 네모 박스 플레이스홀더 */}
-      <section id="gallery" className="min-h-[140vh] p-8 bg-[#0b0b0b] opacity-0">
-        <h2 className="section-title text-xl md:text-2xl mb-6 text-white/90">Words become images</h2>
+      <section id="gallery" className="min-h-[140vh] p-8 bg-white text-black opacity-0">
+        <h2 className="section-title text-xl md:text-2xl mb-6 text-black/90">Words become images</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(9)].map((_, i) => (
             <div
               key={i}
-              className="card group relative aspect-video bg-[#111] rounded-lg overflow-hidden outline-none"
+              className="card group relative aspect-video bg-white rounded-lg overflow-hidden outline-none border border-black/10 shadow-sm"
               tabIndex={0}
               role="button"
               aria-label={`갤러리 아이템 ${i + 1}`}
             >
-              <div className="absolute inset-0 grid place-items-center text-white/60">16:9</div>
-              <div className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity p-4 text-sm">
-                <p className="text-[#c9f]">Prompt</p>
-                <p className="mt-1 text-[#c9f]/80">“...”</p>
+              <div className="absolute inset-0 grid place-items-center text-black/50">16:9</div>
+              <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity p-4 text-sm">
+                <p className="text-black">Prompt</p>
+                <p className="mt-1 text-black/70">“...”</p>
               </div>
             </div>
           ))}

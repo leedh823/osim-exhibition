@@ -21,15 +21,15 @@ export default function Landing() {
         scrub: true,
       });
 
-      // 포털 코어 스케일/블러 변화로 동굴 진입감
-      const fromState = { scale: prefersReduced ? 0.98 : 0.9, filter: prefersReduced ? 'blur(2px)' : 'blur(6px)', opacity: 0.9 };
-      const toState = {
-        scale: prefersReduced ? 1.05 : 1.35,
-        filter: 'blur(0px)',
-        opacity: 1,
-        scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
-      } as gsap.TweenVars;
-      gsap.fromTo('.portal-core', fromState, toState);
+      // 포털 코어 마스크/스케일로 동굴 진입감
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true }
+      });
+      tl.fromTo(
+        '.portal-core',
+        { scale: prefersReduced ? 0.98 : 0.9, filter: prefersReduced ? 'blur(2px)' : 'blur(6px)', opacity: 0.9, '--maskInner': 62, '--maskOuter': 68 },
+        { scale: prefersReduced ? 1.08 : 1.45, filter: 'blur(0px)', opacity: 1, '--maskInner': 105, '--maskOuter': 120, ease: 'none' }
+      );
 
       // 히어로 텍스트를 어둠 속으로 사라지게
       gsap.fromTo(
@@ -95,8 +95,11 @@ export default function Landing() {
           className="portal-core parallax absolute w-[60vmin] h-[60vmin] rounded-full"
           style={{
             background: 'conic-gradient(from 0deg, #0b0b0b, #141414 50%, #0b0b0b)',
-            maskImage: 'radial-gradient(circle at center, #000 62%, transparent 68%)',
-            WebkitMaskImage: 'radial-gradient(circle at center, #000 62%, transparent 68%)',
+            // CSS 변수로 마스크 크기를 제어하여 원 안으로 들어가는 효과
+            ['--maskInner' as any]: 62,
+            ['--maskOuter' as any]: 68,
+            maskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
+            WebkitMaskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
             boxShadow: '0 0 120px 40px rgba(0,0,0,0.6) inset',
           }}
         />

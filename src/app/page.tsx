@@ -26,7 +26,7 @@ export default function Landing() {
         titleEl.innerHTML = letters;
         titleEl.setAttribute('data-split', 'true');
       });
-      // Hero: 고정(pin) + 확대(500%) → 끝 구간에서 흰 전환
+      // Hero: 고정(pin) + 확대(500%) → 끝 구간에서 흰 오버레이만
       const heroTl = gsap.timeline({
         scrollTrigger: {
           trigger: '#hero',
@@ -39,10 +39,10 @@ export default function Landing() {
       });
       // 전체 구간을 1로 보고 진행(스케일 1 → 5)
       heroTl.fromTo('#hero .parallax', { scale: 1 }, { scale: 5, ease: 'none', duration: 1 }, 0);
-      // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작 + 이미지 투명 처리 + 히어로 배경도 흰색
+      // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작 + 이미지 투명 처리 (전역 배경 변경 없음)
       heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none', duration: 0.4 }, 0.6);
       heroTl.to('#hero .parallax', { opacity: 0, duration: 0.4, ease: 'none' }, 0.6);
-      heroTl.to(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000', ease: 'none', duration: 0.4 }, 0.6);
+      // 전역 배경색은 변경하지 않음(요청)
 
       // Narratives reveal
       gsap.fromTo(
@@ -53,20 +53,7 @@ export default function Landing() {
           scrollTrigger: { trigger: '#narratives', start: 'top bottom', end: 'top center', scrub: true },
         }
       );
-      // 섹션 중앙 기준으로 배경/텍스트 색 토글(안전한 onEnter/onLeave)
-      ScrollTrigger.create({
-        trigger: '#narratives',
-        start: 'center center',
-        end: 'bottom top',
-        onEnter: () => {
-          gsap.set(document.body, { backgroundColor: '#000000' });
-          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#000000', color: '#ffffff' });
-        },
-        onLeaveBack: () => {
-          gsap.set(document.body, { backgroundColor: '#ffffff' });
-          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000' });
-        },
-      });
+      // 전역 배경 토글 제거(요청에 따라 히어로만 검은색 유지)
       // Titles(after hero): per-letter appear/disappear with different start per block
       gsap.utils.toArray<HTMLElement>('#narratives .section-title').forEach((el, idx) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
@@ -96,33 +83,14 @@ export default function Landing() {
           scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 15%', scrub: true },
         });
 
-        // 텍스트가 화면 중앙에 올 때 배경을 검정, 텍스트를 흰색으로 전환
-        gsap.to(['#pageRoot', '#hero'], {
-          backgroundColor: '#000000',
-          color: '#ffffff',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: el,
-            start: 'center center',
-            end: '+=1',
-            toggleActions: 'play reverse play reverse',
-          },
-        });
+        // 전역 배경 변경 없음
       });
       gsap.fromTo('#gallery .section-title', { y: 16, opacity: 0 }, {
         y: 0,
         opacity: 1,
         scrollTrigger: { trigger: '#gallery', start: 'top 90%', end: 'top 70%', scrub: true },
       });
-      // 갤러리 진입 시 확실하게 흰 배경 복귀
-      ScrollTrigger.create({
-        trigger: '#gallery',
-        start: 'top bottom',
-        onEnter: () => {
-          gsap.set(document.body, { backgroundColor: '#ffffff' });
-          gsap.set(['#pageRoot', '#hero'], { backgroundColor: '#ffffff', color: '#000000' });
-        },
-      });
+      // 갤러리 진입 시 전역 배경 변경 없음
       gsap.fromTo(
         '.card',
         { y: prefersReduced ? 10 : 40, opacity: 0 },
@@ -220,7 +188,7 @@ export default function Landing() {
   ];
 
   return (
-    <div ref={rootRef} id="pageRoot" className="bg-white text-black">
+    <div ref={rootRef} id="pageRoot" className="bg-transparent text-current">
       {/* Hero: 이미지 + 마우스 반응 */}
       <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
         <img
@@ -228,7 +196,7 @@ export default function Landing() {
           alt="hero"
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
-            width: '100vw',
+            width: '110vw',
             height: '120vh',
             objectFit: 'cover',
             objectPosition: 'center 70%',
@@ -261,7 +229,7 @@ export default function Landing() {
       </section>
 
       {/* Exhibition Title (전시 이름) */}
-      <section id="exhibit" className="min-h-[80vh] bg-transparent flex items-center justify-center px-8">
+      <section id="exhibit" className="min-h-[80vh] bg-black text-white flex items-center justify-center px-8">
         <div className="text-center">
           <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
           <p className="section-title exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
@@ -270,7 +238,7 @@ export default function Landing() {
 
 
       {/* Generate: 네모 박스 + CTA */}
-      <section id="generate" className="min-h-[100vh] bg-white px-8 py-20">
+      <section id="generate" className="min-h-[100vh] bg-transparent px-8 py-20">
         <h2 className="text-2xl md:text-4xl mb-8">Generate</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[...Array(4)].map((_, i) => (

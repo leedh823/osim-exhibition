@@ -42,7 +42,8 @@ export default function Landing() {
       // 스케일이 약 3배(60% 부근) 지점부터 흰 전환 시작 + 이미지 투명 처리 (전역 배경 변경 없음)
       heroTl.to('#hero .white-overlay', { opacity: 1, ease: 'none', duration: 0.4 }, 0.6);
       heroTl.to('#hero .parallax', { opacity: 0, duration: 0.4, ease: 'none' }, 0.6);
-      // 전역 배경색은 변경하지 않음(요청)
+      // 히어로 종료 시점에 페이지 배경을 흰색으로 미리 맞춰 경계선을 제거
+      heroTl.to('#pageRoot', { backgroundColor: '#ffffff', ease: 'none' }, 0.88);
 
       // Narratives reveal
       gsap.fromTo(
@@ -85,6 +86,20 @@ export default function Landing() {
 
         // 전역 배경 변경 없음
       });
+      // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정, 텍스트는 검정 → 흰으로 전환
+      const thirdPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(3)');
+      if (thirdPanel) {
+        gsap.fromTo(
+          thirdPanel,
+          { backgroundColor: '#ffffff', color: '#000000' },
+          {
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            ease: 'none',
+            scrollTrigger: { trigger: thirdPanel, start: 'top 80%', end: 'top 40%', scrub: true },
+          }
+        );
+      }
       gsap.fromTo('#gallery .section-title', { y: 16, opacity: 0 }, {
         y: 0,
         opacity: 1,

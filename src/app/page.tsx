@@ -68,7 +68,7 @@ export default function Landing() {
           opacity: 0,
           stagger: 0.02,
           ease: 'power2.inOut',
-          scrollTrigger: { trigger: el, start: 'center 40%', end: 'top 35%', scrub: true },
+          scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 20%', scrub: true },
         });
       });
       gsap.fromTo(

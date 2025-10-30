@@ -160,30 +160,9 @@ export default function Landing() {
 
   return (
     <div ref={rootRef} id="pageRoot" className="bg-black text-white">
-      {/* Hero: 포털(화이트) */}
-      <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center">
-        {(() => {
-          const portalStyle = {
-            background: '#ffffff',
-            ['--maskInner']: 62,
-            ['--maskOuter']: 68,
-            maskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
-            WebkitMaskImage: 'radial-gradient(circle at center, #000 var(--maskInner)%, transparent var(--maskOuter)%)',
-            boxShadow: '0 0 80px 20px rgba(0,0,0,0.08)',
-          } as React.CSSProperties & Record<'--maskInner' | '--maskOuter', number>;
-          return (
-            <div className="portal-core parallax absolute w-[60vmin] h-[60vmin] rounded-full" style={portalStyle} />
-          );
-        })()}
-        {/* Floating decorative thumbs (placeholders) */}
-        <div className="absolute top-8 left-8 w-28 h-28 rounded-md bg-white/80 shadow float-medium" />
-        <div className="absolute top-14 right-6 w-40 h-56 rounded-md bg-white/80 shadow float-slow" />
-        <div className="absolute bottom-16 left-24 w-44 h-32 rounded-md bg-white/80 shadow float-slow" />
-        <div className="absolute bottom-20 right-24 w-36 h-36 rounded-md bg-white/80 shadow float-medium" />
-        <h1 className="parallax relative z-10 text-4xl md:text-6xl" style={{ letterSpacing: '0.02em' }}>
-          Words become images.
-        </h1>
-        <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
+      {/* Hero: 이미지 + 마우스 반응 */}
+      <section id="hero" className="h-screen relative overflow-hidden flex items-center justify-center bg-black">
+        <img src="/image/1" alt="hero" className="parallax max-w-none w-auto h-[120vh] object-cover opacity-90" />
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}

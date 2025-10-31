@@ -12,8 +12,8 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      // 초기 위치: 이미지 Y를 30vh + 70px 아래로 내리고(요청), 나머지는 0
-      gsap.set('.parallax', { x: 0, y: 'calc(30vh + 70px)', rotateX: 0, rotateY: 0 });
+      // 초기 위치: 이미지 Y를 약간 아래로 내리고, 나머지는 0
+      gsap.set('.parallax', { x: 0, y: 'calc(20vh + 50px)', rotateX: 0, rotateY: 0 });
       gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       // Split titles(after hero) into per-letter spans for stagger animation
       document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title, #exhibit .section-title, #exhibit .exhibit-subtitle').forEach((titleEl) => {
@@ -335,11 +335,11 @@ export default function Landing() {
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
             width: '110vw',
-            height: '120vh',
+            height: '130vh',
             objectFit: 'cover',
-            objectPosition: 'center 70%',
+            objectPosition: 'center 50%',
             transform: 'translateZ(0)',
-            marginTop: '0'
+            marginTop: '-10vh'
           }}
         />
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />

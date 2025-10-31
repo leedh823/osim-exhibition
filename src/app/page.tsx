@@ -363,7 +363,8 @@ export default function Landing() {
             </h1>
           </div>
         </div>
-        <div className="absolute top-[100px] md:top-[120px] right-6 md:right-8 z-10 pointer-events-none">
+        <div className="absolute top-[100px] md:top-[120px] right-6 md:right-8 z-10 pointer-events-none flex items-center">
+          <div className="w-16 md:w-24 h-[1px] bg-white mr-4"></div>
           <p className="text-lg md:text-xl lg:text-2xl text-white text-right" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
             서로의 시선 사이에서
           </p>

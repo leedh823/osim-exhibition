@@ -176,71 +176,134 @@ export default function Landing() {
         }
       );
 
-      // Exhibition title: 다른 텍스트와 동일하게 글자 단위 등장/사라짐 (각 요소 개별 처리)
-      document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
-        const letters = el.querySelectorAll<HTMLElement>('.letter');
-        if (letters.length === 0) return;
-        const appearFromY = 30;
-        // 초기 상태: 확실히 opacity 0, 첫 글자도 포함 (CSS도 함께 설정)
-        letters.forEach(letter => {
-          letter.style.opacity = '0';
-          letter.style.transform = `translateY(${appearFromY}px)`;
+      // Exhibition section: Pin 고정 + 순차 등장 애니메이션
+      const exhibitSection = document.querySelector<HTMLElement>('#exhibit');
+      const exhibitGrid = document.querySelector<HTMLElement>('#exhibit-grid');
+      const exhibitChatInput = document.querySelector<HTMLElement>('#exhibit-chat-input');
+      const exhibitAiMessage = document.querySelector<HTMLElement>('#exhibit-ai-message');
+      const exhibitCards = document.querySelector<HTMLElement>('#exhibit-cards');
+
+      if (exhibitSection) {
+        // 전시 이름 텍스트 글자 단위 등장
+        document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
+          const letters = el.querySelectorAll<HTMLElement>('.letter');
+          if (letters.length === 0) return;
+          const appearFromY = 30;
+          letters.forEach(letter => {
+            letter.style.opacity = '0';
+            letter.style.transform = `translateY(${appearFromY}px)`;
+          });
+          gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none', force3D: true });
+          
+          const firstLetter = letters[0];
+          const restLetters = Array.from(letters).slice(1);
+          
+          if (firstLetter) {
+            gsap.fromTo(
+              firstLetter,
+              { y: appearFromY, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                ease: 'power2.out',
+                immediateRender: true,
+                scrollTrigger: { 
+                  trigger: exhibitSection, 
+                  start: 'top 85%', 
+                  end: 'top 60%', 
+                  scrub: true,
+                },
+              }
+            );
+          }
+          if (restLetters.length > 0) {
+            gsap.fromTo(
+              restLetters,
+              { y: appearFromY, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                stagger: 0.03,
+                ease: 'power2.out',
+                immediateRender: false,
+                scrollTrigger: { 
+                  trigger: exhibitSection, 
+                  start: 'top 85%', 
+                  end: 'top 60%', 
+                  scrub: true,
+                },
+              }
+            );
+          }
         });
-        gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none', force3D: true });
-        // 첫 글자는 별도로 처리하여 확실하게 등장하도록
-        const firstLetter = letters[0];
-        const restLetters = Array.from(letters).slice(1);
-        if (firstLetter) {
-          gsap.fromTo(
-            firstLetter,
-            { y: appearFromY, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              ease: 'power2.out',
-              immediateRender: true,
-              scrollTrigger: { 
-                trigger: el, 
-                start: 'top 85%', 
-                end: 'top 60%', 
-                scrub: true,
-              },
-            }
-          );
-        }
-        if (restLetters.length > 0) {
-          gsap.fromTo(
-            restLetters,
-            { y: appearFromY, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              stagger: 0.03,
-              ease: 'power2.out',
-              immediateRender: false,
-              scrollTrigger: { 
-                trigger: el, 
-                start: 'top 85%', 
-                end: 'top 60%', 
-                scrub: true,
-              },
-            }
-          );
-        }
-        // 사라짐 (텍스트가 더 위로 올라갔을 때 사라지기 시작)
-        gsap.to(letters, {
-          y: -24,
-          opacity: 0,
-          stagger: 0.05,
-          ease: 'power2.inOut',
-          scrollTrigger: { 
-            trigger: el, 
-            start: 'center 30%', 
-            end: 'top 10%', 
+
+        // Pin 고정 + 순차 등장 애니메이션
+        const exhibitTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: exhibitSection,
+            start: 'center center',
+            end: '+=300%',
+            pin: true,
             scrub: true,
+            anticipatePin: 1,
           },
         });
-      });
+
+        // 점선 배경 서서히 나타남
+        if (exhibitGrid) {
+          exhibitTl.to(exhibitGrid, { 
+            opacity: 1, 
+            duration: 0.3, 
+            ease: 'power2.out' 
+          }, 0.1);
+        }
+
+        // 채팅창 나타남
+        if (exhibitChatInput) {
+          exhibitTl.fromTo(exhibitChatInput, 
+            { opacity: 0, y: 20 },
+            { 
+              opacity: 1, 
+              y: 0,
+              duration: 0.4, 
+              ease: 'power2.out' 
+            }, 
+            0.3
+          );
+        }
+
+        // AI 메시지 나타남
+        if (exhibitAiMessage) {
+          exhibitTl.fromTo(exhibitAiMessage, 
+            { opacity: 0, y: 20 },
+            { 
+              opacity: 1, 
+              y: 0,
+              duration: 0.4, 
+              ease: 'power2.out' 
+            }, 
+            0.5
+          );
+        }
+
+        // 카드와 시작 버튼 동시에 나타남
+        if (exhibitCards) {
+          const cards = exhibitCards.querySelectorAll('.exhibit-card');
+          const startBtn = exhibitCards.querySelector('.exhibit-start-btn');
+          
+          exhibitTl.fromTo([...Array.from(cards), startBtn].filter(Boolean), 
+            { opacity: 0, y: 30 },
+            { 
+              opacity: 1, 
+              y: 0,
+              duration: 0.5, 
+              stagger: 0.1,
+              ease: 'power2.out' 
+            }, 
+            0.7
+          );
+        }
+      }
     }, rootRef);
     
     // 모든 애니메이션 설정 후 ScrollTrigger refresh로 타이밍 보정 (첫 글자 문제 해결)
@@ -405,27 +468,65 @@ export default function Landing() {
       </section>
 
       {/* Exhibition Title (전시 이름) */}
-      <section id="exhibit" className="relative z-[1101] min-h-[80vh] bg-black text-white flex items-end justify-center px-8 pb-20">
-        <div className="text-center">
-          <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
-          <p className="section-title exhibit-subtitle mt-6 text-2xl md:text-3xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
+      <section id="exhibit" className="relative z-[1101] min-h-[100vh] bg-black text-white flex items-center justify-center px-8">
+        {/* 점선 배경 패턴 */}
+        <div id="exhibit-grid" className="absolute inset-0 opacity-0 pointer-events-none">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="exhibit-dot-grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                <circle cx="25" cy="25" r="1.5" fill="white" fillOpacity="0.15" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#exhibit-dot-grid)" />
+          </svg>
         </div>
-      </section>
 
-      {/* Cards(3) + CTA */}
-      <section id="cards" className="relative z-[1101] bg-black px-6 py-16 mt-[80vh]">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1,2,3].map((i) => (
-              <div key={i} className="rounded-2xl border border-white/20 bg-white/5 shadow-sm p-8 min-h-[200px] flex items-center justify-center text-xl text-white">
-                Card {i}
-              </div>
-            ))}
+        <div className="relative z-10 w-full max-w-6xl mx-auto">
+          {/* 전시 이름 */}
+          <div className="text-center mb-16">
+            <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
+            <p className="section-title exhibit-subtitle mt-6 text-2xl md:text-3xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
           </div>
-          <div className="mt-10 flex items-center justify-center">
-            <a href="/start" className="px-8 py-4 rounded-full bg-white text-black hover:bg-gray-200 transition-colors text-lg">
-              시작하기
-            </a>
+
+          {/* 채팅창 */}
+          <div id="exhibit-chat-input" className="mb-8 opacity-0">
+            <div className="max-w-2xl mx-auto bg-gray-900/50 rounded-full px-6 py-4 flex items-center gap-4 border border-white/10">
+              <div className="flex-1 text-white/60 text-sm">
+                Portal-tech website, monochrome collage, dotted details, dark themed
+              </div>
+              <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-gray-200 transition-colors">
+                <svg className="w-4 h-4 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* AI 메시지 */}
+          <div id="exhibit-ai-message" className="mb-12 opacity-0">
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-gray-900/30 rounded-2xl px-6 py-4 border border-white/10">
+                <p className="text-white/80 text-base leading-relaxed">
+                  안녕하세요! RE:COGNITION 전시에 오신 것을 환영합니다. 이 공간에서는 우리가 타인을 바라보는 시선과 그 속에 담긴 의미를 함께 탐구해보실 수 있습니다.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Cards(3) + CTA */}
+          <div id="exhibit-cards" className="opacity-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+              {[1,2,3].map((i) => (
+                <div key={i} className="exhibit-card rounded-2xl border border-white/20 bg-white/5 shadow-sm p-8 min-h-[200px] flex items-center justify-center text-xl text-white hover:bg-white/10 transition-colors cursor-pointer">
+                  Card {i}
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-center">
+              <a href="/start" className="exhibit-start-btn px-8 py-4 rounded-full bg-white text-black hover:bg-gray-200 transition-colors text-lg font-medium">
+                시작하기
+              </a>
+            </div>
           </div>
         </div>
       </section>

@@ -340,7 +340,7 @@ export default function Landing() {
         {/* Hero Text Overlay */}
         <div className="absolute top-16 md:top-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
           <div className="relative text-center">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white tracking-wide uppercase whitespace-nowrap">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl text-white tracking-wide uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>
               <span className="relative inline-block">
                 RE:C
                 <div className="absolute left-0 bottom-0 w-14 h-[1px] bg-white"></div>
@@ -348,7 +348,7 @@ export default function Landing() {
               OGNITION
             </h1>
           </div>
-          <p className="text-base md:text-lg text-white mt-6 md:mt-8 text-right font-serif mr-8 md:mr-12">
+          <p className="text-base md:text-lg text-white mt-6 md:mt-8 text-right mr-8 md:mr-12" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
             서로의 시선 사이에서
           </p>
         </div>

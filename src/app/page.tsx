@@ -180,8 +180,8 @@ export default function Landing() {
       const exhibitSection = document.querySelector<HTMLElement>('#exhibit');
       const exhibitGrid = document.querySelector<HTMLElement>('#exhibit-grid');
       const exhibitChatInput = document.querySelector<HTMLElement>('#exhibit-chat-input');
-      const exhibitAiMessage = document.querySelector<HTMLElement>('#exhibit-ai-message');
       const exhibitCards = document.querySelector<HTMLElement>('#exhibit-cards');
+      const exhibitStartBtn = document.querySelector<HTMLElement>('#exhibit-start-btn');
 
       if (exhibitSection) {
         // 전시 이름 텍스트 글자 단위 등장 (pin 시작 전에 완료)
@@ -250,7 +250,7 @@ export default function Landing() {
           },
         });
 
-        // 점선 배경 서서히 나타남 (pin 시작 후)
+        // 선 그리드 배경 서서히 나타남 (pin 시작 후)
         if (exhibitGrid) {
           exhibitTl.to(exhibitGrid, { 
             opacity: 1, 
@@ -259,7 +259,7 @@ export default function Landing() {
           }, 0.1);
         }
 
-        // 채팅창 나타남 (전시명 위에)
+        // 채팅창 나타남 (상단 중앙에)
         if (exhibitChatInput) {
           exhibitTl.to(exhibitChatInput, 
             { 
@@ -271,28 +271,30 @@ export default function Landing() {
           );
         }
 
-        // AI 메시지 나타남 (전시명 아래에)
-        if (exhibitAiMessage) {
-          exhibitTl.to(exhibitAiMessage, 
+        // 카드가 전시명 위로 올라오면서 나타남
+        if (exhibitCards) {
+          const cards = exhibitCards.querySelectorAll('.exhibit-card');
+          
+          // 카드들이 아래에서 위로 올라오면서 나타남
+          gsap.set(cards, { y: 50, opacity: 0 });
+          exhibitTl.to(cards, 
             { 
+              y: 0,
               opacity: 1,
-              duration: 0.4, 
-              ease: 'power2.out' 
+              duration: 0.6, 
+              stagger: 0.1,
+              ease: 'power3.out' 
             }, 
             0.5
           );
         }
 
-        // 카드와 시작 버튼 동시에 나타남 (전시명 아래에)
-        if (exhibitCards) {
-          const cards = exhibitCards.querySelectorAll('.exhibit-card');
-          const startBtn = exhibitCards.querySelector('.exhibit-start-btn');
-          
-          exhibitTl.to([...Array.from(cards), startBtn].filter(Boolean), 
+        // 시작하기 버튼 나타남
+        if (exhibitStartBtn) {
+          exhibitTl.to(exhibitStartBtn, 
             { 
               opacity: 1,
-              duration: 0.5, 
-              stagger: 0.1,
+              duration: 0.4, 
               ease: 'power2.out' 
             }, 
             0.7
@@ -464,15 +466,15 @@ export default function Landing() {
 
       {/* Exhibition Title (전시 이름) */}
       <section id="exhibit" className="relative z-[1101] min-h-[150vh] bg-black text-white flex items-center justify-center px-8 py-20">
-        {/* 점선 배경 패턴 */}
+        {/* 선 그리드 배경 패턴 */}
         <div id="exhibit-grid" className="absolute inset-0 opacity-0 pointer-events-none">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <pattern id="exhibit-dot-grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                <circle cx="25" cy="25" r="1.5" fill="white" fillOpacity="0.15" />
+              <pattern id="exhibit-line-grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.15" />
               </pattern>
             </defs>
-            <rect width="100%" height="100%" fill="url(#exhibit-dot-grid)" />
+            <rect width="100%" height="100%" fill="url(#exhibit-line-grid)" />
           </svg>
         </div>
 
@@ -483,45 +485,36 @@ export default function Landing() {
             <p className="section-title exhibit-subtitle mt-6 text-2xl md:text-3xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
           </div>
 
-          {/* 채팅창 - 전시명 위에 */}
-          <div id="exhibit-chat-input" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[200px] w-full max-w-2xl opacity-0">
+          {/* 채팅창 - 상단 중앙에 */}
+          <div id="exhibit-chat-input" className="absolute top-16 left-1/2 transform -translate-x-1/2 w-full max-w-2xl opacity-0">
             <div className="bg-gray-900/50 rounded-full px-6 py-4 flex items-center gap-4 border border-white/10">
-              <div className="flex-1 text-white/60 text-sm">
+              <div className="flex-1 text-white/60 text-sm truncate">
                 Portal-tech website, monochrome collage, dotted details, dark themed
               </div>
-              <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-gray-200 transition-colors">
-                <svg className="w-4 h-4 rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              <button className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors flex-shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             </div>
           </div>
 
-          {/* AI 메시지 - 전시명 아래에 */}
-          <div id="exhibit-ai-message" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-[180px] w-full max-w-2xl opacity-0">
-            <div>
-              <div className="bg-gray-900/30 rounded-2xl px-6 py-4 border border-white/10">
-                <p className="text-white/80 text-base leading-relaxed">
-                  안녕하세요! RE:COGNITION 전시에 오신 것을 환영합니다. 이 공간에서는 우리가 타인을 바라보는 시선과 그 속에 담긴 의미를 함께 탐구해보실 수 있습니다.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Cards(3) + CTA - 전시명 아래에 */}
-          <div id="exhibit-cards" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-[280px] w-full opacity-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          {/* Cards(3) - 전시명 위로 올라오면서 나타남 */}
+          <div id="exhibit-cards" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[180px] w-full opacity-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[1,2,3].map((i) => (
                 <div key={i} className="exhibit-card rounded-2xl border border-white/20 bg-white/5 shadow-sm p-8 min-h-[200px] flex items-center justify-center text-xl text-white hover:bg-white/10 transition-colors cursor-pointer">
                   Card {i}
                 </div>
               ))}
             </div>
-            <div className="flex items-center justify-center">
-              <a href="/start" className="exhibit-start-btn px-8 py-4 rounded-full bg-white text-black hover:bg-gray-200 transition-colors text-lg font-medium">
-                시작하기
-              </a>
-            </div>
+          </div>
+
+          {/* 시작하기 버튼 - 하단 중앙에 */}
+          <div id="exhibit-start-btn" className="absolute bottom-16 left-1/2 transform -translate-x-1/2 opacity-0">
+            <a href="/start" className="exhibit-start-btn px-8 py-4 rounded-full bg-white text-black hover:bg-gray-200 transition-colors text-lg font-medium">
+              시작하기
+            </a>
           </div>
         </div>
       </section>

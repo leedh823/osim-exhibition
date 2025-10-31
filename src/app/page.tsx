@@ -21,7 +21,9 @@ export default function Landing() {
         const text = titleEl.innerText;
         const letters = text.split('').map((ch, idx) => {
           const safe = ch === ' ' ? '&nbsp;' : ch;
-          return `<span class="letter inline-block will-change-transform">${safe}</span>`;
+          // 첫 글자 앞에 투명한 스페이스를 추가하여 첫 글자가 사라지는 것을 방지
+          const prefix = idx === 0 ? '<span class="letter" style="opacity:0;width:0;display:inline-block;pointer-events:none;user-select:none;">&nbsp;</span>' : '';
+          return `${prefix}<span class="letter inline-block will-change-transform">${safe}</span>`;
         }).join('');
         titleEl.innerHTML = letters;
         titleEl.setAttribute('data-split', 'true');

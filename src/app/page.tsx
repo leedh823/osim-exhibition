@@ -33,7 +33,7 @@ export default function Landing() {
         scrollTrigger: {
           trigger: '#hero',
           start: 'top top',
-          end: '+=320%',
+          end: '+=280%',
           pin: true,
           scrub: true,
           anticipatePin: 1,

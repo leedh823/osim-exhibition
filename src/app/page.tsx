@@ -12,8 +12,8 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      // 초기 위치: 이미지 Y를 30vh + 50px 아래로 내리고(요청), 나머지는 0
-      gsap.set('.parallax', { x: 0, y: 'calc(30vh + 50px)', rotateX: 0, rotateY: 0 });
+      // 초기 위치: 이미지 Y를 30vh + 70px 아래로 내리고(요청), 나머지는 0
+      gsap.set('.parallax', { x: 0, y: 'calc(30vh + 70px)', rotateX: 0, rotateY: 0 });
       gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       // Split titles(after hero) into per-letter spans for stagger animation
       document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title, #exhibit .section-title, #exhibit .exhibit-subtitle').forEach((titleEl) => {
@@ -338,8 +338,8 @@ export default function Landing() {
         />
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
         {/* Hero Text Overlay */}
-        <div className="absolute top-16 md:top-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-          <div className="relative text-center">
+        <div className="absolute top-16 md:top-20 right-8 md:right-12 z-10 pointer-events-none">
+          <div className="relative text-right">
             <h1 className="text-6xl md:text-8xl lg:text-9xl text-white tracking-wide uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>
               <span className="relative inline-block">
                 RE:C
@@ -347,10 +347,10 @@ export default function Landing() {
               </span>
               OGNITION
             </h1>
+            <p className="text-lg md:text-xl lg:text-2xl text-white mt-6 md:mt-8" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
+              서로의 시선 사이에서
+            </p>
           </div>
-          <p className="text-lg md:text-xl lg:text-2xl text-white mt-6 md:mt-8 text-right mr-8 md:mr-12" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
-            서로의 시선 사이에서
-          </p>
         </div>
       </section>
 

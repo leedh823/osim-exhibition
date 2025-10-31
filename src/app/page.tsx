@@ -240,23 +240,14 @@ export default function Landing() {
           scrollTrigger: {
             trigger: exhibitSection,
             start: 'center center',
-            end: '+=200%',
+            end: '+=300%',
             pin: true,
             scrub: true,
             anticipatePin: 1,
           },
         });
 
-        // 원형 페이드 격자 배경 서서히 나타남
-        if (exhibitGrid) {
-          exhibitTl.to(exhibitGrid, { 
-            opacity: 1, 
-            duration: 0.4, 
-            ease: 'power2.out' 
-          }, 0.1);
-        }
-
-        // 상단 검색 바 나타남
+        // 상단 검색 바 나타남 (동시에 시작)
         if (exhibitChatInput) {
           exhibitTl.to(exhibitChatInput, 
             { 
@@ -264,7 +255,46 @@ export default function Landing() {
               duration: 0.5, 
               ease: 'power2.out' 
             }, 
-            0.3
+            0.1
+          );
+        }
+
+        // 원형 페이드 격자 배경 원형으로 확장되면서 나타남
+        if (exhibitGrid) {
+          // clipPath 애니메이션을 위해 CSS 변수 사용
+          exhibitTl.to(exhibitGrid, { 
+            opacity: 1,
+            duration: 0.3,
+            ease: 'power2.out' 
+          }, 0.1);
+          
+          // clipPath를 직접 업데이트
+          exhibitTl.to(exhibitGrid, {
+            '--grid-radius': '100%',
+            duration: 1.5,
+            ease: 'power2.inOut',
+            onUpdate: function() {
+              if (exhibitGrid) {
+                const radius = (this.progress() * 100) + '%';
+                exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
+              }
+            }
+          }, 0.1);
+        }
+
+        // 영어 텍스트 단어별로 등장
+        const titleWords = document.querySelectorAll<HTMLElement>('.exhibit-word');
+        if (titleWords.length > 0) {
+          gsap.set(titleWords, { opacity: 0, y: 20 });
+          exhibitTl.to(titleWords, 
+            { 
+              opacity: 1,
+              y: 0,
+              duration: 0.6, 
+              stagger: 0.2,
+              ease: 'power2.out' 
+            }, 
+            0.4
           );
         }
       }
@@ -434,7 +464,7 @@ export default function Landing() {
       {/* Exhibition Title (전시 이름) */}
       <section id="exhibit" className="relative z-[1101] min-h-[100vh] bg-black text-white flex items-center justify-center px-8">
         {/* 원형 페이드 격자 배경 패턴 */}
-        <div id="exhibit-grid" className="absolute inset-0 opacity-0 pointer-events-none">
+        <div id="exhibit-grid" className="absolute inset-0 opacity-0 pointer-events-none" style={{ clipPath: 'circle(0% at 50% 50%)', '--grid-radius': '0%' } as React.CSSProperties}>
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <radialGradient id="grid-fade" cx="50%" cy="50%" r="50%">
@@ -471,7 +501,10 @@ export default function Landing() {
           {/* 전시 이름 - 화면 정중앙 */}
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center w-full">
-              <h2 className="section-title exhibit-title text-4xl md:text-6xl lg:text-7xl font-semibold tracking-wide mb-4" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
+              <h2 className="section-title exhibit-title text-4xl md:text-6xl lg:text-7xl font-semibold tracking-wide mb-4" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>
+                <span className="exhibit-word inline-block opacity-0">RE:</span>
+                <span className="exhibit-word inline-block opacity-0">COGNITION</span>
+              </h2>
               <p className="section-title exhibit-subtitle text-base md:text-lg lg:text-xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
             </div>
           </div>

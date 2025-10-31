@@ -73,7 +73,18 @@ export default function Landing() {
             stagger: 0.03,
             ease: 'power2.out',
             immediateRender: false,
-            scrollTrigger: { trigger: el, start: appearStart, end: appearEnd, scrub: true },
+            scrollTrigger: { 
+              trigger: el, 
+              start: appearStart, 
+              end: appearEnd, 
+              scrub: true,
+              onEnterBack: () => {
+                // 스크롤을 다시 내릴 때 첫 글자 확실히 리셋
+                if (letters[0]) {
+                  gsap.set(letters[0], { opacity: 0, y: appearFromY });
+                }
+              },
+            },
           }
         );
         // fade out higher than before
@@ -141,16 +152,28 @@ export default function Landing() {
       document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
         if (letters.length === 0) return;
+        const appearFromY = 30;
         // 초기 상태: 확실히 opacity 0, 첫 글자도 포함
-        gsap.set(letters, { opacity: 0, y: 30, clearProps: 'none' });
+        gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
         // 등장
-        gsap.fromTo(letters, { y: 30, opacity: 0 }, {
+        gsap.fromTo(letters, { y: appearFromY, opacity: 0 }, {
           y: 0,
           opacity: 1,
           stagger: 0.03,
           ease: 'power2.out',
           immediateRender: false,
-          scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 60%', scrub: true },
+          scrollTrigger: { 
+            trigger: el, 
+            start: 'top 85%', 
+            end: 'top 60%', 
+            scrub: true,
+            onEnterBack: () => {
+              // 스크롤을 다시 내릴 때 첫 글자 확실히 리셋
+              if (letters[0]) {
+                gsap.set(letters[0], { opacity: 0, y: appearFromY });
+              }
+            },
+          },
         });
         // 사라짐
         gsap.to(letters, {

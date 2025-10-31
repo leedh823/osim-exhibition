@@ -344,7 +344,7 @@ export default function Landing() {
         {blocks.map((block, idx) => (
           <div
             key={idx}
-            className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
+            className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32 bg-black' : 'min-h-[90vh] bg-white'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
             <h2 className={`section-title relative ${idx === 2 ? 'z-[1101] text-white' : 'z-10 text-black'} text-3xl md:text-5xl text-center mb-10`}>{block.title}</h2>
             {block.boxes.map((b, i) => {

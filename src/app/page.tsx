@@ -60,36 +60,55 @@ export default function Landing() {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
         if (letters.length === 0) return;
         const appearFromY = idx === 0 ? 40 : 20; // panel 2,3 slightly below center
-        // 초기 상태: 확실히 opacity 0, 첫 글자도 포함
-        gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
+        // 초기 상태: 확실히 opacity 0, 첫 글자도 포함 (CSS도 함께 설정)
+        letters.forEach(letter => {
+          letter.style.opacity = '0';
+          letter.style.transform = `translateY(${appearFromY}px)`;
+        });
+        gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none', force3D: true });
         const appearStart = idx === 0 ? 'bottom 95%' : 'center 105%';
         const appearEnd = idx === 0 ? 'center 70%' : 'center 85%';
-        gsap.fromTo(
-          letters,
-          { y: appearFromY, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            stagger: 0.03,
-            ease: 'power2.out',
-            immediateRender: false,
-            scrollTrigger: { 
-              trigger: el, 
-              start: appearStart, 
-              end: appearEnd, 
-              scrub: true,
-              onEnterBack: () => {
-                // 스크롤을 다시 내릴 때 모든 글자 초기 상태로 확실히 리셋
-                gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
+        // 첫 글자는 별도로 처리하여 확실하게 등장하도록
+        const firstLetter = letters[0];
+        const restLetters = Array.from(letters).slice(1);
+        if (firstLetter) {
+          gsap.fromTo(
+            firstLetter,
+            { y: appearFromY, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              ease: 'power2.out',
+              immediateRender: true,
+              scrollTrigger: { 
+                trigger: el, 
+                start: appearStart, 
+                end: appearEnd, 
+                scrub: true,
               },
-              onLeave: () => {
-                // 스크롤이 위로 올라가서 트리거를 벗어날 때도 리셋
-                gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
+            }
+          );
+        }
+        if (restLetters.length > 0) {
+          gsap.fromTo(
+            restLetters,
+            { y: appearFromY, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              stagger: 0.03,
+              ease: 'power2.out',
+              immediateRender: false,
+              scrollTrigger: { 
+                trigger: el, 
+                start: appearStart, 
+                end: appearEnd, 
+                scrub: true,
               },
-            },
-          }
-        );
-        // fade out higher than before
+            }
+          );
+        }
+        // fade out (원래 위치로 복구)
         gsap.to(letters, {
           y: -24,
           opacity: 0,
@@ -97,13 +116,9 @@ export default function Landing() {
           ease: 'power2.inOut',
           scrollTrigger: { 
             trigger: el, 
-            start: 'center 30%', 
-            end: 'top 15%', 
+            start: 'center 50%', 
+            end: 'top 20%', 
             scrub: true,
-            onLeaveBack: () => {
-              // 스크롤을 다시 내릴 때 (사라짐 애니메이션 역방향) 모든 글자 초기 상태로 리셋
-              gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
-            },
           },
         });
 
@@ -164,31 +179,53 @@ export default function Landing() {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
         if (letters.length === 0) return;
         const appearFromY = 30;
-        // 초기 상태: 확실히 opacity 0, 첫 글자도 포함
-        gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
-        // 등장
-        gsap.fromTo(letters, { y: appearFromY, opacity: 0 }, {
-          y: 0,
-          opacity: 1,
-          stagger: 0.03,
-          ease: 'power2.out',
-          immediateRender: false,
-          scrollTrigger: { 
-            trigger: el, 
-            start: 'top 85%', 
-            end: 'top 60%', 
-            scrub: true,
-            onEnterBack: () => {
-              // 스크롤을 다시 내릴 때 모든 글자 초기 상태로 확실히 리셋
-              gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
-            },
-            onLeave: () => {
-              // 스크롤이 위로 올라가서 트리거를 벗어날 때도 리셋
-              gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
-            },
-          },
+        // 초기 상태: 확실히 opacity 0, 첫 글자도 포함 (CSS도 함께 설정)
+        letters.forEach(letter => {
+          letter.style.opacity = '0';
+          letter.style.transform = `translateY(${appearFromY}px)`;
         });
-        // 사라짐
+        gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none', force3D: true });
+        // 첫 글자는 별도로 처리하여 확실하게 등장하도록
+        const firstLetter = letters[0];
+        const restLetters = Array.from(letters).slice(1);
+        if (firstLetter) {
+          gsap.fromTo(
+            firstLetter,
+            { y: appearFromY, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              ease: 'power2.out',
+              immediateRender: true,
+              scrollTrigger: { 
+                trigger: el, 
+                start: 'top 85%', 
+                end: 'top 60%', 
+                scrub: true,
+              },
+            }
+          );
+        }
+        if (restLetters.length > 0) {
+          gsap.fromTo(
+            restLetters,
+            { y: appearFromY, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              stagger: 0.03,
+              ease: 'power2.out',
+              immediateRender: false,
+              scrollTrigger: { 
+                trigger: el, 
+                start: 'top 85%', 
+                end: 'top 60%', 
+                scrub: true,
+              },
+            }
+          );
+        }
+        // 사라짐 (원래 위치로 복구)
         gsap.to(letters, {
           y: -24,
           opacity: 0,
@@ -196,13 +233,9 @@ export default function Landing() {
           ease: 'power2.inOut',
           scrollTrigger: { 
             trigger: el, 
-            start: 'center 30%', 
-            end: 'top 15%', 
+            start: 'center 50%', 
+            end: 'top 20%', 
             scrub: true,
-            onLeaveBack: () => {
-              // 스크롤을 다시 내릴 때 (사라짐 애니메이션 역방향) 모든 글자 초기 상태로 리셋
-              gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
-            },
           },
         });
       });

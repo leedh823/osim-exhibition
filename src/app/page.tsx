@@ -180,15 +180,13 @@ export default function Landing() {
       const exhibitSection = document.querySelector<HTMLElement>('#exhibit');
       const exhibitGrid = document.querySelector<HTMLElement>('#exhibit-grid');
       const exhibitChatInput = document.querySelector<HTMLElement>('#exhibit-chat-input');
-      const exhibitCards = document.querySelector<HTMLElement>('#exhibit-cards');
-      const exhibitStartBtn = document.querySelector<HTMLElement>('#exhibit-start-btn');
 
       if (exhibitSection) {
         // 전시 이름 텍스트 글자 단위 등장 (pin 시작 전에 완료)
         document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
           const letters = el.querySelectorAll<HTMLElement>('.letter');
           if (letters.length === 0) return;
-          const appearFromY = 30;
+          const appearFromY = 20;
           letters.forEach(letter => {
             letter.style.opacity = '0';
             letter.style.transform = `translateY(${appearFromY}px)`;
@@ -198,7 +196,6 @@ export default function Landing() {
           const firstLetter = letters[0];
           const restLetters = Array.from(letters).slice(1);
           
-          // 텍스트 등장은 섹션이 화면에 들어올 때 시작, center에 도달하기 전에 완료
           if (firstLetter) {
             gsap.fromTo(
               firstLetter,
@@ -238,66 +235,36 @@ export default function Landing() {
           }
         });
 
-        // Pin 고정 + 순차 등장 애니메이션 (텍스트가 중앙에 올 때 시작)
+        // Pin 고정 + 순차 등장 애니메이션
         const exhibitTl = gsap.timeline({
           scrollTrigger: {
             trigger: exhibitSection,
             start: 'center center',
-            end: '+=300%',
+            end: '+=200%',
             pin: true,
             scrub: true,
             anticipatePin: 1,
           },
         });
 
-        // 선 그리드 배경 서서히 나타남 (pin 시작 후)
+        // 원형 페이드 격자 배경 서서히 나타남
         if (exhibitGrid) {
           exhibitTl.to(exhibitGrid, { 
             opacity: 1, 
-            duration: 0.3, 
+            duration: 0.4, 
             ease: 'power2.out' 
           }, 0.1);
         }
 
-        // 채팅창 나타남 (상단 중앙에)
+        // 상단 검색 바 나타남
         if (exhibitChatInput) {
           exhibitTl.to(exhibitChatInput, 
             { 
               opacity: 1,
-              duration: 0.4, 
+              duration: 0.5, 
               ease: 'power2.out' 
             }, 
             0.3
-          );
-        }
-
-        // 카드가 전시명 위로 올라오면서 나타남
-        if (exhibitCards) {
-          const cards = exhibitCards.querySelectorAll('.exhibit-card');
-          
-          // 카드들이 아래에서 위로 올라오면서 나타남
-          gsap.set(cards, { y: 50, opacity: 0 });
-          exhibitTl.to(cards, 
-            { 
-              y: 0,
-              opacity: 1,
-              duration: 0.6, 
-              stagger: 0.1,
-              ease: 'power3.out' 
-            }, 
-            0.5
-          );
-        }
-
-        // 시작하기 버튼 나타남
-        if (exhibitStartBtn) {
-          exhibitTl.to(exhibitStartBtn, 
-            { 
-              opacity: 1,
-              duration: 0.4, 
-              ease: 'power2.out' 
-            }, 
-            0.7
           );
         }
       }
@@ -465,56 +432,48 @@ export default function Landing() {
       </section>
 
       {/* Exhibition Title (전시 이름) */}
-      <section id="exhibit" className="relative z-[1101] min-h-[150vh] bg-black text-white flex items-center justify-center px-8 py-20">
-        {/* 선 그리드 배경 패턴 */}
+      <section id="exhibit" className="relative z-[1101] min-h-[100vh] bg-black text-white flex items-center justify-center px-8">
+        {/* 원형 페이드 격자 배경 패턴 */}
         <div id="exhibit-grid" className="absolute inset-0 opacity-0 pointer-events-none">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
+              <radialGradient id="grid-fade" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="white" stopOpacity="0.2" />
+                <stop offset="50%" stopColor="white" stopOpacity="0.1" />
+                <stop offset="100%" stopColor="white" stopOpacity="0" />
+              </radialGradient>
               <pattern id="exhibit-line-grid" width="50" height="50" patternUnits="userSpaceOnUse">
                 <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.15" />
               </pattern>
+              <mask id="grid-mask">
+                <rect width="100%" height="100%" fill="url(#grid-fade)" />
+              </mask>
             </defs>
-            <rect width="100%" height="100%" fill="url(#exhibit-line-grid)" />
+            <rect width="100%" height="100%" fill="url(#exhibit-line-grid)" mask="url(#grid-mask)" />
           </svg>
         </div>
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto">
-          {/* 전시 이름 - 화면 중앙에 고정 */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center w-full">
-            <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
-            <p className="section-title exhibit-subtitle mt-6 text-2xl md:text-3xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
-          </div>
-
-          {/* 채팅창 - 상단 중앙에 */}
-          <div id="exhibit-chat-input" className="absolute top-16 left-1/2 transform -translate-x-1/2 w-full max-w-2xl opacity-0">
-            <div className="bg-gray-900/50 rounded-full px-6 py-4 flex items-center gap-4 border border-white/10">
-              <div className="flex-1 text-white/60 text-sm truncate">
+        <div className="relative z-10 w-full max-w-6xl mx-auto h-full flex flex-col">
+          {/* 상단 검색 바 - 화면 최상단 */}
+          <div id="exhibit-chat-input" className="absolute top-8 left-1/2 transform -translate-x-1/2 w-full max-w-2xl opacity-0">
+            <div className="bg-gray-900/70 rounded-full px-6 py-3 flex items-center gap-4 border border-white/20 backdrop-blur-sm">
+              <div className="flex-1 text-white/70 text-sm truncate">
                 Portal-tech website, monochrome collage, dotted details, dark themed
               </div>
-              <button className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors flex-shrink-0">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <button className="w-8 h-8 rounded-full border border-white/30 bg-transparent hover:bg-white/10 flex items-center justify-center transition-colors flex-shrink-0">
+                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             </div>
           </div>
 
-          {/* Cards(3) - 전시명 위로 올라오면서 나타남 */}
-          <div id="exhibit-cards" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[180px] w-full opacity-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1,2,3].map((i) => (
-                <div key={i} className="exhibit-card rounded-2xl border border-white/20 bg-white/5 shadow-sm p-8 min-h-[200px] flex items-center justify-center text-xl text-white hover:bg-white/10 transition-colors cursor-pointer">
-                  Card {i}
-                </div>
-              ))}
+          {/* 전시 이름 - 화면 정중앙 */}
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center w-full">
+              <h2 className="section-title exhibit-title text-6xl md:text-8xl lg:text-9xl font-semibold tracking-wide mb-4" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
+              <p className="section-title exhibit-subtitle text-xl md:text-2xl italic" style={{ fontFamily: 'var(--font-butler)', fontStyle: 'italic', fontWeight: 400 }}>서로의 시선 사이에서</p>
             </div>
-          </div>
-
-          {/* 시작하기 버튼 - 하단 중앙에 */}
-          <div id="exhibit-start-btn" className="absolute bottom-16 left-1/2 transform -translate-x-1/2 opacity-0">
-            <a href="/start" className="exhibit-start-btn px-8 py-4 rounded-full bg-white text-black hover:bg-gray-200 transition-colors text-lg font-medium">
-              시작하기
-            </a>
           </div>
         </div>
       </section>

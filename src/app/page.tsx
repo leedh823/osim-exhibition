@@ -307,12 +307,12 @@ export default function Landing() {
     {
       title: 'Hover on an image surface what that sparked it.',
       boxes: [
-        { style: 'top-16 left-10 w-20 h-28', tooltip: 'Prompt: sample M' },
-        { style: 'top-12 right-20 w-28 h-28', tooltip: 'Prompt: sample N' },
-        { style: 'bottom-24 left-32 w-28 h-28', tooltip: 'Prompt: sample O' },
-        { style: 'bottom-20 right-32 w-40 h-28', tooltip: 'Prompt: sample P' },
-        { style: 'top-[42%] left-[8%] w-16 h-16', tooltip: 'Prompt: sample Q' },
-        { style: 'top-[38%] right-[10%] w-16 h-20', tooltip: 'Prompt: sample R' },
+        { style: 'top-16 left-16 w-20 h-28', tooltip: 'Prompt: sample M' },
+        { style: 'top-12 right-16 w-28 h-28', tooltip: 'Prompt: sample N' },
+        { style: 'bottom-36 left-24 w-28 h-28', tooltip: 'Prompt: sample O' },
+        { style: 'bottom-32 right-24 w-40 h-28', tooltip: 'Prompt: sample P' },
+        { style: 'top-[42%] left-[15%] w-16 h-16', tooltip: 'Prompt: sample Q' },
+        { style: 'top-[38%] right-[15%] w-16 h-20', tooltip: 'Prompt: sample R' },
       ],
     },
   ];

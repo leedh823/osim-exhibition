@@ -183,6 +183,17 @@ export default function Landing() {
       const exhibitChatText = document.querySelector<HTMLElement>('#exhibit-chat-text');
 
       if (exhibitSection) {
+        // 전시 이름 텍스트 글자 단위 등장 (갤러리처럼) - 1단계: 먼저 등장
+        document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
+          const text = el.innerText;
+          const letters = text.split('').map((ch, idx) => {
+            const safe = ch === ' ' ? '\u00A0' : ch;
+            const prefix = idx === 0 ? '<span class="letter" style="opacity:0;width:0;display:inline-block;pointer-events:none;user-select:none;">&nbsp;</span>' : '';
+            return `${prefix}<span class="letter inline-block will-change-transform">${safe}</span>`;
+          }).join('');
+          el.innerHTML = letters;
+        });
+
         // Pin 고정 + 순차 등장 애니메이션
         const exhibitTl = gsap.timeline({
           scrollTrigger: {
@@ -195,80 +206,8 @@ export default function Landing() {
           },
         });
 
-        // 원형 페이드 격자 배경 원형으로 확장되면서 나타남
-        if (exhibitGrid) {
-          exhibitTl.to(exhibitGrid, { 
-            opacity: 1,
-            duration: 0.3,
-            ease: 'power2.out' 
-          }, 0.1);
-          
-          // clipPath를 직접 업데이트하여 원형으로 확장
-          const gridAnimation = { progress: 0 };
-          exhibitTl.to(gridAnimation, {
-            progress: 1,
-            duration: 1.5,
-            ease: 'power2.inOut',
-            onUpdate: function() {
-              if (exhibitGrid) {
-                const radius = Math.sqrt(2) * 100 * gridAnimation.progress + '%'; // 화면 대각선까지 채우기
-                exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
-              }
-            }
-          }, 0.1);
-        }
-
-        // 상단 검색 바 나타남
-        if (exhibitChatInput) {
-          exhibitTl.to(exhibitChatInput, 
-            { 
-              opacity: 1,
-              duration: 0.5, 
-              ease: 'power2.out' 
-            }, 
-            0.2
-          );
-        }
-
-        // 채팅 UI 안 영어 텍스트 단어별로 등장
-        if (exhibitChatText) {
-          const chatText = exhibitChatText.innerText;
-          exhibitChatText.innerHTML = '';
-          const words = chatText.split(' ').map((word, idx) => {
-            const span = document.createElement('span');
-            span.className = 'inline-block';
-            span.style.opacity = '0';
-            span.textContent = word;
-            if (idx < chatText.split(' ').length - 1) {
-              span.textContent += ' ';
-            }
-            exhibitChatText.appendChild(span);
-            return span;
-          });
-
-          gsap.set(words, { opacity: 0, y: 10 });
-          exhibitTl.to(words, 
-            { 
-              opacity: 1,
-              y: 0,
-              duration: 0.8, 
-              stagger: 0.08,
-              ease: 'power2.out' 
-            }, 
-            0.4
-          );
-        }
-
-        // 전시 이름 텍스트 글자 단위 등장 (갤러리처럼)
+        // 1. 전시명 등장 (0 ~ 0.5)
         document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
-          const text = el.innerText;
-          const letters = text.split('').map((ch, idx) => {
-            const safe = ch === ' ' ? '\u00A0' : ch;
-            const prefix = idx === 0 ? '<span class="letter" style="opacity:0;width:0;display:inline-block;pointer-events:none;user-select:none;">&nbsp;</span>' : '';
-            return `${prefix}<span class="letter inline-block will-change-transform">${safe}</span>`;
-          }).join('');
-          el.innerHTML = letters;
-          
           const letterElements = el.querySelectorAll<HTMLElement>('.letter');
           if (letterElements.length === 0) return;
           const appearFromY = 30;
@@ -293,7 +232,7 @@ export default function Landing() {
                 immediateRender: true,
                 duration: 0.5
               },
-              0.6
+              0
             );
           }
           if (restLetters.length > 0) {
@@ -308,10 +247,89 @@ export default function Landing() {
                 immediateRender: false,
                 duration: 0.8
               },
-              0.6
+              0
             );
           }
         });
+
+        // 2. 채팅 UI 등장 + 배경 격자 무늬 점점 등장 (동시에, 0.5부터)
+        if (exhibitChatInput) {
+          exhibitTl.to(exhibitChatInput, 
+            { 
+              opacity: 1,
+              duration: 0.5, 
+              ease: 'power2.out' 
+            }, 
+            0.5
+          );
+        }
+
+        // 격자 배경 원형으로 확장되면서 나타남 (2단계와 3단계에서 연속 확장)
+        if (exhibitGrid) {
+          // opacity 먼저 나타남
+          exhibitTl.to(exhibitGrid, { 
+            opacity: 1,
+            duration: 0.3,
+            ease: 'power2.out' 
+          }, 0.5);
+          
+          // clipPath를 직접 업데이트하여 원형으로 확장 (2단계: 0~0.5, 3단계: 0.5~1.0)
+          const gridAnimation = { progress: 0 };
+          // 2단계: 절반까지 확장
+          exhibitTl.to(gridAnimation, {
+            progress: 0.5,
+            duration: 0.8,
+            ease: 'power2.inOut',
+            onUpdate: function() {
+              if (exhibitGrid) {
+                const radius = Math.sqrt(2) * 100 * gridAnimation.progress + '%';
+                exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
+              }
+            }
+          }, 0.5);
+          
+          // 3단계: 나머지 확장 (1.3부터 시작)
+          exhibitTl.to(gridAnimation, {
+            progress: 1,
+            duration: 1.2,
+            ease: 'power2.inOut',
+            onUpdate: function() {
+              if (exhibitGrid) {
+                const radius = Math.sqrt(2) * 100 * gridAnimation.progress + '%';
+                exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
+              }
+            }
+          }, 1.3);
+        }
+
+        // 채팅 UI 안 영어 텍스트 단어별로 등장 (3단계와 동시 시작)
+        if (exhibitChatText) {
+          const chatText = exhibitChatText.innerText;
+          exhibitChatText.innerHTML = '';
+          const words = chatText.split(' ').map((word, idx) => {
+            const span = document.createElement('span');
+            span.className = 'inline-block';
+            span.style.opacity = '0';
+            span.textContent = word;
+            if (idx < chatText.split(' ').length - 1) {
+              span.textContent += ' ';
+            }
+            exhibitChatText.appendChild(span);
+            return span;
+          });
+
+          gsap.set(words, { opacity: 0, y: 10 });
+          exhibitTl.to(words, 
+            { 
+              opacity: 1,
+              y: 0,
+              duration: 1.0, 
+              stagger: 0.08,
+              ease: 'power2.out' 
+            }, 
+            1.3
+          );
+        }
       }
     }, rootRef);
     

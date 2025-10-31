@@ -337,6 +337,21 @@ export default function Landing() {
           }}
         />
         <div className="white-overlay absolute inset-0 bg-white opacity-0 pointer-events-none" />
+        {/* Hero Text Overlay */}
+        <div className="absolute top-16 md:top-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+          <div className="relative text-center">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white tracking-wide uppercase whitespace-nowrap">
+              <span className="relative inline-block">
+                RE:C
+                <div className="absolute left-0 bottom-0 w-14 h-[1px] bg-white"></div>
+              </span>
+              OGNITION
+            </h1>
+          </div>
+          <p className="text-base md:text-lg text-white mt-6 md:mt-8 text-right font-serif mr-8 md:mr-12">
+            서로의 시선 사이에서
+          </p>
+        </div>
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}

@@ -180,61 +180,9 @@ export default function Landing() {
       const exhibitSection = document.querySelector<HTMLElement>('#exhibit');
       const exhibitGrid = document.querySelector<HTMLElement>('#exhibit-grid');
       const exhibitChatInput = document.querySelector<HTMLElement>('#exhibit-chat-input');
+      const exhibitChatText = document.querySelector<HTMLElement>('#exhibit-chat-text');
 
       if (exhibitSection) {
-        // 전시 이름 텍스트 글자 단위 등장 (pin 시작 전에 완료)
-        document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
-          const letters = el.querySelectorAll<HTMLElement>('.letter');
-          if (letters.length === 0) return;
-          const appearFromY = 20;
-          letters.forEach(letter => {
-            letter.style.opacity = '0';
-            letter.style.transform = `translateY(${appearFromY}px)`;
-          });
-          gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none', force3D: true });
-          
-          const firstLetter = letters[0];
-          const restLetters = Array.from(letters).slice(1);
-          
-          if (firstLetter) {
-            gsap.fromTo(
-              firstLetter,
-              { y: appearFromY, opacity: 0 },
-              {
-                y: 0,
-                opacity: 1,
-                ease: 'power2.out',
-                immediateRender: true,
-                scrollTrigger: { 
-                  trigger: exhibitSection, 
-                  start: 'top 85%', 
-                  end: 'center 80%', 
-                  scrub: true,
-                },
-              }
-            );
-          }
-          if (restLetters.length > 0) {
-            gsap.fromTo(
-              restLetters,
-              { y: appearFromY, opacity: 0 },
-              {
-                y: 0,
-                opacity: 1,
-                stagger: 0.03,
-                ease: 'power2.out',
-                immediateRender: false,
-                scrollTrigger: { 
-                  trigger: exhibitSection, 
-                  start: 'top 85%', 
-                  end: 'center 80%', 
-                  scrub: true,
-                },
-              }
-            );
-          }
-        });
-
         // Pin 고정 + 순차 등장 애니메이션
         const exhibitTl = gsap.timeline({
           scrollTrigger: {
@@ -247,7 +195,30 @@ export default function Landing() {
           },
         });
 
-        // 상단 검색 바 나타남 (동시에 시작)
+        // 원형 페이드 격자 배경 원형으로 확장되면서 나타남
+        if (exhibitGrid) {
+          exhibitTl.to(exhibitGrid, { 
+            opacity: 1,
+            duration: 0.3,
+            ease: 'power2.out' 
+          }, 0.1);
+          
+          // clipPath를 직접 업데이트하여 원형으로 확장
+          const gridAnimation = { progress: 0 };
+          exhibitTl.to(gridAnimation, {
+            progress: 1,
+            duration: 1.5,
+            ease: 'power2.inOut',
+            onUpdate: function() {
+              if (exhibitGrid) {
+                const radius = Math.sqrt(2) * 100 * gridAnimation.progress + '%'; // 화면 대각선까지 채우기
+                exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
+              }
+            }
+          }, 0.1);
+        }
+
+        // 상단 검색 바 나타남
         if (exhibitChatInput) {
           exhibitTl.to(exhibitChatInput, 
             { 
@@ -255,48 +226,92 @@ export default function Landing() {
               duration: 0.5, 
               ease: 'power2.out' 
             }, 
-            0.1
+            0.2
           );
         }
 
-        // 원형 페이드 격자 배경 원형으로 확장되면서 나타남
-        if (exhibitGrid) {
-          // clipPath 애니메이션을 위해 CSS 변수 사용
-          exhibitTl.to(exhibitGrid, { 
-            opacity: 1,
-            duration: 0.3,
-            ease: 'power2.out' 
-          }, 0.1);
-          
-          // clipPath를 직접 업데이트
-          exhibitTl.to(exhibitGrid, {
-            '--grid-radius': '100%',
-            duration: 1.5,
-            ease: 'power2.inOut',
-            onUpdate: function() {
-              if (exhibitGrid) {
-                const radius = (this.progress() * 100) + '%';
-                exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
-              }
+        // 채팅 UI 안 영어 텍스트 단어별로 등장
+        if (exhibitChatText) {
+          const chatText = exhibitChatText.innerText;
+          exhibitChatText.innerHTML = '';
+          const words = chatText.split(' ').map((word, idx) => {
+            const span = document.createElement('span');
+            span.className = 'inline-block';
+            span.style.opacity = '0';
+            span.textContent = word;
+            if (idx < chatText.split(' ').length - 1) {
+              span.textContent += ' ';
             }
-          }, 0.1);
-        }
+            exhibitChatText.appendChild(span);
+            return span;
+          });
 
-        // 영어 텍스트 단어별로 등장
-        const titleWords = document.querySelectorAll<HTMLElement>('.exhibit-word');
-        if (titleWords.length > 0) {
-          gsap.set(titleWords, { opacity: 0, y: 20 });
-          exhibitTl.to(titleWords, 
+          gsap.set(words, { opacity: 0, y: 10 });
+          exhibitTl.to(words, 
             { 
               opacity: 1,
               y: 0,
-              duration: 0.6, 
-              stagger: 0.2,
+              duration: 0.8, 
+              stagger: 0.08,
               ease: 'power2.out' 
             }, 
             0.4
           );
         }
+
+        // 전시 이름 텍스트 글자 단위 등장 (갤러리처럼)
+        document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
+          const text = el.innerText;
+          const letters = text.split('').map((ch, idx) => {
+            const safe = ch === ' ' ? '\u00A0' : ch;
+            const prefix = idx === 0 ? '<span class="letter" style="opacity:0;width:0;display:inline-block;pointer-events:none;user-select:none;">&nbsp;</span>' : '';
+            return `${prefix}<span class="letter inline-block will-change-transform">${safe}</span>`;
+          }).join('');
+          el.innerHTML = letters;
+          
+          const letterElements = el.querySelectorAll<HTMLElement>('.letter');
+          if (letterElements.length === 0) return;
+          const appearFromY = 30;
+          
+          letterElements.forEach(letter => {
+            letter.style.opacity = '0';
+            letter.style.transform = `translateY(${appearFromY}px)`;
+          });
+          gsap.set(letterElements, { opacity: 0, y: appearFromY, clearProps: 'none', force3D: true });
+          
+          const firstLetter = letterElements[0];
+          const restLetters = Array.from(letterElements).slice(1);
+          
+          if (firstLetter) {
+            exhibitTl.fromTo(
+              firstLetter,
+              { y: appearFromY, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                ease: 'power2.out',
+                immediateRender: true,
+                duration: 0.5
+              },
+              0.6
+            );
+          }
+          if (restLetters.length > 0) {
+            exhibitTl.fromTo(
+              restLetters,
+              { y: appearFromY, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                stagger: 0.03,
+                ease: 'power2.out',
+                immediateRender: false,
+                duration: 0.8
+              },
+              0.6
+            );
+          }
+        });
       }
     }, rootRef);
     
@@ -487,7 +502,7 @@ export default function Landing() {
           {/* 상단 검색 바 - 화면 최상단 */}
           <div id="exhibit-chat-input" className="absolute top-8 left-1/2 transform -translate-x-1/2 w-full max-w-2xl opacity-0">
             <div className="bg-gray-900/70 rounded-full px-6 py-3 flex items-center gap-4 border border-white/20 backdrop-blur-sm">
-              <div className="flex-1 text-white/70 text-sm truncate">
+              <div id="exhibit-chat-text" className="flex-1 text-white/70 text-sm">
                 Portal-tech website, monochrome collage, dotted details, dark themed
               </div>
               <button className="w-8 h-8 rounded-full border border-white/30 bg-transparent hover:bg-white/10 flex items-center justify-center transition-colors flex-shrink-0">
@@ -501,10 +516,7 @@ export default function Landing() {
           {/* 전시 이름 - 화면 정중앙 */}
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center w-full">
-              <h2 className="section-title exhibit-title text-4xl md:text-6xl lg:text-7xl font-semibold tracking-wide mb-4" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>
-                <span className="exhibit-word inline-block opacity-0">RE:</span>
-                <span className="exhibit-word inline-block opacity-0">COGNITION</span>
-              </h2>
+              <h2 className="section-title exhibit-title text-4xl md:text-6xl lg:text-7xl font-semibold tracking-wide mb-4" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
               <p className="section-title exhibit-subtitle text-base md:text-lg lg:text-xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
             </div>
           </div>

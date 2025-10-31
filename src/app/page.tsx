@@ -12,8 +12,8 @@ export default function Landing() {
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = gsap.context(() => {
-      // 초기 위치: 이미지 Y를 30vh 아래로 내리고(요청), 나머지는 0
-      gsap.set('.parallax', { x: 0, y: '30vh', rotateX: 0, rotateY: 0 });
+      // 초기 위치: 이미지 Y를 30vh + 50px 아래로 내리고(요청), 나머지는 0
+      gsap.set('.parallax', { x: 0, y: 'calc(30vh + 50px)', rotateX: 0, rotateY: 0 });
       gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       // Split titles(after hero) into per-letter spans for stagger animation
       document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title, #exhibit .section-title, #exhibit .exhibit-subtitle').forEach((titleEl) => {
@@ -340,7 +340,7 @@ export default function Landing() {
         {/* Hero Text Overlay */}
         <div className="absolute top-16 md:top-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
           <div className="relative text-center">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl text-white tracking-wide uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>
+            <h1 className="text-6xl md:text-8xl lg:text-9xl text-white tracking-wide uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>
               <span className="relative inline-block">
                 RE:C
                 <div className="absolute left-0 bottom-0 w-14 h-[1px] bg-white"></div>
@@ -348,7 +348,7 @@ export default function Landing() {
               OGNITION
             </h1>
           </div>
-          <p className="text-base md:text-lg text-white mt-6 md:mt-8 text-right mr-8 md:mr-12" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
+          <p className="text-lg md:text-xl lg:text-2xl text-white mt-6 md:mt-8 text-right mr-8 md:mr-12" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
             서로의 시선 사이에서
           </p>
         </div>

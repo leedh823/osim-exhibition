@@ -284,6 +284,8 @@ export default function Landing() {
   const blocks = [
     {
       title: 'Words become images.',
+      titleEn: 'We look at others every day. We try to read faces, movements, and the unspoken feelings in between.',
+      titleKo: '우리는 매일 누군가를 바라봅니다. 표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
         { style: 'top-14 left-10 w-24 h-24', tooltip: 'Prompt: sample A' },
         { style: 'top-28 right-16 w-28 h-40', tooltip: 'Prompt: sample B' },
@@ -361,7 +363,14 @@ export default function Landing() {
             key={idx}
             className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
-            <h2 className={`section-title relative ${idx === 2 ? 'z-[1101] text-white' : 'z-10 text-black'} text-3xl md:text-5xl text-center mb-10`}>{block.title}</h2>
+            {idx === 0 && block.titleEn && block.titleKo ? (
+              <div className={`relative z-10 text-black text-center mb-10`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '40px' }}>
+                <div className="section-title">{block.titleEn}</div>
+                <div className="section-title mt-4">{block.titleKo}</div>
+              </div>
+            ) : (
+              <h2 className={`section-title relative ${idx === 2 ? 'z-[1101] text-white' : 'z-10 text-black'} text-3xl md:text-5xl text-center mb-10`}>{block.title}</h2>
+            )}
             {block.boxes.map((b, i) => {
               // 하단 박스인지 확인 (bottom-으로 시작하는 스타일)
               const isBottomBox = b.style.includes('bottom-');

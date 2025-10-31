@@ -347,7 +347,7 @@ export default function Landing() {
               </span>
               OGNITION
             </h1>
-            <p className="text-lg md:text-xl lg:text-2xl text-white mt-6 md:mt-8" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
+            <p className="text-lg md:text-xl lg:text-2xl text-white mt-6 md:mt-8 text-right" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
               서로의 시선 사이에서
             </p>
           </div>

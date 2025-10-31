@@ -58,9 +58,10 @@ export default function Landing() {
       // Titles(after hero): per-letter appear/disappear with different start per block
       gsap.utils.toArray<HTMLElement>('#narratives .section-title').forEach((el, idx) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
-        // reset to avoid first-letter missing when re-entering
-        gsap.set(letters, { opacity: 0 });
+        if (letters.length === 0) return;
         const appearFromY = idx === 0 ? 40 : 20; // panel 2,3 slightly below center
+        // 초기 상태: 확실히 opacity 0, 첫 글자도 포함
+        gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
         const appearStart = idx === 0 ? 'bottom 95%' : 'center 105%';
         const appearEnd = idx === 0 ? 'center 70%' : 'center 85%';
         gsap.fromTo(
@@ -136,10 +137,12 @@ export default function Landing() {
         }
       );
 
-      // Exhibition title: 다른 텍스트와 동일하게 글자 단위 등장/사라짐
-      gsap.utils.toArray<HTMLElement>('#exhibit .section-title, #exhibit .exhibit-subtitle').forEach((el) => {
+      // Exhibition title: 다른 텍스트와 동일하게 글자 단위 등장/사라짐 (각 요소 개별 처리)
+      document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
-        gsap.set(letters, { opacity: 0 });
+        if (letters.length === 0) return;
+        // 초기 상태: 확실히 opacity 0, 첫 글자도 포함
+        gsap.set(letters, { opacity: 0, y: 30, clearProps: 'none' });
         // 등장
         gsap.fromTo(letters, { y: 30, opacity: 0 }, {
           y: 0,
@@ -147,7 +150,7 @@ export default function Landing() {
           stagger: 0.03,
           ease: 'power2.out',
           immediateRender: false,
-          scrollTrigger: { trigger: '#exhibit', start: 'top 85%', end: 'top 60%', scrub: true },
+          scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 60%', scrub: true },
         });
         // 사라짐
         gsap.to(letters, {
@@ -155,10 +158,13 @@ export default function Landing() {
           opacity: 0,
           stagger: 0.05,
           ease: 'power2.inOut',
-          scrollTrigger: { trigger: '#exhibit', start: 'center 30%', end: 'top 15%', scrub: true },
+          scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 15%', scrub: true },
         });
       });
     }, rootRef);
+    
+    // 모든 애니메이션 설정 후 ScrollTrigger refresh로 타이밍 보정 (첫 글자 문제 해결)
+    ScrollTrigger.refresh();
 
     // 히어로 패럴랙스
     const el = rootRef.current;
@@ -278,7 +284,7 @@ export default function Landing() {
       </section>
 
       {/* Exhibition Title (전시 이름) */}
-      <section id="exhibit" className="relative z-[1101] min-h-[80vh] bg-black text-white flex items-center justify-center px-8">
+      <section id="exhibit" className="relative z-[1101] min-h-[80vh] bg-black text-white flex items-end justify-center px-8 pb-20">
         <div className="text-center">
           <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
           <p className="section-title exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>

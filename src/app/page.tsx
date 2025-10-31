@@ -316,6 +316,10 @@ export default function Landing() {
     },
     {
       title: 'Hover on an image surface what that sparked it.',
+      titleEn1: 'But what if, in that very moment,',
+      titleKo1: '하지만 그 순간,',
+      titleEn2: 'your own interpretation was already being observed and analyzed?',
+      titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
         { style: 'top-16 left-16 w-20 h-28', tooltip: 'Prompt: sample M' },
         { style: 'top-12 right-16 w-28 h-28', tooltip: 'Prompt: sample N' },
@@ -373,8 +377,8 @@ export default function Landing() {
             key={idx}
             className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
-            {(idx === 0 || idx === 1) && block.titleEn1 && block.titleKo1 ? (
-              <div className={`relative z-10 text-black text-center mb-10`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
+            {(idx === 0 || idx === 1 || idx === 2) && block.titleEn1 && block.titleKo1 ? (
+              <div className={`relative ${idx === 2 ? 'z-[1101] text-white' : 'z-10 text-black'} text-center mb-10`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
                 <div className="section-title">{block.titleEn1}</div>
                 <div className="section-title mt-2">{block.titleKo1}</div>
                 <div className="section-title mt-2">{block.titleEn2}</div>

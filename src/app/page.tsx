@@ -184,7 +184,7 @@ export default function Landing() {
       const exhibitCards = document.querySelector<HTMLElement>('#exhibit-cards');
 
       if (exhibitSection) {
-        // 전시 이름 텍스트 글자 단위 등장
+        // 전시 이름 텍스트 글자 단위 등장 (pin 시작 전에 완료)
         document.querySelectorAll<HTMLElement>('#exhibit .section-title').forEach((el) => {
           const letters = el.querySelectorAll<HTMLElement>('.letter');
           if (letters.length === 0) return;
@@ -198,6 +198,7 @@ export default function Landing() {
           const firstLetter = letters[0];
           const restLetters = Array.from(letters).slice(1);
           
+          // 텍스트 등장은 섹션이 화면에 들어올 때 시작, center에 도달하기 전에 완료
           if (firstLetter) {
             gsap.fromTo(
               firstLetter,
@@ -210,7 +211,7 @@ export default function Landing() {
                 scrollTrigger: { 
                   trigger: exhibitSection, 
                   start: 'top 85%', 
-                  end: 'top 60%', 
+                  end: 'center 80%', 
                   scrub: true,
                 },
               }
@@ -229,7 +230,7 @@ export default function Landing() {
                 scrollTrigger: { 
                   trigger: exhibitSection, 
                   start: 'top 85%', 
-                  end: 'top 60%', 
+                  end: 'center 80%', 
                   scrub: true,
                 },
               }
@@ -237,7 +238,7 @@ export default function Landing() {
           }
         });
 
-        // Pin 고정 + 순차 등장 애니메이션
+        // Pin 고정 + 순차 등장 애니메이션 (텍스트가 중앙에 올 때 시작)
         const exhibitTl = gsap.timeline({
           scrollTrigger: {
             trigger: exhibitSection,
@@ -249,7 +250,7 @@ export default function Landing() {
           },
         });
 
-        // 점선 배경 서서히 나타남
+        // 점선 배경 서서히 나타남 (pin 시작 후)
         if (exhibitGrid) {
           exhibitTl.to(exhibitGrid, { 
             opacity: 1, 

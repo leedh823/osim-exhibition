@@ -110,9 +110,7 @@ export default function Landing() {
             }
           );
         }
-        // fade out (원래 위치로 복구, 갤러리 1은 더 위에서 사라지기 시작)
-        const fadeStart = idx === 0 ? 'center 85%' : 'center 50%';
-        const fadeEnd = idx === 0 ? 'top 50%' : 'top 20%';
+        // fade out (원래 위치로 복구)
         gsap.to(letters, {
           y: -24,
           opacity: 0,
@@ -120,8 +118,8 @@ export default function Landing() {
           ease: 'power2.inOut',
           scrollTrigger: { 
             trigger: el, 
-            start: fadeStart, 
-            end: fadeEnd, 
+            start: 'center 50%', 
+            end: 'top 20%', 
             scrub: true,
           },
         });

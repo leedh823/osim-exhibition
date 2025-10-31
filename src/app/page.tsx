@@ -284,7 +284,8 @@ export default function Landing() {
             ease: 'power2.inOut',
             onUpdate: function() {
               if (exhibitGrid) {
-                const radius = Math.sqrt(2) * 100 * gridAnimation.progress + '%';
+                // 화면 전체를 확실히 채우기 위해 150%까지 확장
+                const radius = 150 * gridAnimation.progress + '%';
                 exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
               }
             },
@@ -303,7 +304,8 @@ export default function Landing() {
             ease: 'power2.inOut',
             onUpdate: function() {
               if (exhibitGrid) {
-                const radius = Math.sqrt(2) * 100 * gridAnimation.progress + '%';
+                // 화면 전체를 확실히 채우기 위해 150%까지 확장
+                const radius = 150 * gridAnimation.progress + '%';
                 exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
               }
             }

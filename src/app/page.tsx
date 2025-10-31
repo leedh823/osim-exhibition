@@ -136,16 +136,26 @@ export default function Landing() {
         }
       );
 
-      // Exhibition title: 다른 텍스트와 동일하게 글자 단위 등장
+      // Exhibition title: 다른 텍스트와 동일하게 글자 단위 등장/사라짐
       gsap.utils.toArray<HTMLElement>('#exhibit .section-title, #exhibit .exhibit-subtitle').forEach((el) => {
         const letters = el.querySelectorAll<HTMLElement>('.letter');
         gsap.set(letters, { opacity: 0 });
+        // 등장
         gsap.fromTo(letters, { y: 30, opacity: 0 }, {
           y: 0,
           opacity: 1,
           stagger: 0.03,
           ease: 'power2.out',
+          immediateRender: false,
           scrollTrigger: { trigger: '#exhibit', start: 'top 85%', end: 'top 60%', scrub: true },
+        });
+        // 사라짐
+        gsap.to(letters, {
+          y: -24,
+          opacity: 0,
+          stagger: 0.05,
+          ease: 'power2.inOut',
+          scrollTrigger: { trigger: '#exhibit', start: 'center 30%', end: 'top 15%', scrub: true },
         });
       });
     }, rootRef);
@@ -268,7 +278,7 @@ export default function Landing() {
       </section>
 
       {/* Exhibition Title (전시 이름) */}
-      <section id="exhibit" className="relative z-[1101] min-h-[80vh] bg-white text-black flex items-center justify-center px-8">
+      <section id="exhibit" className="relative z-[1101] min-h-[80vh] bg-black text-white flex items-center justify-center px-8">
         <div className="text-center">
           <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
           <p className="section-title exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
@@ -276,17 +286,17 @@ export default function Landing() {
       </section>
 
       {/* Cards(3) + CTA */}
-      <section id="cards" className="relative z-[1101] bg-white px-6 py-16">
+      <section id="cards" className="relative z-[1101] bg-black px-6 py-16 mt-[80vh]">
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1,2,3].map((i) => (
-              <div key={i} className="rounded-2xl border border-black/10 bg-white shadow-sm p-8 min-h-[200px] flex items-center justify-center text-xl">
+              <div key={i} className="rounded-2xl border border-white/20 bg-white/5 shadow-sm p-8 min-h-[200px] flex items-center justify-center text-xl text-white">
                 Card {i}
               </div>
             ))}
           </div>
           <div className="mt-10 flex items-center justify-center">
-            <a href="/start" className="px-8 py-4 rounded-full bg-black text-white hover:bg-gray-800 transition-colors text-lg">
+            <a href="/start" className="px-8 py-4 rounded-full bg-white text-black hover:bg-gray-200 transition-colors text-lg">
               시작하기
             </a>
           </div>

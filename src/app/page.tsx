@@ -471,8 +471,8 @@ export default function Landing() {
           {/* 전시 이름 - 화면 정중앙 */}
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center w-full">
-              <h2 className="section-title exhibit-title text-6xl md:text-8xl lg:text-9xl font-semibold tracking-wide mb-4" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
-              <p className="section-title exhibit-subtitle text-xl md:text-2xl italic" style={{ fontFamily: 'var(--font-butler)', fontStyle: 'italic', fontWeight: 400 }}>서로의 시선 사이에서</p>
+              <h2 className="section-title exhibit-title text-4xl md:text-6xl lg:text-7xl font-semibold tracking-wide mb-4" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
+              <p className="section-title exhibit-subtitle text-base md:text-lg lg:text-xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
             </div>
           </div>
         </div>

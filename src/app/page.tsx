@@ -410,8 +410,8 @@ export default function Landing() {
       {/* Exhibition Title (전시 이름) */}
       <section id="exhibit" className="relative z-[1101] min-h-[80vh] bg-black text-white flex items-end justify-center px-8 pb-20">
         <div className="text-center">
-          <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide">DESIGN</h2>
-          <p className="section-title exhibit-subtitle mt-6 italic text-2xl md:text-3xl opacity-90">at the speed of creation</p>
+          <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
+          <p className="section-title exhibit-subtitle mt-6 text-2xl md:text-3xl" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>서로의 시선 사이에서</p>
         </div>
       </section>
 

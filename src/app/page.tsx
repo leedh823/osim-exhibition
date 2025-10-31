@@ -259,13 +259,11 @@ export default function Landing() {
           }, 0.1);
         }
 
-        // 채팅창 나타남
+        // 채팅창 나타남 (전시명 위에)
         if (exhibitChatInput) {
-          exhibitTl.fromTo(exhibitChatInput, 
-            { opacity: 0, y: 20 },
+          exhibitTl.to(exhibitChatInput, 
             { 
-              opacity: 1, 
-              y: 0,
+              opacity: 1,
               duration: 0.4, 
               ease: 'power2.out' 
             }, 
@@ -273,13 +271,11 @@ export default function Landing() {
           );
         }
 
-        // AI 메시지 나타남
+        // AI 메시지 나타남 (전시명 아래에)
         if (exhibitAiMessage) {
-          exhibitTl.fromTo(exhibitAiMessage, 
-            { opacity: 0, y: 20 },
+          exhibitTl.to(exhibitAiMessage, 
             { 
-              opacity: 1, 
-              y: 0,
+              opacity: 1,
               duration: 0.4, 
               ease: 'power2.out' 
             }, 
@@ -287,16 +283,14 @@ export default function Landing() {
           );
         }
 
-        // 카드와 시작 버튼 동시에 나타남
+        // 카드와 시작 버튼 동시에 나타남 (전시명 아래에)
         if (exhibitCards) {
           const cards = exhibitCards.querySelectorAll('.exhibit-card');
           const startBtn = exhibitCards.querySelector('.exhibit-start-btn');
           
-          exhibitTl.fromTo([...Array.from(cards), startBtn].filter(Boolean), 
-            { opacity: 0, y: 30 },
+          exhibitTl.to([...Array.from(cards), startBtn].filter(Boolean), 
             { 
-              opacity: 1, 
-              y: 0,
+              opacity: 1,
               duration: 0.5, 
               stagger: 0.1,
               ease: 'power2.out' 
@@ -469,7 +463,7 @@ export default function Landing() {
       </section>
 
       {/* Exhibition Title (전시 이름) */}
-      <section id="exhibit" className="relative z-[1101] min-h-[100vh] bg-black text-white flex items-center justify-center px-8">
+      <section id="exhibit" className="relative z-[1101] min-h-[150vh] bg-black text-white flex items-center justify-center px-8 py-20">
         {/* 점선 배경 패턴 */}
         <div id="exhibit-grid" className="absolute inset-0 opacity-0 pointer-events-none">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -483,15 +477,15 @@ export default function Landing() {
         </div>
 
         <div className="relative z-10 w-full max-w-6xl mx-auto">
-          {/* 전시 이름 */}
-          <div className="text-center mb-16">
+          {/* 전시 이름 - 화면 중앙에 고정 */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center w-full">
             <h2 className="section-title exhibit-title text-6xl md:text-8xl font-semibold tracking-wide" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
             <p className="section-title exhibit-subtitle mt-6 text-2xl md:text-3xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
           </div>
 
-          {/* 채팅창 */}
-          <div id="exhibit-chat-input" className="mb-8 opacity-0">
-            <div className="max-w-2xl mx-auto bg-gray-900/50 rounded-full px-6 py-4 flex items-center gap-4 border border-white/10">
+          {/* 채팅창 - 전시명 위에 */}
+          <div id="exhibit-chat-input" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[200px] w-full max-w-2xl opacity-0">
+            <div className="bg-gray-900/50 rounded-full px-6 py-4 flex items-center gap-4 border border-white/10">
               <div className="flex-1 text-white/60 text-sm">
                 Portal-tech website, monochrome collage, dotted details, dark themed
               </div>
@@ -503,9 +497,9 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* AI 메시지 */}
-          <div id="exhibit-ai-message" className="mb-12 opacity-0">
-            <div className="max-w-2xl mx-auto">
+          {/* AI 메시지 - 전시명 아래에 */}
+          <div id="exhibit-ai-message" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-[180px] w-full max-w-2xl opacity-0">
+            <div>
               <div className="bg-gray-900/30 rounded-2xl px-6 py-4 border border-white/10">
                 <p className="text-white/80 text-base leading-relaxed">
                   안녕하세요! RE:COGNITION 전시에 오신 것을 환영합니다. 이 공간에서는 우리가 타인을 바라보는 시선과 그 속에 담긴 의미를 함께 탐구해보실 수 있습니다.
@@ -514,8 +508,8 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Cards(3) + CTA */}
-          <div id="exhibit-cards" className="opacity-0">
+          {/* Cards(3) + CTA - 전시명 아래에 */}
+          <div id="exhibit-cards" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-[280px] w-full opacity-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
               {[1,2,3].map((i) => (
                 <div key={i} className="exhibit-card rounded-2xl border border-white/20 bg-white/5 shadow-sm p-8 min-h-[200px] flex items-center justify-center text-xl text-white hover:bg-white/10 transition-colors cursor-pointer">

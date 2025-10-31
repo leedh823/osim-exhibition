@@ -364,7 +364,7 @@ export default function Landing() {
             className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
             {idx === 0 && block.titleEn && block.titleKo ? (
-              <div className={`relative z-10 text-black text-center mb-10`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '40px' }}>
+              <div className={`relative z-10 text-black text-center mb-10`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
                 <div className="section-title">{block.titleEn}</div>
                 <div className="section-title mt-4">{block.titleKo}</div>
               </div>

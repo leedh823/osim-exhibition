@@ -344,21 +344,25 @@ export default function Landing() {
         {blocks.map((block, idx) => (
           <div
             key={idx}
-            className={`panel-block relative ${idx === 2 ? 'min-h-[110vh]' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
+            className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
             <h2 className={`section-title relative ${idx === 2 ? 'z-[1101] text-white' : 'z-10 text-black'} text-3xl md:text-5xl text-center mb-10`}>{block.title}</h2>
-            {block.boxes.map((b, i) => (
-              <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible ${idx === 2 ? 'z-[1101]' : 'z-10'}`}>
-                <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
-                {/* 아래 라인이 그려진 뒤 텍스트가 중앙에서 뜨는 효과 */}
-                <div className="z-20 absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[260px] max-w-[70vw]">
-                  <div className={`mx-auto h-[3px] rounded-full w-0 group-hover:w-24 transition-all duration-300 ${idx === 2 ? 'bg-white/30' : 'bg-black/20'}`}></div>
-                  <div className={`mt-2 px-4 py-3 rounded-xl border shadow text-sm opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center ${idx === 2 ? 'bg-black text-white border-white/20' : 'bg-white text-black border-black/10'}`}>
-                    {b.tooltip}
+            {block.boxes.map((b, i) => {
+              // 하단 박스인지 확인 (bottom-으로 시작하는 스타일)
+              const isBottomBox = b.style.includes('bottom-');
+              return (
+                <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible ${idx === 2 ? 'z-[1101]' : 'z-10'}`}>
+                  <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
+                  {/* 하단 박스는 위쪽, 그 외는 아래쪽에 툴팁 표시 */}
+                  <div className={`z-20 absolute left-1/2 -translate-x-1/2 w-[260px] max-w-[70vw] ${isBottomBox ? 'bottom-full mb-2 flex flex-col-reverse' : 'top-full mt-2'}`}>
+                    <div className={`mx-auto h-[3px] rounded-full w-0 group-hover:w-24 transition-all duration-300 ${idx === 2 ? 'bg-white/30' : 'bg-black/20'}`}></div>
+                    <div className={`${isBottomBox ? 'mb-2' : 'mt-2'} px-4 py-3 rounded-xl border shadow text-sm opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center ${idx === 2 ? 'bg-black text-white border-white/20' : 'bg-white text-black border-black/10'}`}>
+                      {b.tooltip}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ))}
       </section>

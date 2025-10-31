@@ -355,11 +355,7 @@ export default function Landing() {
         <div className="absolute top-8 md:top-12 left-6 md:left-8 z-10 pointer-events-none">
           <div className="relative">
             <h1 className="text-6xl md:text-8xl lg:text-9xl text-white tracking-wide uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>
-              <span className="relative inline-block">
-                RE:C
-                <div className="absolute left-0 bottom-0 w-full h-[1px] bg-white"></div>
-              </span>
-              OGNITION
+              RE:COGNITION
             </h1>
           </div>
         </div>

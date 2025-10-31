@@ -335,7 +335,7 @@ export default function Landing() {
           className="parallax max-w-none opacity-90 will-change-transform"
           style={{
             width: '110vw',
-            height: '100vh',
+            height: '50vh',
             objectFit: 'cover',
             objectPosition: 'center 50%',
             transform: 'translateZ(0)',

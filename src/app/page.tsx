@@ -266,16 +266,18 @@ export default function Landing() {
 
         // 격자 배경 원형으로 확장되면서 나타남 (2단계와 3단계에서 연속 확장)
         if (exhibitGrid) {
-          // opacity 먼저 나타남
+          // clipPath를 직접 업데이트하여 원형으로 확장
+          // 2단계: opacity와 clipPath 동시에 시작
+          const gridAnimation = { progress: 0 };
+          
+          // opacity와 clipPath 애니메이션을 하나로 통합
           exhibitTl.to(exhibitGrid, { 
             opacity: 1,
             duration: 0.3,
             ease: 'power2.out' 
           }, 0.5);
           
-          // clipPath를 직접 업데이트하여 원형으로 확장 (2단계: 0~0.5, 3단계: 0.5~1.0)
-          const gridAnimation = { progress: 0 };
-          // 2단계: 절반까지 확장
+          // 2단계: 절반까지 확장 (0.5부터 시작)
           exhibitTl.to(gridAnimation, {
             progress: 0.5,
             duration: 0.8,
@@ -285,10 +287,16 @@ export default function Landing() {
                 const radius = Math.sqrt(2) * 100 * gridAnimation.progress + '%';
                 exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
               }
+            },
+            onStart: function() {
+              // 애니메이션 시작 시 초기 clipPath 설정
+              if (exhibitGrid) {
+                exhibitGrid.style.clipPath = 'circle(0% at 50% 50%)';
+              }
             }
           }, 0.5);
           
-          // 3단계: 나머지 확장 (1.3부터 시작)
+          // 3단계: 나머지 확장 (1.3부터 시작, 같은 객체 사용)
           exhibitTl.to(gridAnimation, {
             progress: 1,
             duration: 1.2,
@@ -501,12 +509,12 @@ export default function Landing() {
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <radialGradient id="grid-fade" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.2" />
-                <stop offset="50%" stopColor="white" stopOpacity="0.1" />
+                <stop offset="0%" stopColor="white" stopOpacity="0.3" />
+                <stop offset="50%" stopColor="white" stopOpacity="0.2" />
                 <stop offset="100%" stopColor="white" stopOpacity="0" />
               </radialGradient>
               <pattern id="exhibit-line-grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.15" />
+                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" strokeWidth="1" strokeOpacity="0.3" />
               </pattern>
               <mask id="grid-mask">
                 <rect width="100%" height="100%" fill="url(#grid-fade)" />

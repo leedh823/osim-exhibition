@@ -110,7 +110,7 @@ export default function Landing() {
             }
           );
         }
-        // fade out (원래 위치로 복구)
+        // fade out (텍스트가 더 위로 올라갔을 때 사라지기 시작)
         gsap.to(letters, {
           y: -24,
           opacity: 0,
@@ -118,8 +118,8 @@ export default function Landing() {
           ease: 'power2.inOut',
           scrollTrigger: { 
             trigger: el, 
-            start: 'center 50%', 
-            end: 'top 20%', 
+            start: 'center 30%', 
+            end: 'top 10%', 
             scrub: true,
           },
         });
@@ -227,7 +227,7 @@ export default function Landing() {
             }
           );
         }
-        // 사라짐 (원래 위치로 복구)
+        // 사라짐 (텍스트가 더 위로 올라갔을 때 사라지기 시작)
         gsap.to(letters, {
           y: -24,
           opacity: 0,
@@ -235,8 +235,8 @@ export default function Landing() {
           ease: 'power2.inOut',
           scrollTrigger: { 
             trigger: el, 
-            start: 'center 50%', 
-            end: 'top 20%', 
+            start: 'center 30%', 
+            end: 'top 10%', 
             scrub: true,
           },
         });

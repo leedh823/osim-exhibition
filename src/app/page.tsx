@@ -301,6 +301,10 @@ export default function Landing() {
     },
     {
       title: 'Each image carries its seed.',
+      titleEn1: 'Interpreting others may, in truth,',
+      titleKo1: '그렇게 타인을 해석하는 일은,',
+      titleEn2: 'be another way of trying to understand ourselves.',
+      titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
         { style: 'top-20 left-24 w-28 h-36', tooltip: 'Prompt: sample G' },
         { style: 'top-12 right-28 w-20 h-20', tooltip: 'Prompt: sample H' },
@@ -369,7 +373,7 @@ export default function Landing() {
             key={idx}
             className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
-            {idx === 0 && block.titleEn1 && block.titleKo1 ? (
+            {(idx === 0 || idx === 1) && block.titleEn1 && block.titleKo1 ? (
               <div className={`relative z-10 text-black text-center mb-10`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
                 <div className="section-title">{block.titleEn1}</div>
                 <div className="section-title mt-2">{block.titleKo1}</div>

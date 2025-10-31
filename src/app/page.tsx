@@ -79,10 +79,12 @@ export default function Landing() {
               end: appearEnd, 
               scrub: true,
               onEnterBack: () => {
-                // 스크롤을 다시 내릴 때 첫 글자 확실히 리셋
-                if (letters[0]) {
-                  gsap.set(letters[0], { opacity: 0, y: appearFromY });
-                }
+                // 스크롤을 다시 내릴 때 모든 글자 초기 상태로 확실히 리셋
+                gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
+              },
+              onLeave: () => {
+                // 스크롤이 위로 올라가서 트리거를 벗어날 때도 리셋
+                gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
               },
             },
           }
@@ -93,7 +95,16 @@ export default function Landing() {
           opacity: 0,
           stagger: 0.05,
           ease: 'power2.inOut',
-          scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 15%', scrub: true },
+          scrollTrigger: { 
+            trigger: el, 
+            start: 'center 30%', 
+            end: 'top 15%', 
+            scrub: true,
+            onLeaveBack: () => {
+              // 스크롤을 다시 내릴 때 (사라짐 애니메이션 역방향) 모든 글자 초기 상태로 리셋
+              gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
+            },
+          },
         });
 
         // 전역 배경 변경 없음
@@ -168,10 +179,12 @@ export default function Landing() {
             end: 'top 60%', 
             scrub: true,
             onEnterBack: () => {
-              // 스크롤을 다시 내릴 때 첫 글자 확실히 리셋
-              if (letters[0]) {
-                gsap.set(letters[0], { opacity: 0, y: appearFromY });
-              }
+              // 스크롤을 다시 내릴 때 모든 글자 초기 상태로 확실히 리셋
+              gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
+            },
+            onLeave: () => {
+              // 스크롤이 위로 올라가서 트리거를 벗어날 때도 리셋
+              gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
             },
           },
         });
@@ -181,7 +194,16 @@ export default function Landing() {
           opacity: 0,
           stagger: 0.05,
           ease: 'power2.inOut',
-          scrollTrigger: { trigger: el, start: 'center 30%', end: 'top 15%', scrub: true },
+          scrollTrigger: { 
+            trigger: el, 
+            start: 'center 30%', 
+            end: 'top 15%', 
+            scrub: true,
+            onLeaveBack: () => {
+              // 스크롤을 다시 내릴 때 (사라짐 애니메이션 역방향) 모든 글자 초기 상태로 리셋
+              gsap.set(letters, { opacity: 0, y: appearFromY, clearProps: 'none' });
+            },
+          },
         });
       });
     }, rootRef);

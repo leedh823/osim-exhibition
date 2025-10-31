@@ -509,12 +509,12 @@ export default function Landing() {
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <radialGradient id="grid-fade" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="white" stopOpacity="0.2" />
+                <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+                <stop offset="50%" stopColor="white" stopOpacity="0.3" />
                 <stop offset="100%" stopColor="white" stopOpacity="0" />
               </radialGradient>
-              <pattern id="exhibit-line-grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" strokeWidth="1" strokeOpacity="0.3" />
+              <pattern id="exhibit-line-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="white" strokeWidth="1" strokeOpacity="0.5" />
               </pattern>
               <mask id="grid-mask">
                 <rect width="100%" height="100%" fill="url(#grid-fade)" />

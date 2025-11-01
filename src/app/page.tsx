@@ -406,18 +406,16 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        // 왼쪽: 큰 빨간 정사각형 (레이블 아래)
-        { style: 'top-[30%] left-[5%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // 왼쪽 위: 작은 회색 정사각형
-        { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 오른쪽 상단: 세로형 빨간 직사각형
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 80, maxH: 300, objectFit: 'cover' },
-        // 중앙 하단: 큰 빨간 정사각형
-        { style: 'bottom-[20%] left-[40%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // 중앙 하단 오른쪽: 작은 회색 정사각형
-        { style: 'bottom-[25%] right-[35%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 오른쪽 하단: 세로형 빨간 직사각형
-        { style: 'bottom-[5%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+        // 상단 왼쪽: 정사각형 이미지
+        { style: 'top-[8%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 200, maxH: 200, objectFit: 'cover' },
+        // 중앙 하단 (텍스트 바로 아래): 정사각형 이미지
+        { style: 'bottom-[30%] left-[45%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 180, maxH: 180, objectFit: 'cover' },
+        // 오른쪽 상단: 세로형 이미지
+        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 80, maxH: 280, objectFit: 'cover' },
+        // 오른쪽 중앙: 세로형 이미지
+        { style: 'top-[40%] right-[5%]', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png', maxW: 80, maxH: 280, objectFit: 'cover' },
+        // 오른쪽 하단: 세로형 이미지
+        { style: 'bottom-[5%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 80, maxH: 280, objectFit: 'cover' },
       ],
     },
     {

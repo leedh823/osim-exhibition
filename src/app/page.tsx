@@ -533,7 +533,7 @@ export default function Landing() {
                         display: 'block',
                         width: b.maxW ? `${b.maxW}px` : '200px',
                         height: b.maxH ? `${b.maxH}px` : '280px',
-                        objectFit: (b as any).objectFit || 'cover'
+                        objectFit: ('objectFit' in b && typeof b.objectFit === 'string' ? b.objectFit : 'cover') as 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
                       }}
                     />
                   ) : (

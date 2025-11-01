@@ -391,12 +391,12 @@ export default function Landing() {
       titleEn2: 'We try to read faces, movements, and the unspoken feelings in between.',
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
-        { style: 'top-14 left-10 w-24 h-24', tooltip: 'Prompt: sample A' },
-        { style: 'top-28 right-16 w-28 h-40', tooltip: 'Prompt: sample B' },
-        { style: 'bottom-28 left-28 w-40 h-28', tooltip: 'Prompt: sample C' },
-        { style: 'bottom-16 right-40 w-28 h-28', tooltip: 'Prompt: sample D' },
-        { style: 'top-1/3 left-1/4 w-16 h-16', tooltip: 'Prompt: sample E' },
-        { style: 'top-1/3 right-1/5 w-16 h-24', tooltip: 'Prompt: sample F' },
+        { style: 'top-14 left-10 w-24 h-24', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png' },
+        { style: 'top-28 right-16 w-28 h-40', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png' },
+        { style: 'bottom-28 left-28 w-40 h-28', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png' },
+        { style: 'bottom-16 right-40 w-28 h-28', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png' },
+        { style: 'top-1/3 left-1/4 w-16 h-16', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png' },
+        { style: 'top-1/3 right-1/5 w-16 h-24', tooltip: 'Prompt: sample F', image: '/gallery/gallery-1-f.png' },
       ],
     },
     {
@@ -406,12 +406,12 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        { style: 'top-20 left-24 w-28 h-36', tooltip: 'Prompt: sample G' },
-        { style: 'top-12 right-28 w-20 h-20', tooltip: 'Prompt: sample H' },
-        { style: 'bottom-28 right-20 w-36 h-28', tooltip: 'Prompt: sample I' },
-        { style: 'bottom-20 left-16 w-24 h-24', tooltip: 'Prompt: sample J' },
-        { style: 'top-1/2 left-[12%] w-14 h-14', tooltip: 'Prompt: sample K' },
-        { style: 'top-[45%] right-[15%] w-20 h-14', tooltip: 'Prompt: sample L' },
+        { style: 'top-20 left-24 w-28 h-36', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png' },
+        { style: 'top-12 right-28 w-20 h-20', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png' },
+        { style: 'bottom-28 right-20 w-36 h-28', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png' },
+        { style: 'bottom-20 left-16 w-24 h-24', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png' },
+        { style: 'top-1/2 left-[12%] w-14 h-14', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png' },
+        { style: 'top-[45%] right-[15%] w-20 h-14', tooltip: 'Prompt: sample L', image: '/gallery/gallery-1-l.png' },
       ],
     },
     {
@@ -421,12 +421,12 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        { style: 'top-16 left-16 w-20 h-28', tooltip: 'Prompt: sample M' },
-        { style: 'top-12 right-16 w-28 h-28', tooltip: 'Prompt: sample N' },
-        { style: 'bottom-36 left-24 w-28 h-28', tooltip: 'Prompt: sample O' },
-        { style: 'bottom-32 right-24 w-40 h-28', tooltip: 'Prompt: sample P' },
-        { style: 'top-[42%] left-[15%] w-16 h-16', tooltip: 'Prompt: sample Q' },
-        { style: 'top-[38%] right-[15%] w-16 h-20', tooltip: 'Prompt: sample R' },
+        { style: 'top-16 left-16 w-20 h-28', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png' },
+        { style: 'top-12 right-16 w-28 h-28', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png' },
+        { style: 'bottom-36 left-24 w-28 h-28', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png' },
+        { style: 'bottom-32 right-24 w-40 h-28', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png' },
+        { style: 'top-[42%] left-[15%] w-16 h-16', tooltip: 'Prompt: sample Q', image: '/gallery/gallery-1-q.png' },
+        { style: 'top-[38%] right-[15%] w-16 h-20', tooltip: 'Prompt: sample R', image: '/gallery/gallery-1-r.png' },
       ],
     },
   ];
@@ -489,7 +489,15 @@ export default function Landing() {
               const isBottomBox = b.style.includes('bottom-');
               return (
                 <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible ${idx === 2 ? 'z-[1101]' : 'z-10'}`}>
-                  <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
+                  {b.image ? (
+                    <img 
+                      src={b.image} 
+                      alt={b.tooltip}
+                      className="w-full h-full rounded-md object-cover shadow"
+                    />
+                  ) : (
+                    <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
+                  )}
                   {/* 하단 박스는 위쪽, 그 외는 아래쪽에 툴팁 표시 */}
                   <div className={`z-20 absolute left-1/2 -translate-x-1/2 w-[260px] max-w-[70vw] ${isBottomBox ? 'bottom-full mb-2 flex flex-col-reverse' : 'top-full mt-2'}`}>
                     <div className={`mx-auto h-[3px] rounded-full w-0 group-hover:w-24 transition-all duration-300 ${idx === 2 ? 'bg-white/30' : 'bg-black/20'}`}></div>

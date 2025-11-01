@@ -411,7 +411,7 @@ export default function Landing() {
         // 상단 가운데: 회색 박스
         { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 90, maxH: 90 },
         // 텍스트 왼쪽 아래 대각선: 정사각형 이미지 (텍스트와 겹치지 않게)
-        { style: 'bottom-[32%] left-[25%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 180, maxH: 180, objectFit: 'cover' },
+        { style: 'bottom-[18%] left-[25%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 180, maxH: 180, objectFit: 'cover' },
         // 오른쪽 상단 위쪽: 가로형 이미지
         { style: 'top-[3%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 250, maxH: 150, objectFit: 'cover' },
         // 오른쪽 중앙: 가로형 이미지

@@ -439,6 +439,14 @@ export default function Landing() {
         { style: 'top-[43%] right-[8%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 210, maxH: 270 },
       ],
     },
+    {
+      title: '',
+      titleEn1: 'Where your gaze lingers,',
+      titleKo1: '당신의 시선이 머무는 곳에서,',
+      titleEn2: 'the exhibition continues to take shape.',
+      titleKo2: '이 전시는 계속해서 만들어집니다.',
+      boxes: [],
+    },
   ];
 
   return (

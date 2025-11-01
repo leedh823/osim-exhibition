@@ -391,12 +391,12 @@ export default function Landing() {
       titleEn2: 'We try to read faces, movements, and the unspoken feelings in between.',
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
-        { style: 'top-[5%] left-[3%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png' },
-        { style: 'top-[5%] right-[3%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png' },
-        { style: 'top-[45%] left-[8%]', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png' },
-        { style: 'top-[48%] right-[8%]', tooltip: 'Prompt: sample F', image: '/gallery/gallery-1-f.png' },
-        { style: 'bottom-[12%] left-[5%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png' },
-        { style: 'bottom-[8%] right-[5%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png' },
+        { style: 'top-[5%] left-[3%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 200, maxH: 280 },
+        { style: 'top-[5%] right-[3%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 350, maxH: 220 },
+        { style: 'top-[35%] left-[4%]', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png', maxW: 320, maxH: 200 },
+        { style: 'top-[40%] right-[4%]', tooltip: 'Prompt: sample F', image: '/gallery/gallery-1-f.png', maxW: 280, maxH: 180 },
+        { style: 'bottom-[12%] left-[2%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 400, maxH: 240 },
+        { style: 'bottom-[8%] right-[3%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 220, maxH: 220 },
       ],
     },
     {
@@ -406,12 +406,12 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png' },
-        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png' },
-        { style: 'top-[45%] left-[3%]', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png' },
-        { style: 'top-[50%] right-[5%]', tooltip: 'Prompt: sample L', image: '/gallery/gallery-1-l.png' },
-        { style: 'bottom-[10%] right-[5%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png' },
-        { style: 'bottom-[8%] left-[12%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png' },
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 240, maxH: 320 },
+        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 380, maxH: 240 },
+        { style: 'top-[38%] left-[1%]', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png', maxW: 260, maxH: 260 },
+        { style: 'top-[42%] right-[2%]', tooltip: 'Prompt: sample L', image: '/gallery/gallery-1-l.png', maxW: 300, maxH: 200 },
+        { style: 'bottom-[10%] right-[2%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 420, maxH: 260 },
+        { style: 'bottom-[5%] left-[8%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 280, maxH: 280 },
       ],
     },
     {
@@ -421,12 +421,12 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png' },
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png' },
-        { style: 'top-[42%] left-[10%]', tooltip: 'Prompt: sample Q', image: '/gallery/gallery-1-q.png' },
-        { style: 'top-[48%] right-[3%]', tooltip: 'Prompt: sample R', image: '/gallery/gallery-1-r.png' },
-        { style: 'bottom-[10%] left-[5%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png' },
-        { style: 'bottom-[18%] right-[8%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png' },
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 220, maxH: 300 },
+        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 360, maxH: 230 },
+        { style: 'top-[32%] left-[6%]', tooltip: 'Prompt: sample Q', image: '/gallery/gallery-1-q.png', maxW: 340, maxH: 210 },
+        { style: 'top-[38%] right-[1%]', tooltip: 'Prompt: sample R', image: '/gallery/gallery-1-r.png', maxW: 290, maxH: 280 },
+        { style: 'bottom-[10%] left-[2%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 270, maxH: 270 },
+        { style: 'bottom-[15%] right-[4%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 400, maxH: 250 },
       ],
     },
   ];
@@ -495,8 +495,12 @@ export default function Landing() {
                     <img 
                       src={b.image} 
                       alt={b.tooltip}
-                      className="max-w-[300px] max-h-[400px] w-auto h-auto shadow"
-                      style={{ display: 'block' }}
+                      className="w-auto h-auto shadow"
+                      style={{ 
+                        display: 'block',
+                        maxWidth: b.maxW ? `${b.maxW}px` : '300px',
+                        maxHeight: b.maxH ? `${b.maxH}px` : '400px'
+                      }}
                     />
                   ) : (
                     <div className={`w-56 h-56 rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />

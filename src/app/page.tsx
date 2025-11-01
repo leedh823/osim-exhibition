@@ -406,16 +406,12 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        // 상단 왼쪽: 정사각형 이미지
-        { style: 'top-[8%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // 중앙 하단 (텍스트 바로 아래): 정사각형 이미지
-        { style: 'bottom-[30%] left-[45%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 180, maxH: 180, objectFit: 'cover' },
-        // 오른쪽 상단: 세로형 이미지
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 80, maxH: 280, objectFit: 'cover' },
-        // 오른쪽 중앙: 세로형 이미지
-        { style: 'top-[40%] right-[5%]', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png', maxW: 80, maxH: 280, objectFit: 'cover' },
-        // 오른쪽 하단: 세로형 이미지
-        { style: 'bottom-[5%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 80, maxH: 280, objectFit: 'cover' },
+        // 자유분방한 배치 - 화면 밖으로 벗어나도 OK
+        { style: 'top-[2%] -left-[3%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 200, maxH: 200, objectFit: 'cover' },
+        { style: 'bottom-[25%] left-[42%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 180, maxH: 180, objectFit: 'cover' },
+        { style: 'top-[12%] -right-[2%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 80, maxH: 320, objectFit: 'cover' },
+        { style: 'top-[55%] right-[3%]', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png', maxW: 90, maxH: 260, objectFit: 'cover' },
+        { style: '-bottom-[8%] right-[1%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 75, maxH: 300, objectFit: 'cover' },
       ],
     },
     {

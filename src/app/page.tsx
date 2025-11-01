@@ -485,14 +485,14 @@ export default function Landing() {
             className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
             {(idx === 0 || idx === 1 || idx === 2) && block.titleEn1 && block.titleKo1 ? (
-              <div className={`relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-center mb-10 px-4 py-8 ${idx === 2 ? 'bg-black/90' : 'bg-white/90'} rounded-lg`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
+              <div className={`relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-center mb-10 px-4 py-8 ${idx === 2 ? '' : 'bg-white/90'} rounded-lg`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
                 <div className="section-title">{block.titleEn1}</div>
                 <div className="section-title mt-2">{block.titleKo1}</div>
                 <div className="section-title mt-2">{block.titleEn2}</div>
                 <div className="section-title mt-2">{block.titleKo2}</div>
               </div>
             ) : (
-              <h2 className={`section-title relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-3xl md:text-5xl text-center mb-10 px-4 py-8 ${idx === 2 ? 'bg-black/90' : 'bg-white/90'} rounded-lg`}>{block.title}</h2>
+              <h2 className={`section-title relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-3xl md:text-5xl text-center mb-10 px-4 py-8 ${idx === 2 ? '' : 'bg-white/90'} rounded-lg`}>{block.title}</h2>
             )}
             {block.boxes.map((b, i) => {
               // 하단 박스인지 확인 (bottom-으로 시작하는 스타일)

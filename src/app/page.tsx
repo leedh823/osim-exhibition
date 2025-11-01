@@ -412,8 +412,8 @@ export default function Landing() {
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
         // 상단 행 (3개)
-        { style: 'top-[6%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 220, maxH: 300 },
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 170, maxH: 230 },
+        { style: 'top-[6%] left-[8%]', tooltip: '', image: null, maxW: 170, maxH: 230 },
+        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 220, maxH: 300 },
         { style: 'top-[7%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 210, maxH: 290 },
         // 중앙 행 (2개 - 작은 빈 박스)
         { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 140, maxH: 180 },

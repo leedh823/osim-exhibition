@@ -372,7 +372,7 @@ export default function Landing() {
       });
       gsap.to('.portal-core', { x: dx * 45, y: dy * 45, duration: 0.25, ease: 'power3.out' });
       // 페이지 내 이미지/박스 블록 전체 패럴랙스(텍스트 제외) — 좌우/상하 동일 스케일로 증폭
-      gsap.to('.parallax-item', { x: dx * 80, y: dy * 80, duration: 1, ease: 'sine.out' });
+      gsap.to('.parallax-item', { x: dx * 120, y: dy * 120, duration: 1, ease: 'sine.out' });
     };
     window.addEventListener('mousemove', handler);
 

@@ -514,10 +514,11 @@ export default function Landing() {
                     />
                   ) : (
                     <div 
-                      className={`rounded-lg parallax-item bg-gray-200/50`}
+                      className={`rounded-lg parallax-item`}
                       style={{
                         width: b.maxW ? `${b.maxW}px` : '130px',
-                        height: b.maxH ? `${b.maxH}px` : '180px'
+                        height: b.maxH ? `${b.maxH}px` : '180px',
+                        backgroundColor: '#F9F9F9'
                       }}
                     />
                   )}

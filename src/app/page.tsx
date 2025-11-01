@@ -391,17 +391,19 @@ export default function Landing() {
       titleEn2: 'We try to read faces, movements, and the unspoken feelings in between.',
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
-        // 상단 행 (3개)
-        { style: 'top-[8%] left-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        { style: 'top-[8%] left-[50%] -translate-x-1/2', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 280, maxH: 380 },
-        { style: 'top-[8%] right-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
+        // 상단 행 (4개)
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 260, maxH: 360 },
+        { style: 'top-[8%] left-[28%]', tooltip: '', image: null, maxW: 220, maxH: 300 },
+        { style: 'top-[8%] right-[28%]', tooltip: '', image: null, maxW: 220, maxH: 300 },
+        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 300, maxH: 360 },
         // 중앙 행 (2개)
-        { style: 'top-[45%] left-[10%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 300, maxH: 360 },
-        { style: 'top-[45%] right-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        // 하단 행 (3개)
-        { style: 'bottom-[10%] left-[10%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 320, maxH: 400 },
-        { style: 'bottom-[10%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        { style: 'bottom-[10%] right-[10%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 260, maxH: 340 },
+        { style: 'top-[45%] left-[10%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 320, maxH: 400 },
+        { style: 'top-[45%] right-[10%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 260, maxH: 340 },
+        // 하단 행 (4개)
+        { style: 'bottom-[10%] left-[5%]', tooltip: '', image: null, maxW: 240, maxH: 320 },
+        { style: 'bottom-[10%] left-[28%]', tooltip: '', image: null, maxW: 240, maxH: 320 },
+        { style: 'bottom-[10%] right-[28%]', tooltip: '', image: null, maxW: 240, maxH: 320 },
+        { style: 'bottom-[10%] right-[5%]', tooltip: '', image: null, maxW: 240, maxH: 320 },
       ],
     },
     {
@@ -411,17 +413,17 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        // 상단 행 (3개)
-        { style: 'top-[8%] left-[10%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 300, maxH: 400 },
-        { style: 'top-[8%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        { style: 'top-[8%] right-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        // 중앙 행 (2개)
-        { style: 'top-[45%] left-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        { style: 'top-[45%] right-[10%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 280, maxH: 380 },
-        // 하단 행 (3개)
-        { style: 'bottom-[10%] left-[10%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 320, maxH: 360 },
-        { style: 'bottom-[10%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        { style: 'bottom-[10%] right-[10%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 290, maxH: 420 },
+        // 상단 행 (5개)
+        { style: 'top-[8%] left-[3%]', tooltip: '', image: null, maxW: 200, maxH: 280 },
+        { style: 'top-[8%] left-[22%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 300, maxH: 400 },
+        { style: 'top-[8%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 240, maxH: 320 },
+        { style: 'top-[8%] right-[22%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 280, maxH: 380 },
+        { style: 'top-[8%] right-[3%]', tooltip: '', image: null, maxW: 200, maxH: 280 },
+        // 하단 행 (4개)
+        { style: 'bottom-[10%] left-[5%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 320, maxH: 360 },
+        { style: 'bottom-[10%] left-[32%]', tooltip: '', image: null, maxW: 260, maxH: 340 },
+        { style: 'bottom-[10%] right-[32%]', tooltip: '', image: null, maxW: 260, maxH: 340 },
+        { style: 'bottom-[10%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 290, maxH: 420 },
       ],
     },
     {
@@ -431,17 +433,19 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        // 상단 행 (3개)
-        { style: 'top-[8%] left-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        { style: 'top-[8%] left-[50%] -translate-x-1/2', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 270, maxH: 370 },
-        { style: 'top-[8%] right-[10%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 310, maxH: 390 },
+        // 상단 행 (4개)
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 270, maxH: 370 },
+        { style: 'top-[8%] left-[28%]', tooltip: '', image: null, maxW: 220, maxH: 300 },
+        { style: 'top-[8%] right-[28%]', tooltip: '', image: null, maxW: 220, maxH: 300 },
+        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 310, maxH: 390 },
         // 중앙 행 (2개)
-        { style: 'top-[45%] left-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        { style: 'top-[45%] right-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
-        // 하단 행 (3개)
-        { style: 'bottom-[10%] left-[10%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 290, maxH: 410 },
-        { style: 'bottom-[10%] left-[50%] -translate-x-1/2', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 280, maxH: 350 },
-        { style: 'bottom-[10%] right-[10%]', tooltip: '', image: null, maxW: 280, maxH: 380 },
+        { style: 'top-[45%] left-[10%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 290, maxH: 410 },
+        { style: 'top-[45%] right-[10%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 280, maxH: 350 },
+        // 하단 행 (4개)
+        { style: 'bottom-[10%] left-[5%]', tooltip: '', image: null, maxW: 240, maxH: 320 },
+        { style: 'bottom-[10%] left-[28%]', tooltip: '', image: null, maxW: 240, maxH: 320 },
+        { style: 'bottom-[10%] right-[28%]', tooltip: '', image: null, maxW: 240, maxH: 320 },
+        { style: 'bottom-[10%] right-[5%]', tooltip: '', image: null, maxW: 240, maxH: 320 },
       ],
     },
   ];

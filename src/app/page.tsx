@@ -429,12 +429,12 @@ export default function Landing() {
         { style: 'top-[30%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 200, maxH: 200, objectFit: 'cover' },
         // 왼쪽 위: 작은 회색 정사각형
         { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 중앙 하단: 가로형 이미지 (텍스트 아래로 내림)
-        { style: 'bottom-[35%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 300, maxH: 100, objectFit: 'cover' },
+        // 중앙 하단: 가로형 이미지 (더 아래로)
+        { style: 'bottom-[25%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 300, maxH: 100, objectFit: 'cover' },
         // 중앙 하단 오른쪽: 작은 회색 정사각형
         { style: 'bottom-[30%] right-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 오른쪽 상단 위쪽: 가로형 이미지
-        { style: 'top-[3%] right-[8%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 250, maxH: 150, objectFit: 'cover' },
+        // 오른쪽 상단 위쪽: 가로형 이미지 (왼쪽으로)
+        { style: 'top-[3%] right-[15%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 250, maxH: 150, objectFit: 'cover' },
         // 오른쪽 중앙: 가로형 이미지
         { style: 'top-[45%] right-[5%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 240, maxH: 140, objectFit: 'cover' },
       ],

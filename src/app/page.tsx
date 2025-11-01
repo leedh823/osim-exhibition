@@ -391,12 +391,12 @@ export default function Landing() {
       titleEn2: 'We try to read faces, movements, and the unspoken feelings in between.',
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
-        { style: 'top-[8%] left-[5%] w-56 h-56', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png' },
-        { style: 'top-[5%] right-[8%] w-56 h-80', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png' },
-        { style: 'top-[45%] left-[10%] w-40 h-40', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png' },
-        { style: 'top-[50%] right-[12%] w-40 h-56', tooltip: 'Prompt: sample F', image: '/gallery/gallery-1-f.png' },
-        { style: 'bottom-[15%] left-[8%] w-80 h-56', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png' },
-        { style: 'bottom-[8%] right-[5%] w-56 h-56', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png' },
+        { style: 'top-[5%] left-[3%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png' },
+        { style: 'top-[5%] right-[3%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png' },
+        { style: 'top-[45%] left-[8%]', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png' },
+        { style: 'top-[48%] right-[8%]', tooltip: 'Prompt: sample F', image: '/gallery/gallery-1-f.png' },
+        { style: 'bottom-[12%] left-[5%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png' },
+        { style: 'bottom-[8%] right-[5%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png' },
       ],
     },
     {
@@ -406,12 +406,12 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        { style: 'top-[10%] left-[8%] w-56 h-72', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png' },
-        { style: 'top-[8%] right-[10%] w-48 h-48', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png' },
-        { style: 'top-[48%] left-[5%] w-40 h-40', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png' },
-        { style: 'top-[55%] right-[8%] w-48 h-40', tooltip: 'Prompt: sample L', image: '/gallery/gallery-1-l.png' },
-        { style: 'bottom-[12%] right-[6%] w-72 h-56', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png' },
-        { style: 'bottom-[8%] left-[15%] w-56 h-56', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png' },
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png' },
+        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png' },
+        { style: 'top-[45%] left-[3%]', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png' },
+        { style: 'top-[50%] right-[5%]', tooltip: 'Prompt: sample L', image: '/gallery/gallery-1-l.png' },
+        { style: 'bottom-[10%] right-[5%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png' },
+        { style: 'bottom-[8%] left-[12%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png' },
       ],
     },
     {
@@ -421,12 +421,12 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        { style: 'top-[10%] left-[6%] w-48 h-64', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png' },
-        { style: 'top-[6%] right-[8%] w-56 h-56', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png' },
-        { style: 'top-[42%] left-[12%] w-40 h-40', tooltip: 'Prompt: sample Q', image: '/gallery/gallery-1-q.png' },
-        { style: 'top-[50%] right-[5%] w-40 h-48', tooltip: 'Prompt: sample R', image: '/gallery/gallery-1-r.png' },
-        { style: 'bottom-[10%] left-[8%] w-56 h-56', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png' },
-        { style: 'bottom-[20%] right-[12%] w-80 h-56', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png' },
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png' },
+        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png' },
+        { style: 'top-[42%] left-[10%]', tooltip: 'Prompt: sample Q', image: '/gallery/gallery-1-q.png' },
+        { style: 'top-[48%] right-[3%]', tooltip: 'Prompt: sample R', image: '/gallery/gallery-1-r.png' },
+        { style: 'bottom-[10%] left-[5%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png' },
+        { style: 'bottom-[18%] right-[8%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png' },
       ],
     },
   ];
@@ -487,16 +487,19 @@ export default function Landing() {
             {block.boxes.map((b, i) => {
               // 하단 박스인지 확인 (bottom-으로 시작하는 스타일)
               const isBottomBox = b.style.includes('bottom-');
+              // style에서 위치만 추출 (w-*, h-* 제거)
+              const positionStyle = b.style.split(' ').filter(s => !s.startsWith('w-') && !s.startsWith('h-')).join(' ');
               return (
-                <div key={i} className={`group parallax-item absolute ${b.style} overflow-visible ${idx === 2 ? 'z-[1101]' : 'z-10'}`}>
+                <div key={i} className={`group parallax-item absolute ${positionStyle} overflow-visible ${idx === 2 ? 'z-[1101]' : 'z-10'}`}>
                   {b.image ? (
                     <img 
                       src={b.image} 
                       alt={b.tooltip}
-                      className="w-full h-full object-contain shadow"
+                      className="max-w-[300px] max-h-[400px] w-auto h-auto shadow"
+                      style={{ display: 'block' }}
                     />
                   ) : (
-                    <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
+                    <div className={`w-56 h-56 rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />
                   )}
                   {/* 하단 박스는 위쪽, 그 외는 아래쪽에 툴팁 표시 */}
                   <div className={`z-20 absolute left-1/2 -translate-x-1/2 w-[260px] max-w-[70vw] ${isBottomBox ? 'bottom-full mb-2 flex flex-col-reverse' : 'top-full mt-2'}`}>

@@ -391,13 +391,10 @@ export default function Landing() {
       titleEn2: 'We try to read faces, movements, and the unspoken feelings in between.',
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
-        { style: 'top-[10%] left-[8%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 180, maxH: 260 },
-        { style: 'top-[12%] right-[10%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 420, maxH: 280 },
-        { style: 'bottom-[15%] left-[10%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 380, maxH: 240 },
-        { style: 'bottom-[12%] right-[8%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 240, maxH: 300 },
-        { style: 'top-[45%] left-[12%]', tooltip: 'Placeholder 1', maxW: 180, maxH: 220 },
-        { style: 'top-[50%] right-[12%]', tooltip: 'Placeholder 2', maxW: 200, maxH: 240 },
-        { style: 'top-[35%] left-[6%]', tooltip: 'Placeholder 3', maxW: 160, maxH: 200 },
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 280, maxH: 380 },
+        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 300, maxH: 360 },
+        { style: 'bottom-[8%] left-[5%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 320, maxH: 400 },
+        { style: 'bottom-[8%] right-[5%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 260, maxH: 340 },
       ],
     },
     {
@@ -407,13 +404,10 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        { style: 'top-[10%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 300, maxH: 340 },
-        { style: 'top-[12%] right-[10%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 200, maxH: 240 },
-        { style: 'bottom-[15%] left-[10%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 450, maxH: 280 },
-        { style: 'bottom-[12%] right-[8%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 260, maxH: 320 },
-        { style: 'top-[45%] left-[12%]', tooltip: 'Placeholder 4', maxW: 220, maxH: 260 },
-        { style: 'top-[50%] right-[12%]', tooltip: 'Placeholder 5', maxW: 180, maxH: 220 },
-        { style: 'top-[38%] left-[6%]', tooltip: 'Placeholder 6', maxW: 200, maxH: 240 },
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 300, maxH: 400 },
+        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 280, maxH: 380 },
+        { style: 'bottom-[8%] left-[5%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 320, maxH: 360 },
+        { style: 'bottom-[8%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 290, maxH: 420 },
       ],
     },
     {
@@ -423,13 +417,10 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        { style: 'top-[10%] left-[8%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 160, maxH: 220 },
-        { style: 'top-[12%] right-[10%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 400, maxH: 260 },
-        { style: 'bottom-[15%] left-[10%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 320, maxH: 380 },
-        { style: 'bottom-[12%] right-[8%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 360, maxH: 220 },
-        { style: 'top-[45%] left-[12%]', tooltip: 'Placeholder 7', maxW: 240, maxH: 280 },
-        { style: 'top-[50%] right-[12%]', tooltip: 'Placeholder 8', maxW: 190, maxH: 230 },
-        { style: 'top-[35%] left-[6%]', tooltip: 'Placeholder 9', maxW: 170, maxH: 210 },
+        { style: 'top-[8%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 270, maxH: 370 },
+        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 310, maxH: 390 },
+        { style: 'bottom-[8%] left-[5%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 290, maxH: 410 },
+        { style: 'bottom-[8%] right-[5%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 280, maxH: 350 },
       ],
     },
   ];
@@ -478,14 +469,14 @@ export default function Landing() {
             className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
             {(idx === 0 || idx === 1 || idx === 2) && block.titleEn1 && block.titleKo1 ? (
-              <div className={`relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-center mb-10 px-8 py-16`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
+              <div className={`relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-center mb-10 px-4`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
                 <div className="section-title">{block.titleEn1}</div>
                 <div className="section-title mt-2">{block.titleKo1}</div>
                 <div className="section-title mt-2">{block.titleEn2}</div>
                 <div className="section-title mt-2">{block.titleKo2}</div>
               </div>
             ) : (
-              <h2 className={`section-title relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-3xl md:text-5xl text-center mb-10 px-8 py-16`}>{block.title}</h2>
+              <h2 className={`section-title relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-3xl md:text-5xl text-center mb-10 px-4`}>{block.title}</h2>
             )}
             {block.boxes.map((b, i) => {
               // 하단 박스인지 확인 (bottom-으로 시작하는 스타일)

@@ -412,8 +412,8 @@ export default function Landing() {
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
         // 상단 행 (3개)
-        { style: 'top-[6%] left-[8%]', tooltip: '', image: null, maxW: 170, maxH: 230 },
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 220, maxH: 300 },
+        { style: 'top-[6%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 220, maxH: 300 },
+        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 170, maxH: 230 },
         { style: 'top-[7%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 210, maxH: 290 },
         // 중앙 행 (2개 - 작은 빈 박스)
         { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 140, maxH: 180 },
@@ -431,17 +431,12 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        // 상단 행 (3개)
+        // 상단 행 (2개)
         { style: 'top-[6%] left-[8%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 200, maxH: 280 },
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 160, maxH: 220 },
         { style: 'top-[7%] right-[8%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 230, maxH: 300 },
-        // 중앙 행 (2개 - 작은 빈 박스)
-        { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 140, maxH: 180 },
-        { style: 'top-[43%] right-[8%]', tooltip: '', image: null, maxW: 140, maxH: 180 },
-        // 하단 행 (3개)
-        { style: 'bottom-[10%] left-[8%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 220, maxH: 310 },
-        { style: 'bottom-[9%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 180, maxH: 240 },
-        { style: 'bottom-[11%] right-[8%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 210, maxH: 270 },
+        // 중앙 행 (2개)
+        { style: 'top-[42%] left-[8%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 220, maxH: 310 },
+        { style: 'top-[43%] right-[8%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 210, maxH: 270 },
       ],
     },
   ];

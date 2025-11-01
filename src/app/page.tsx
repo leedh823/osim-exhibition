@@ -531,8 +531,9 @@ export default function Landing() {
                       className="w-auto h-auto"
                       style={{ 
                         display: 'block',
-                        maxWidth: b.maxW ? `${b.maxW}px` : '200px',
-                        maxHeight: b.maxH ? `${b.maxH}px` : '280px'
+                        width: b.maxW ? `${b.maxW}px` : '200px',
+                        height: b.maxH ? `${b.maxH}px` : '280px',
+                        objectFit: (b as any).objectFit || 'cover'
                       }}
                     />
                   ) : (

@@ -447,20 +447,7 @@ export default function Landing() {
       titleKo1: '당신의 시선이 머무는 곳에서,',
       titleEn2: 'the exhibition continues to take shape.',
       titleKo2: '이 전시는 계속해서 만들어집니다.',
-      boxes: [
-        // 왼쪽: 가로형 빨간 직사각형 (레이블 아래)
-        { style: 'top-[30%] left-[5%]', tooltip: 'Image 1', image: '/gallery/gallery-4-a.png', maxW: 300, maxH: 100, objectFit: 'cover' },
-        // 왼쪽 하단: 작은 회색 정사각형
-        { style: 'bottom-[30%] left-[20%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 중앙 하단: 가로형 빨간 직사각형
-        { style: 'bottom-[25%] left-[45%]', tooltip: 'Image 2', image: '/gallery/gallery-4-b.png', maxW: 300, maxH: 100, objectFit: 'cover' },
-        // 오른쪽 상단: 세로형 빨간 직사각형
-        { style: 'top-[5%] right-[5%]', tooltip: 'Image 3', image: '/gallery/gallery-4-c.png', maxW: 80, maxH: 300, objectFit: 'cover' },
-        // 중앙 하단 오른쪽: 작은 회색 정사각형
-        { style: 'bottom-[30%] right-[20%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 오른쪽 하단: 세로형 빨간 직사각형
-        { style: 'bottom-[5%] right-[5%]', tooltip: 'Image 4', image: '/gallery/gallery-4-d.png', maxW: 80, maxH: 300, objectFit: 'cover' },
-      ],
+      boxes: [],
     },
   ];
 

@@ -406,16 +406,16 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        // 상단 왼쪽: 정사각형 이미지 (텍스트와 겹치지 않게)
+        // 상단 왼쪽: 정사각형 이미지
         { style: 'top-[8%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // 중앙 하단 (텍스트 아래): 정사각형 이미지
-        { style: 'bottom-[28%] left-[45%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 180, maxH: 180, objectFit: 'cover' },
-        // 오른쪽 상단: 세로형 이미지 (화면 안에)
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 80, maxH: 280, objectFit: 'cover' },
-        // 오른쪽 중앙: 세로형 이미지
-        { style: 'top-[42%] right-[5%]', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png', maxW: 80, maxH: 280, objectFit: 'cover' },
-        // 오른쪽 하단: 세로형 이미지 (화면 안에)
-        { style: 'bottom-[5%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 80, maxH: 280, objectFit: 'cover' },
+        // 상단 가운데: 회색 박스
+        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 90, maxH: 90 },
+        // 중앙 하단 (텍스트 아래로 내림): 정사각형 이미지
+        { style: 'bottom-[35%] left-[45%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 180, maxH: 180, objectFit: 'cover' },
+        // 오른쪽 상단 위쪽: 가로형 이미지
+        { style: 'top-[3%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 250, maxH: 150, objectFit: 'cover' },
+        // 오른쪽 중앙: 가로형 이미지
+        { style: 'top-[45%] right-[5%]', tooltip: 'Prompt: sample K', image: '/gallery/gallery-1-k.png', maxW: 240, maxH: 140, objectFit: 'cover' },
       ],
     },
     {
@@ -425,18 +425,18 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        // 왼쪽: 정사각형 이미지 (텍스트와 겹치지 않게, 화면 안에)
+        // 왼쪽: 정사각형 이미지
         { style: 'top-[30%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 200, maxH: 200, objectFit: 'cover' },
         // 왼쪽 위: 작은 회색 정사각형
         { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 오른쪽 상단: 세로형 이미지 (화면 안에)
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 80, maxH: 300, objectFit: 'cover' },
-        // 중앙 하단: 가로형 이미지 (텍스트와 겹치지 않게)
-        { style: 'bottom-[25%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 300, maxH: 100, objectFit: 'cover' },
+        // 중앙 하단: 가로형 이미지 (텍스트 아래로 내림)
+        { style: 'bottom-[35%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 300, maxH: 100, objectFit: 'cover' },
         // 중앙 하단 오른쪽: 작은 회색 정사각형
         { style: 'bottom-[30%] right-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 오른쪽 하단: 세로형 이미지 (화면 안에)
-        { style: 'bottom-[5%] right-[5%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+        // 오른쪽 상단 위쪽: 가로형 이미지
+        { style: 'top-[3%] right-[8%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 250, maxH: 150, objectFit: 'cover' },
+        // 오른쪽 중앙: 가로형 이미지
+        { style: 'top-[45%] right-[5%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 240, maxH: 140, objectFit: 'cover' },
       ],
     },
     {

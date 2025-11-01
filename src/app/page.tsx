@@ -492,8 +492,8 @@ export default function Landing() {
             key={idx}
             className={`panel-block relative ${idx === 2 ? 'min-h-[110vh] pb-32' : 'min-h-[90vh]'} w-full px-8 flex flex-col items-center justify-center overflow-visible`}
           >
-            {(idx === 0 || idx === 1 || idx === 2) && block.titleEn1 && block.titleKo1 ? (
-              <div className={`relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-center mb-10 px-4 py-8 ${idx === 2 ? '' : 'bg-white/90'} rounded-lg`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
+            {(idx === 0 || idx === 1 || idx === 2 || idx === 3) && block.titleEn1 && block.titleKo1 ? (
+              <div className={`relative ${idx === 2 || idx === 3 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-center mb-10 px-4 py-8 ${idx === 2 || idx === 3 ? '' : 'bg-white/90'} rounded-lg`} style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: '20px' }}>
                 <div className="section-title">{block.titleEn1}</div>
                 <div className="section-title mt-2">{block.titleKo1}</div>
                 <div className="section-title mt-2">{block.titleEn2}</div>

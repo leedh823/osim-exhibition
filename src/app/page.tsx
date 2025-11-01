@@ -391,17 +391,12 @@ export default function Landing() {
       titleEn2: 'We try to read faces, movements, and the unspoken feelings in between.',
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
-        // 상단 행 (3개)
-        { style: 'top-[6%] left-[8%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 200, maxH: 280 },
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 130, maxH: 180 },
-        { style: 'top-[7%] right-[8%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 210, maxH: 290 },
-        // 중앙 행 (2개 - 작은 빈 박스)
-        { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 120, maxH: 150 },
-        { style: 'top-[43%] right-[8%]', tooltip: '', image: null, maxW: 120, maxH: 150 },
-        // 하단 행 (3개)
-        { style: 'bottom-[10%] left-[8%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 240, maxH: 300 },
-        { style: 'bottom-[9%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 150, maxH: 200 },
-        { style: 'bottom-[11%] right-[8%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 200, maxH: 270 },
+        // 왼쪽 상단: 큰 빨간 정사각형 (약 20% width/height)
+        { style: 'top-[5%] left-[5%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 200, maxH: 200, objectFit: 'cover' },
+        // 오른쪽 상단: 세로형 빨간 직사각형 (약 8% width, 25% height)
+        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+        // 텍스트 아래 중앙: 작은 회색 정사각형 (약 8% width/height)
+        { style: 'top-[45%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 80, maxH: 80 },
       ],
     },
     {
@@ -411,17 +406,18 @@ export default function Landing() {
       titleEn2: 'be another way of trying to understand ourselves.',
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
-        // 상단 행 (3개)
-        { style: 'top-[6%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 220, maxH: 300 },
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 130, maxH: 180 },
-        { style: 'top-[7%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 210, maxH: 290 },
-        // 중앙 행 (2개 - 작은 빈 박스)
-        { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 120, maxH: 150 },
-        { style: 'top-[43%] right-[8%]', tooltip: '', image: null, maxW: 120, maxH: 150 },
-        // 하단 행 (3개)
-        { style: 'bottom-[10%] left-[8%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 240, maxH: 270 },
-        { style: 'bottom-[9%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 150, maxH: 200 },
-        { style: 'bottom-[11%] right-[8%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 220, maxH: 320 },
+        // 왼쪽: 큰 빨간 정사각형 (레이블 아래)
+        { style: 'top-[30%] left-[5%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 200, maxH: 200, objectFit: 'cover' },
+        // 왼쪽 위: 작은 회색 정사각형
+        { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 오른쪽 상단: 세로형 빨간 직사각형
+        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+        // 중앙 하단: 큰 빨간 정사각형
+        { style: 'bottom-[20%] left-[40%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 200, maxH: 200, objectFit: 'cover' },
+        // 중앙 하단 오른쪽: 작은 회색 정사각형
+        { style: 'bottom-[25%] right-[35%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 오른쪽 하단: 세로형 빨간 직사각형
+        { style: 'bottom-[5%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 80, maxH: 300, objectFit: 'cover' },
       ],
     },
     {
@@ -431,12 +427,18 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        // 상단 행 (2개)
-        { style: 'top-[6%] left-[8%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 200, maxH: 280 },
-        { style: 'top-[7%] right-[8%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 230, maxH: 300 },
-        // 중앙 행 (2개)
-        { style: 'top-[42%] left-[8%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 220, maxH: 310 },
-        { style: 'top-[43%] right-[8%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 210, maxH: 270 },
+        // 왼쪽: 큰 빨간 정사각형 (레이블 아래)
+        { style: 'top-[30%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 200, maxH: 200, objectFit: 'cover' },
+        // 왼쪽 위: 작은 회색 정사각형
+        { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 오른쪽 상단: 세로형 빨간 직사각형
+        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+        // 중앙 하단: 가로형 빨간 직사각형 (약 30% width, 10% height)
+        { style: 'bottom-[25%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 300, maxH: 100, objectFit: 'cover' },
+        // 중앙 하단 오른쪽: 작은 회색 정사각형
+        { style: 'bottom-[30%] right-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 오른쪽 하단: 세로형 빨간 직사각형
+        { style: 'bottom-[5%] right-[5%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 80, maxH: 300, objectFit: 'cover' },
       ],
     },
     {
@@ -445,7 +447,20 @@ export default function Landing() {
       titleKo1: '당신의 시선이 머무는 곳에서,',
       titleEn2: 'the exhibition continues to take shape.',
       titleKo2: '이 전시는 계속해서 만들어집니다.',
-      boxes: [],
+      boxes: [
+        // 왼쪽: 가로형 빨간 직사각형 (레이블 아래)
+        { style: 'top-[30%] left-[5%]', tooltip: 'Image 1', image: '/gallery/gallery-4-a.png', maxW: 300, maxH: 100, objectFit: 'cover' },
+        // 왼쪽 하단: 작은 회색 정사각형
+        { style: 'bottom-[30%] left-[20%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 중앙 하단: 가로형 빨간 직사각형
+        { style: 'bottom-[25%] left-[45%]', tooltip: 'Image 2', image: '/gallery/gallery-4-b.png', maxW: 300, maxH: 100, objectFit: 'cover' },
+        // 오른쪽 상단: 세로형 빨간 직사각형
+        { style: 'top-[5%] right-[5%]', tooltip: 'Image 3', image: '/gallery/gallery-4-c.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+        // 중앙 하단 오른쪽: 작은 회색 정사각형
+        { style: 'bottom-[30%] right-[20%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 오른쪽 하단: 세로형 빨간 직사각형
+        { style: 'bottom-[5%] right-[5%]', tooltip: 'Image 4', image: '/gallery/gallery-4-d.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+      ],
     },
   ];
 

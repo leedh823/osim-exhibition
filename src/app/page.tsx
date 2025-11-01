@@ -523,7 +523,7 @@ export default function Landing() {
               // style에서 위치만 추출 (w-*, h-* 제거)
               const positionStyle = b.style.split(' ').filter(s => !s.startsWith('w-') && !s.startsWith('h-')).join(' ');
               return (
-                <div key={i} className={`group parallax-item absolute ${positionStyle} overflow-visible ${idx === 2 ? 'z-[50]' : 'z-[5]'}`}>
+                <div key={i} className={`group parallax-item absolute ${positionStyle} overflow-visible ${idx === 2 || idx === 3 ? 'z-[1100]' : 'z-[5]'}`}>
                   {b.image ? (
                     <img 
                       src={b.image} 

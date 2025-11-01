@@ -391,12 +391,10 @@ export default function Landing() {
       titleEn2: 'We try to read faces, movements, and the unspoken feelings in between.',
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
-        // 왼쪽 상단: 큰 빨간 정사각형 (약 20% width/height)
-        { style: 'top-[5%] left-[5%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // 오른쪽 상단: 세로형 빨간 직사각형 (약 8% width, 25% height)
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 80, maxH: 300, objectFit: 'cover' },
-        // 텍스트 아래 중앙: 작은 회색 정사각형 (약 8% width/height)
-        { style: 'top-[45%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 자유분방한 배치 - 화면 밖으로 벗어나도 OK
+        { style: '-top-[2%] -left-[5%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 220, maxH: 220, objectFit: 'cover' },
+        { style: 'top-[8%] -right-[4%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 85, maxH: 320, objectFit: 'cover' },
+        { style: 'bottom-[20%] left-[35%]', tooltip: '', image: null, maxW: 90, maxH: 90 },
       ],
     },
     {
@@ -421,18 +419,13 @@ export default function Landing() {
       titleEn2: 'your own interpretation was already being observed and analyzed?',
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
-        // 왼쪽: 큰 빨간 정사각형 (레이블 아래)
-        { style: 'top-[30%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // 왼쪽 위: 작은 회색 정사각형
-        { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 오른쪽 상단: 세로형 빨간 직사각형
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 80, maxH: 300, objectFit: 'cover' },
-        // 중앙 하단: 가로형 빨간 직사각형 (약 30% width, 10% height)
-        { style: 'bottom-[25%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 300, maxH: 100, objectFit: 'cover' },
-        // 중앙 하단 오른쪽: 작은 회색 정사각형
-        { style: 'bottom-[30%] right-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 오른쪽 하단: 세로형 빨간 직사각형
-        { style: 'bottom-[5%] right-[5%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+        // 자유분방한 배치 - 화면 밖으로 벗어나도 OK
+        { style: 'top-[32%] -left-[3%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 210, maxH: 210, objectFit: 'cover' },
+        { style: 'top-[18%] left-[28%]', tooltip: '', image: null, maxW: 85, maxH: 85 },
+        { style: '-top-[1%] -right-[3%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 75, maxH: 310, objectFit: 'cover' },
+        { style: 'bottom-[28%] left-[38%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 280, maxH: 95, objectFit: 'cover' },
+        { style: 'bottom-[32%] right-[28%]', tooltip: '', image: null, maxW: 90, maxH: 90 },
+        { style: '-bottom-[6%] right-[2%]', tooltip: 'Prompt: sample P', image: '/gallery/gallery-1-p.png', maxW: 82, maxH: 305, objectFit: 'cover' },
       ],
     },
     {

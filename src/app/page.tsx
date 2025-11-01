@@ -493,7 +493,7 @@ export default function Landing() {
                     <img 
                       src={b.image} 
                       alt={b.tooltip}
-                      className="w-full h-full rounded-md object-cover shadow"
+                      className="w-auto h-auto max-w-none max-h-none rounded-md shadow"
                     />
                   ) : (
                     <div className={`w-full h-full rounded-md shadow ${idx === 2 ? 'bg-white/10' : 'bg-black/5'}`} />

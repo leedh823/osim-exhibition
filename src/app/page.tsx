@@ -393,14 +393,14 @@ export default function Landing() {
       boxes: [
         // 상단 행 (3개)
         { style: 'top-[6%] left-[8%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 200, maxH: 280 },
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 160, maxH: 220 },
+        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 130, maxH: 180 },
         { style: 'top-[7%] right-[8%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 210, maxH: 290 },
         // 중앙 행 (2개 - 작은 빈 박스)
-        { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 140, maxH: 180 },
-        { style: 'top-[43%] right-[8%]', tooltip: '', image: null, maxW: 140, maxH: 180 },
+        { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 120, maxH: 150 },
+        { style: 'top-[43%] right-[8%]', tooltip: '', image: null, maxW: 120, maxH: 150 },
         // 하단 행 (3개)
         { style: 'bottom-[10%] left-[8%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 240, maxH: 300 },
-        { style: 'bottom-[9%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 180, maxH: 240 },
+        { style: 'bottom-[9%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 150, maxH: 200 },
         { style: 'bottom-[11%] right-[8%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 200, maxH: 270 },
       ],
     },
@@ -412,15 +412,15 @@ export default function Landing() {
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
         // 상단 행 (3개)
-        { style: 'top-[6%] left-[8%]', tooltip: '', image: null, maxW: 170, maxH: 230 },
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 220, maxH: 300 },
+        { style: 'top-[6%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 220, maxH: 300 },
+        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 130, maxH: 180 },
         { style: 'top-[7%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 210, maxH: 290 },
         // 중앙 행 (2개 - 작은 빈 박스)
-        { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 140, maxH: 180 },
-        { style: 'top-[43%] right-[8%]', tooltip: '', image: null, maxW: 140, maxH: 180 },
+        { style: 'top-[42%] left-[8%]', tooltip: '', image: null, maxW: 120, maxH: 150 },
+        { style: 'top-[43%] right-[8%]', tooltip: '', image: null, maxW: 120, maxH: 150 },
         // 하단 행 (3개)
         { style: 'bottom-[10%] left-[8%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 240, maxH: 270 },
-        { style: 'bottom-[9%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 180, maxH: 240 },
+        { style: 'bottom-[9%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 150, maxH: 200 },
         { style: 'bottom-[11%] right-[8%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 220, maxH: 320 },
       ],
     },
@@ -514,10 +514,10 @@ export default function Landing() {
                     />
                   ) : (
                     <div 
-                      className={`rounded-lg parallax-item bg-gray-200/40`}
+                      className={`rounded-lg parallax-item bg-gray-100/25`}
                       style={{
-                        width: b.maxW ? `${b.maxW}px` : '160px',
-                        height: b.maxH ? `${b.maxH}px` : '220px'
+                        width: b.maxW ? `${b.maxW}px` : '130px',
+                        height: b.maxH ? `${b.maxH}px` : '180px'
                       }}
                     />
                   )}

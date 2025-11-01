@@ -514,7 +514,7 @@ export default function Landing() {
                     />
                   ) : (
                     <div 
-                      className={`rounded-lg parallax-item bg-gray-100/25`}
+                      className={`rounded-lg parallax-item bg-gray-200/50`}
                       style={{
                         width: b.maxW ? `${b.maxW}px` : '130px',
                         height: b.maxH ? `${b.maxH}px` : '180px'

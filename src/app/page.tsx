@@ -522,18 +522,22 @@ export default function Landing() {
               const isBottomBox = b.style.includes('bottom-');
               // style에서 위치만 추출 (w-*, h-* 제거)
               const positionStyle = b.style.split(' ').filter(s => !s.startsWith('w-') && !s.startsWith('h-')).join(' ');
+              // 이미지 박스는 더 높은 z-index, 회색 박스는 낮은 z-index
+              const baseZ = idx === 2 || idx === 3 ? 'z-[1100]' : 'z-[5]';
+              const boxZ = b.image ? baseZ : (idx === 2 || idx === 3 ? 'z-[1090]' : 'z-[4]');
               return (
-                <div key={i} className={`group parallax-item absolute ${positionStyle} overflow-visible ${idx === 2 || idx === 3 ? 'z-[1100]' : 'z-[5]'}`}>
+                <div key={i} className={`group parallax-item absolute ${positionStyle} overflow-visible ${boxZ}`}>
                   {b.image ? (
                     <img 
                       src={b.image} 
                       alt={b.tooltip}
-                      className="w-auto h-auto"
+                      className="w-auto h-auto relative"
                       style={{ 
                         display: 'block',
                         width: b.maxW ? `${b.maxW}px` : '200px',
                         height: b.maxH ? `${b.maxH}px` : '280px',
-                        objectFit: ('objectFit' in b && typeof b.objectFit === 'string' ? b.objectFit : 'cover') as 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
+                        objectFit: ('objectFit' in b && typeof b.objectFit === 'string' ? b.objectFit : 'cover') as 'cover' | 'contain' | 'fill' | 'none' | 'scale-down',
+                        zIndex: 10
                       }}
                     />
                   ) : (
@@ -542,7 +546,8 @@ export default function Landing() {
                       style={{
                         width: b.maxW ? `${b.maxW}px` : '130px',
                         height: b.maxH ? `${b.maxH}px` : '180px',
-                        backgroundColor: idx === 2 ? '#F9F9F9' : '#F9F9F9'
+                        backgroundColor: idx === 2 ? '#F9F9F9' : '#F9F9F9',
+                        zIndex: 1
                       }}
                     />
                   )}

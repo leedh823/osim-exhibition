@@ -402,14 +402,14 @@ export default function Landing() {
       boxes: [
         // 왼쪽 상단: 임시 이미지 (sample A 왼쪽 위)
         { style: 'top-[5%] left-[5%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // sample C와 sample B 사이: 회색 박스
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // sample C와 sample B 사이: 회색 박스 (가로형)
+        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 140, maxH: 90 },
         // 오른쪽 하단: 정사각형 이미지 (더 오른쪽 아래로)
         { style: 'bottom-[15%] right-[10%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 200, maxH: 200, objectFit: 'cover' },
         // 오른쪽 상단: 세로형 이미지 (원래 모양)
         { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 80, maxH: 300, objectFit: 'cover' },
-        // 텍스트 아래 중앙: 작은 회색 정사각형 (텍스트와 겹치지 않게)
-        { style: 'bottom-[22%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 텍스트 아래 중앙: 회색 박스 (세로형)
+        { style: 'bottom-[22%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 70, maxH: 110 },
       ],
     },
     {
@@ -421,10 +421,10 @@ export default function Landing() {
       boxes: [
         // 상단 왼쪽: 정사각형 이미지
         { style: 'top-[8%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // sample G와 sample C 사이: 회색 박스 (sample C 위치와 비슷)
-        { style: 'top-[5%] left-[5%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
-        // 상단 가운데: 회색 박스
-        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 90, maxH: 90 },
+        // sample G와 sample C 사이: 회색 박스 (세로형)
+        { style: 'top-[5%] left-[5%]', tooltip: '', image: null, maxW: 60, maxH: 120 },
+        // 상단 가운데: 회색 박스 (가로형)
+        { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 160, maxH: 85 },
         // 텍스트 왼쪽 아래 대각선: 정사각형 이미지 (텍스트와 겹치지 않게)
         { style: 'bottom-[4%] left-[25%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 180, maxH: 180, objectFit: 'cover' },
         // 오른쪽 상단 위쪽: 가로형 이미지
@@ -442,12 +442,12 @@ export default function Landing() {
       boxes: [
         // 왼쪽: 정사각형 이미지
         { style: 'top-[30%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // 왼쪽 위: 작은 회색 정사각형
-        { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 왼쪽 위: 회색 박스 (가로형)
+        { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 130, maxH: 75 },
         // 중앙 하단: 가로형 이미지 (더 아래로)
         { style: 'bottom-[25%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 300, maxH: 100, objectFit: 'cover' },
-        // 중앙 하단 오른쪽: 작은 회색 정사각형
-        { style: 'bottom-[30%] right-[30%]', tooltip: '', image: null, maxW: 80, maxH: 80 },
+        // 중앙 하단 오른쪽: 회색 박스 (세로형)
+        { style: 'bottom-[30%] right-[30%]', tooltip: '', image: null, maxW: 65, maxH: 130 },
         // 오른쪽 상단 위쪽: 가로형 이미지 (왼쪽으로)
         { style: 'top-[3%] right-[15%]', tooltip: 'Prompt: sample N', image: '/gallery/gallery-1-n.png', maxW: 250, maxH: 150, objectFit: 'cover' },
         // 오른쪽 중앙: 가로형 이미지

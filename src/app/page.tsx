@@ -140,6 +140,15 @@ export default function Landing() {
           ease: 'none',
           scrollTrigger: { trigger: secondPanel, start: 'center 30%', end: 'bottom top', scrub: true },
         });
+        // 세 번째 패널의 회색 박스들도 배경과 함께 색상 변경
+        const panel3GrayBoxes = document.querySelectorAll<HTMLElement>('.panel3-gray-box');
+        if (panel3GrayBoxes.length > 0) {
+          gsap.fromTo(panel3GrayBoxes, { backgroundColor: '#F9F9F9' }, {
+            backgroundColor: '#111111',
+            ease: 'none',
+            scrollTrigger: { trigger: secondPanel, start: 'center 30%', end: 'bottom top', scrub: true },
+          });
+        }
       }
       // 패널3(인덱스 2) 진입 시 배경을 자연스럽게 흰 → 검정 전환(오버레이 + 자체 배경 동기화) + 타이틀 컬러 전환
       const thirdPanel = document.querySelector<HTMLElement>('#narratives .panel-block:nth-of-type(3)');
@@ -525,11 +534,11 @@ export default function Landing() {
                     />
                   ) : (
                     <div 
-                      className={`rounded-lg parallax-item`}
+                      className={`rounded-lg parallax-item ${idx === 2 ? 'panel3-gray-box' : ''}`}
                       style={{
                         width: b.maxW ? `${b.maxW}px` : '130px',
                         height: b.maxH ? `${b.maxH}px` : '180px',
-                        backgroundColor: idx === 2 ? '#111111' : '#F9F9F9'
+                        backgroundColor: idx === 2 ? '#F9F9F9' : '#F9F9F9'
                       }}
                     />
                   )}

@@ -391,10 +391,10 @@ export default function Landing() {
       titleEn2: 'We try to read faces, movements, and the unspoken feelings in between.',
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
-        // 상단 왼쪽: 정사각형 이미지 (화면 안에)
-        { style: 'top-[5%] left-[5%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 200, maxH: 200, objectFit: 'cover' },
-        // 오른쪽 상단: 세로형 이미지 (화면 안에)
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 80, maxH: 300, objectFit: 'cover' },
+        // 오른쪽 하단: 정사각형 이미지 (더 오른쪽 아래로)
+        { style: 'bottom-[15%] right-[10%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 200, maxH: 200, objectFit: 'cover' },
+        // 왼쪽 하단: 세로형 이미지 (원본 이미지)
+        { style: 'bottom-[15%] left-[10%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 80, maxH: 300, objectFit: 'cover' },
         // 텍스트 아래 중앙: 작은 회색 정사각형 (텍스트와 겹치지 않게)
         { style: 'bottom-[22%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 80, maxH: 80 },
       ],

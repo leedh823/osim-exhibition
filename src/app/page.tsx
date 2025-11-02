@@ -529,7 +529,7 @@ export default function Landing() {
                       style={{
                         width: b.maxW ? `${b.maxW}px` : '130px',
                         height: b.maxH ? `${b.maxH}px` : '180px',
-                        backgroundColor: '#F9F9F9'
+                        backgroundColor: idx === 2 ? '#111111' : '#F9F9F9'
                       }}
                     />
                   )}

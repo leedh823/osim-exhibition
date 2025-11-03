@@ -411,7 +411,7 @@ export default function Landing() {
         // 텍스트 아래 중앙: 회색 박스 (세로형)
         { style: 'bottom-[19%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 70, maxH: 110 },
         // 왼쪽 중앙: 가로형 이미지 - 1616x1238 (약 4:3 비율)
-        { style: 'top-[61%] left-[8%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 240, maxH: 184, objectFit: 'contain' },
+        { style: 'top-[61%] left-[8%]', tooltip: '단정한 건축의 곡선과 맑은 빛 속에서, 그는 마치 자신과 세계의 경계를 바라보는 듯합니다.', image: '/gallery/gallery-1-d.png', maxW: 240, maxH: 184, objectFit: 'contain' },
       ],
     },
     {
@@ -422,17 +422,17 @@ export default function Landing() {
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
         // 상단 왼쪽: 정사각형 이미지 - 1024x1024 (1:1 비율)
-        { style: 'top-[11%] left-[12%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 240, maxH: 240, objectFit: 'contain' },
+        { style: 'top-[11%] left-[12%]', tooltip: '수많은 사람들의 흐름 속에서 한 사람이 멈춰 서 있습니다.\n\n익명성 속에서도 존재를 증명하려는 개인의 시선을 드러냅니다.', image: '/gallery/gallery-1-g.png', maxW: 240, maxH: 240, objectFit: 'contain' },
         // sample G와 sample C 사이: 회색 박스 (세로형)
         { style: 'top-[8%] left-[5%]', tooltip: '', image: null, maxW: 60, maxH: 120 },
         // 상단 가운데: 회색 박스 (가로형)
         { style: 'top-[8%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 160, maxH: 85 },
         // 텍스트 왼쪽 아래 대각선: 세로형 이미지 (텍스트와 겹치지 않게) - 508x816 (2:3 비율)
-        { style: 'bottom-[1%] left-[25%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 134, maxH: 216, objectFit: 'contain' },
+        { style: 'bottom-[1%] left-[25%]', tooltip: '그 움직임은 고요한 도시의 시간 속에서, 일상의 리듬을 조용히 기록하고 있습니다.', image: '/gallery/gallery-1-i.png', maxW: 134, maxH: 216, objectFit: 'contain' },
         // 오른쪽 상단 위쪽: 가로형 이미지 - 1456x816 (16:9 비율)
-        { style: 'top-[6%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 300, maxH: 169, objectFit: 'contain' },
+        { style: 'top-[6%] right-[8%]', tooltip: '푸른빛이 감도는 거대한 홀 안, 광활한 공간 속에 흩어진 인물들은 마치 시간의 흐름 속을 유영하는 작은 존재처럼 보입니다.', image: '/gallery/gallery-1-h.png', maxW: 300, maxH: 169, objectFit: 'contain' },
         // 오른쪽 중앙: 가로형 이미지 - 1456x816 (16:9 비율)
-        { style: 'top-[48%] right-[5%]', tooltip: 'Prompt: sample L', image: '/gallery/gallery-1-l.png', maxW: 288, maxH: 162, objectFit: 'contain' },
+        { style: 'top-[48%] right-[5%]', tooltip: '형형색색의 건물들 사이, 아이들이 운동장에서 뛰어놀고 있습니다.\n\n따스한 오후의 빛 아래, 도시는 소란스럽지 않게 살아있는 리듬을 이어갑니다.', image: '/gallery/gallery-1-l.png', maxW: 288, maxH: 162, objectFit: 'contain' },
       ],
     },
     {
@@ -443,17 +443,17 @@ export default function Landing() {
       titleKo2: '당신의 해석 또한 누군가의 시선 속에서 분석되고 있었다면요?',
       boxes: [
         // 왼쪽: 가로형 이미지 - 1456x816 (16:9 비율)
-        { style: 'top-[33%] left-[5%]', tooltip: 'Prompt: sample M', image: '/gallery/gallery-1-m.png', maxW: 280, maxH: 157, objectFit: 'contain' },
+        { style: 'top-[33%] left-[5%]', tooltip: '붉은 벽돌 지붕이 이어진 마을이 푸른 언덕과 맞닿아 있습니다.\n\n짙은 초록의 숲과 따뜻한 햇살 속에서, 자연과 인간의 시간이 평화롭게 공존합니다.', image: '/gallery/gallery-1-m.png', maxW: 280, maxH: 157, objectFit: 'contain' },
         // 왼쪽 위: 회색 박스 (가로형)
         { style: 'top-[23%] left-[30%]', tooltip: '', image: null, maxW: 130, maxH: 75 },
         // 중앙 하단: 세로형 이미지 (더 아래로) - 612x815 (3:4 비율)
-        { style: 'bottom-[18%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 200, maxH: 267, objectFit: 'contain' },
+        { style: 'bottom-[18%] left-[35%]', tooltip: '빛과 어둠의 경계 위에서, 그는 존재 자체로 하나의 시선을 형성합니다.', image: '/gallery/gallery-1-o.png', maxW: 200, maxH: 267, objectFit: 'contain' },
         // 중앙 하단 오른쪽: 회색 박스 (세로형)
         { style: 'bottom-[27%] right-[30%]', tooltip: '', image: null, maxW: 65, maxH: 130 },
         // 오른쪽 상단 위쪽: 가로형 이미지 - 2912x1632 (16:9 비율)
-        { style: 'top-[6%] right-[15%]', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png', maxW: 300, maxH: 169, objectFit: 'contain' },
+        { style: 'top-[6%] right-[15%]', tooltip: '거대한 자연을 마주한 그의 작은 실루엣은, 인간의 존재가 지닌 사유와 고요한 경외심을 함께 담아냅니다.', image: '/gallery/gallery-1-e.png', maxW: 300, maxH: 169, objectFit: 'contain' },
         // 오른쪽 중앙: 세로형 이미지 - 896x1344 (2:3 비율)
-        { style: 'top-[48%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 161, maxH: 240, objectFit: 'contain' },
+        { style: 'top-[48%] right-[5%]', tooltip: '붉은 지붕과 푸른 벽, 나무 그늘이 만들어내는 따뜻한 리듬 속에 시간은 느리게 흐릅니다.', image: '/gallery/gallery-1-j.png', maxW: 161, maxH: 240, objectFit: 'contain' },
       ],
     },
     {

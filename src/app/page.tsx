@@ -447,7 +447,7 @@ export default function Landing() {
         // 왼쪽 위: 회색 박스 (가로형)
         { style: 'top-[23%] left-[30%]', tooltip: '', image: null, maxW: 130, maxH: 75 },
         // 중앙 하단: 세로형 이미지 (더 아래로) - 612x815 (3:4 비율)
-        { style: 'bottom-[12%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 200, maxH: 267, objectFit: 'contain' },
+        { style: 'bottom-[18%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 200, maxH: 267, objectFit: 'contain' },
         // 중앙 하단 오른쪽: 회색 박스 (세로형)
         { style: 'bottom-[27%] right-[30%]', tooltip: '', image: null, maxW: 65, maxH: 130 },
         // 오른쪽 상단 위쪽: 가로형 이미지 - 2912x1632 (16:9 비율)

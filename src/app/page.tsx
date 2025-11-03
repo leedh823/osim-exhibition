@@ -378,18 +378,18 @@ export default function Landing() {
             }, 2.3);
           }
           
-          // 박스가 끝까지 올라간 후 약간 눕혀졌다가 원상복귀 (천천히)
+          // 박스가 끝까지 올라간 후 약간 눕혀졌다가 원상복귀 (천천히, 30% 더 길게)
           exhibitTl.to(blackBox, {
             rotationX: 15,
-            duration: 0.8,
+            duration: 1.04,
             ease: 'power2.inOut'
           }, 3.5);
           
           exhibitTl.to(blackBox, {
             rotationX: 0,
-            duration: 0.8,
+            duration: 1.04,
             ease: 'power2.inOut'
-          }, 4.3);
+          }, 4.54);
         }
       }
     }, rootRef);
@@ -663,15 +663,15 @@ export default function Landing() {
           {/* 검은색 박스 - 아래에서 올라오는 애니메이션 */}
           <div 
             id="exhibit-black-box"
-            className="absolute inset-x-8 h-[60vh] bg-black border border-white/30 rounded-lg z-20"
-            style={{ top: '50%', opacity: 0 }}
+            className="absolute inset-x-8 h-[70vh] bg-black border border-white/30 rounded-lg z-20"
+            style={{ top: '45%', opacity: 0 }}
           />
           
           {/* Regenerate 버튼 - 박스 아래 */}
           <button
             id="regenerate-button"
             className="absolute left-1/2 -translate-x-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
-            style={{ top: 'calc(50% + 30vh + 20px)', opacity: 0 }}
+            style={{ top: 'calc(45% + 35vh + 20px)', opacity: 0 }}
           >
             Regenerate
           </button>

@@ -357,7 +357,8 @@ export default function Landing() {
           // 초기 위치: 화면 아래쪽 밖으로 (top: 50% + 100vh = 화면 아래)
           gsap.set(blackBox, { y: '100vh', opacity: 0, transformOrigin: 'center center', rotationX: 0 });
           if (regenerateButton) {
-            gsap.set(regenerateButton, { opacity: 0 });
+            // 버튼 초기 위치: 약간 아래쪽에 숨겨진 상태
+            gsap.set(regenerateButton, { opacity: 0, y: 20 });
           }
           
           // 스크롤 시 박스가 올라오면서 나타남 (영어 텍스트 완료 후, 약 2.3 지점부터 시작)
@@ -369,13 +370,14 @@ export default function Landing() {
             ease: 'power2.out'
           }, 2.3);
           
-          // 버튼도 같이 등장
+          // 버튼은 박스 등장이 끝난 후에 따라 나오는 느낌으로
           if (regenerateButton) {
             exhibitTl.to(regenerateButton, {
               opacity: 1,
-              duration: 1.2,
+              y: 0,
+              duration: 0.6,
               ease: 'power2.out'
-            }, 2.3);
+            }, 3.5);
           }
           
           // 박스가 끝까지 올라간 후 약간 눕혀졌다가 원상복귀 (천천히, 30% 더 길게, 약간의 기울기)
@@ -670,8 +672,8 @@ export default function Landing() {
           {/* Regenerate 버튼 - 박스 아래 */}
           <button
             id="regenerate-button"
-            className="absolute left-1/2 -translate-x-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
-            style={{ top: 'calc(47.5% + 32.5vh + 20px)', opacity: 0 }}
+            className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
+            style={{ top: 'calc(47.5% + 32.5vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
           >
             Regenerate
           </button>

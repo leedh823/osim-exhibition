@@ -401,17 +401,17 @@ export default function Landing() {
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
         // 왼쪽 상단: 임시 이미지 (sample A 왼쪽 위) - 1856x2464 (3:4 비율)
-        { style: 'top-[5%] left-[5%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 151, maxH: 200, objectFit: 'contain' },
+        { style: 'top-[5%] left-[5%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 181, maxH: 240, objectFit: 'contain' },
         // sample C와 sample B 사이: 회색 박스 (가로형)
         { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 140, maxH: 90 },
         // 오른쪽 하단: 세로형 이미지 (더 오른쪽 아래로) - 1792x2688 (2:3 비율)
-        { style: 'bottom-[15%] right-[10%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 133, maxH: 200, objectFit: 'contain' },
+        { style: 'bottom-[15%] right-[10%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 160, maxH: 240, objectFit: 'contain' },
         // 오른쪽 상단: 가로형 이미지 (원래 모양) - 2912x1632 (16:9 비율)
-        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 270, maxH: 152, objectFit: 'contain' },
+        { style: 'top-[5%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 324, maxH: 182, objectFit: 'contain' },
         // 텍스트 아래 중앙: 회색 박스 (세로형)
         { style: 'bottom-[22%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 70, maxH: 110 },
         // 왼쪽 중앙: 가로형 이미지 - 1616x1238 (약 4:3 비율)
-        { style: 'top-[50%] left-[8%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 200, maxH: 153, objectFit: 'contain' },
+        { style: 'top-[50%] left-[8%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 240, maxH: 184, objectFit: 'contain' },
       ],
     },
     {
@@ -422,17 +422,17 @@ export default function Landing() {
       titleKo2: '어쩌면 자신을 이해하려는 시도의 또 다른 형태일지도 모릅니다.',
       boxes: [
         // 상단 왼쪽: 정사각형 이미지 - 1024x1024 (1:1 비율)
-        { style: 'top-[8%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 200, maxH: 200, objectFit: 'contain' },
+        { style: 'top-[8%] left-[8%]', tooltip: 'Prompt: sample G', image: '/gallery/gallery-1-g.png', maxW: 240, maxH: 240, objectFit: 'contain' },
         // sample G와 sample C 사이: 회색 박스 (세로형)
         { style: 'top-[5%] left-[5%]', tooltip: '', image: null, maxW: 60, maxH: 120 },
         // 상단 가운데: 회색 박스 (가로형)
         { style: 'top-[5%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 160, maxH: 85 },
         // 텍스트 왼쪽 아래 대각선: 세로형 이미지 (텍스트와 겹치지 않게) - 508x816 (2:3 비율)
-        { style: 'bottom-[4%] left-[25%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 112, maxH: 180, objectFit: 'contain' },
+        { style: 'bottom-[4%] left-[25%]', tooltip: 'Prompt: sample I', image: '/gallery/gallery-1-i.png', maxW: 134, maxH: 216, objectFit: 'contain' },
         // 오른쪽 상단 위쪽: 가로형 이미지 - 1456x816 (16:9 비율)
-        { style: 'top-[3%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 250, maxH: 141, objectFit: 'contain' },
+        { style: 'top-[3%] right-[8%]', tooltip: 'Prompt: sample H', image: '/gallery/gallery-1-h.png', maxW: 300, maxH: 169, objectFit: 'contain' },
         // 오른쪽 중앙: 가로형 이미지 - 1456x816 (16:9 비율)
-        { style: 'top-[45%] right-[5%]', tooltip: 'Prompt: sample L', image: '/gallery/gallery-1-l.png', maxW: 240, maxH: 135, objectFit: 'contain' },
+        { style: 'top-[45%] right-[5%]', tooltip: 'Prompt: sample L', image: '/gallery/gallery-1-l.png', maxW: 288, maxH: 162, objectFit: 'contain' },
       ],
     },
     {
@@ -451,9 +451,9 @@ export default function Landing() {
         // 중앙 하단 오른쪽: 회색 박스 (세로형)
         { style: 'bottom-[30%] right-[30%]', tooltip: '', image: null, maxW: 65, maxH: 130 },
         // 오른쪽 상단 위쪽: 가로형 이미지 - 2912x1632 (16:9 비율)
-        { style: 'top-[3%] right-[15%]', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png', maxW: 250, maxH: 141, objectFit: 'contain' },
+        { style: 'top-[3%] right-[15%]', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png', maxW: 300, maxH: 169, objectFit: 'contain' },
         // 오른쪽 중앙: 세로형 이미지 - 896x1344 (2:3 비율)
-        { style: 'top-[45%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 134, maxH: 200, objectFit: 'contain' },
+        { style: 'top-[45%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 161, maxH: 240, objectFit: 'contain' },
       ],
     },
     {
@@ -539,6 +539,7 @@ export default function Landing() {
                         width: b.maxW ? `${b.maxW}px` : '200px',
                         height: b.maxH ? `${b.maxH}px` : '280px',
                         objectFit: ('objectFit' in b && typeof b.objectFit === 'string' ? b.objectFit : 'cover') as 'cover' | 'contain' | 'fill' | 'none' | 'scale-down',
+                        borderRadius: '4px',
                         zIndex: 10
                       }}
                     />

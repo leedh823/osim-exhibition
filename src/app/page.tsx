@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -8,6 +8,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [posterIndex, setPosterIndex] = useState(0);
 
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -350,7 +351,19 @@ export default function Landing() {
           );
         }
 
-        // 검은색 박스가 아래에서 올라오는 애니메이션 (영어 텍스트 애니메이션 완료 후)
+        // 포스터 캐러셀 등장 애니메이션 (영어 텍스트 완료 후, 박스 등장 전)
+        const posterContainer = document.querySelector('#poster-carousel') as HTMLElement;
+        if (posterContainer) {
+          gsap.set(posterContainer, { opacity: 0, y: 50 });
+          exhibitTl.to(posterContainer, {
+            opacity: 1,
+            y: 0,
+            duration: 1.0,
+            ease: 'power2.out'
+          }, 2.0);
+        }
+
+        // 검은색 박스가 아래에서 올라오는 애니메이션 (포스터 등장 후)
         const blackBox = document.querySelector('#exhibit-black-box') as HTMLElement;
         const regenerateButton = document.querySelector('#regenerate-button') as HTMLElement;
         if (blackBox) {
@@ -361,14 +374,14 @@ export default function Landing() {
             gsap.set(regenerateButton, { opacity: 0, y: 20 });
           }
           
-          // 스크롤 시 박스가 올라오면서 나타남 (영어 텍스트 완료 후, 약 2.3 지점부터 시작)
+          // 스크롤 시 박스가 올라오면서 나타남 (포스터 등장 후, 약 3.0 지점부터 시작)
           // duration을 더 길게 하여 천천히 등장
           exhibitTl.to(blackBox, {
             y: '-50%',
             opacity: 1,
             duration: 1.2,
             ease: 'power2.out'
-          }, 2.3);
+          }, 3.0);
           
           // 버튼은 박스 등장이 끝난 후에 따라 나오는 느낌으로
           if (regenerateButton) {
@@ -377,7 +390,7 @@ export default function Landing() {
               y: 0,
               duration: 0.6,
               ease: 'power2.out'
-            }, 3.5);
+            }, 4.2);
           }
           
           // 박스가 끝까지 올라간 후 약간 눕혀졌다가 원상복귀 (천천히, 30% 더 길게, 약간의 기울기)
@@ -385,16 +398,33 @@ export default function Landing() {
             rotationX: 5,
             duration: 1.04,
             ease: 'power2.inOut'
-          }, 3.5);
+          }, 4.2);
           
           exhibitTl.to(blackBox, {
             rotationX: 0,
             duration: 1.04,
             ease: 'power2.inOut'
-          }, 4.54);
+          }, 5.24);
         }
       }
     }, rootRef);
+    
+    // 포스터 클릭 애니메이션 처리
+    useLayoutEffect(() => {
+      const posterItems = document.querySelectorAll('.poster-item');
+      posterItems.forEach((item, idx) => {
+        const isCenter = idx === 1;
+        
+        gsap.to(item, {
+          opacity: isCenter ? 1 : 0.4,
+          scale: isCenter ? 1 : 0.9,
+          x: (idx - 1) * 420, // 가운데: 0, 왼쪽: -420, 오른쪽: 420
+          width: isCenter ? 400 : 300,
+          duration: 0.5,
+          ease: 'power2.out'
+        });
+      });
+    }, [posterIndex]);
     
     // 모든 애니메이션 설정 후 ScrollTrigger refresh로 타이밍 보정 (첫 글자 문제 해결)
     ScrollTrigger.refresh();
@@ -660,6 +690,45 @@ export default function Landing() {
               <h2 className="section-title exhibit-title text-4xl md:text-6xl lg:text-7xl font-semibold tracking-wide mb-4" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>RE:COGNITION</h2>
               <p className="section-title exhibit-subtitle text-base md:text-lg lg:text-xl" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>서로의 시선 사이에서</p>
             </div>
+          </div>
+
+          {/* 포스터 캐러셀 */}
+          <div 
+            id="poster-carousel"
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ opacity: 0, zIndex: 25 }}
+          >
+            {[0, 1, 2].map((idx) => {
+              const actualIndex = (posterIndex + idx) % 3;
+              const isCenter = idx === 1;
+              return (
+                <div
+                  key={`${posterIndex}-${idx}`}
+                  className="poster-item absolute cursor-pointer pointer-events-auto"
+                  onClick={() => {
+                    if (!isCenter) {
+                      // 왼쪽 클릭: -1, 오른쪽 클릭: +1
+                      setPosterIndex((prev) => {
+                        const newIndex = prev + (idx === 0 ? -1 : 1);
+                        return ((newIndex % 3) + 3) % 3;
+                      });
+                    }
+                  }}
+                  style={{
+                    width: isCenter ? '400px' : '300px',
+                    left: '50%',
+                    transform: `translateX(${(idx - 1) * 420 - 50}%) scale(${isCenter ? 1 : 0.9})`,
+                    opacity: isCenter ? 1 : 0.4
+                  }}
+                >
+                  <img
+                    src={`/poster/poster${actualIndex + 1}.png`}
+                    alt={`Poster ${actualIndex + 1}`}
+                    className="w-full h-auto rounded-lg"
+                  />
+                </div>
+              );
+            })}
           </div>
 
           {/* 검은색 박스 - 아래에서 올라오는 애니메이션 */}

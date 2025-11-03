@@ -683,15 +683,15 @@ export default function Landing() {
               top: '47.5%'
             }}
           >
-            {/* Poster 1 - 왼쪽 상단 */}
+            {/* Poster 1 - 포스터 2 왼쪽 */}
             <div
               className="poster-item absolute pointer-events-auto"
               style={{
-                width: '180px',
-                left: '15%',
-                top: '8%',
-                transform: 'translateX(-50%)',
-                opacity: 1,
+                width: '200px',
+                left: '30%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                opacity: 0.5,
                 zIndex: 10
               }}
             >
@@ -702,11 +702,11 @@ export default function Landing() {
               />
             </div>
 
-            {/* Poster 2 - 중앙 */}
+            {/* Poster 2 - 중앙 (큰 크기) */}
             <div
               className="poster-item absolute pointer-events-auto"
               style={{
-                width: '240px',
+                width: '280px',
                 left: '50%',
                 top: '50%',
                 transform: 'translate(-50%, -50%)',
@@ -721,15 +721,15 @@ export default function Landing() {
               />
             </div>
 
-            {/* Poster 3 - 오른쪽 하단 */}
+            {/* Poster 3 - 포스터 2 오른쪽 */}
             <div
               className="poster-item absolute pointer-events-auto"
               style={{
-                width: '160px',
-                left: '75%',
-                top: '72%',
-                transform: 'translateX(-50%)',
-                opacity: 1,
+                width: '200px',
+                left: '70%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                opacity: 0.5,
                 zIndex: 10
               }}
             >

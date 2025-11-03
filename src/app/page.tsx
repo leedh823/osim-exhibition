@@ -401,7 +401,7 @@ export default function Landing() {
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
         // 왼쪽 상단: 임시 이미지 (sample A 왼쪽 위) - 1856x2464 (3:4 비율)
-        { style: 'top-[12%] left-[9%]', tooltip: '따뜻한 빛이 비추는 벽면 위, 낡은 보안카메라가 고요히 시선을 고정하고 있습니다.', image: '/gallery/gallery-1-c.png', maxW: 181, maxH: 240, objectFit: 'contain', tooltipWidth: 280 },
+        { style: 'top-[12%] left-[21%]', tooltip: '따뜻한 빛이 비추는 벽면 위, 낡은 보안카메라가 고요히 시선을 고정하고 있습니다.', image: '/gallery/gallery-1-c.png', maxW: 181, maxH: 240, objectFit: 'contain', tooltipWidth: 280 },
         // sample C와 sample B 사이: 회색 박스 (가로형)
         { style: 'top-[8%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 140, maxH: 90 },
         // 오른쪽 하단: 세로형 이미지 (더 오른쪽 아래로) - 1792x2688 (2:3 비율)

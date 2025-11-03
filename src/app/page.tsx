@@ -8,7 +8,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const [posterIndex, setPosterIndex] = useState(0);
 
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -448,35 +447,6 @@ export default function Landing() {
     };
   }, []);
 
-  // 포스터 클릭 애니메이션 처리
-  useLayoutEffect(() => {
-    const posterItems = document.querySelectorAll('.poster-item');
-    if (posterItems.length === 0) return;
-    
-    const ctx2 = gsap.context(() => {
-      posterItems.forEach((item, idx) => {
-        const isCenter = idx === 1;
-        const rotateY = isCenter ? 0 : (idx === 0 ? 35 : -35);
-        
-        gsap.to(item, {
-          opacity: isCenter ? 1 : 0.5,
-          scale: isCenter ? 1 : 0.85,
-          x: (idx - 1) * 300, // 가운데: 0, 왼쪽: -300, 오른쪽: 300
-          z: isCenter ? 0 : -50,
-          rotateY: rotateY,
-          width: isCenter ? 280 : 200,
-          duration: 0.6,
-          ease: 'power2.out',
-          transformStyle: 'preserve-3d',
-          transformOrigin: 'center center'
-        });
-      });
-    });
-    
-    return () => {
-      ctx2.revert();
-    };
-  }, [posterIndex]);
 
   // 데이터 주도 블록 정의: 타이틀과 박스(좌표/크기/툴팁)
   const blocks = [
@@ -703,53 +673,72 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* 포스터 캐러셀 - 검은색 박스 위에 */}
+          {/* 포스터 배치 - 검은색 박스 안에 자유롭게 배치 */}
           <div 
             id="poster-carousel"
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            className="absolute inset-x-8 h-[50vh] pointer-events-none"
             style={{ 
               opacity: 0, 
               zIndex: 25, 
-              top: '47.5%', 
-              transform: 'translateY(-50%)',
-              perspective: '1000px'
+              top: '47.5%'
             }}
           >
-            {[0, 1, 2].map((idx) => {
-              const actualIndex = (posterIndex + idx) % 3;
-              const isCenter = idx === 1;
-              const rotateY = isCenter ? 0 : (idx === 0 ? 35 : -35); // 왼쪽은 +35도, 오른쪽은 -35도
-              return (
-                <div
-                  key={`${posterIndex}-${idx}`}
-                  className="poster-item absolute cursor-pointer pointer-events-auto transition-all duration-500"
-                  onClick={() => {
-                    if (!isCenter) {
-                      // 왼쪽 클릭: +1 (왼쪽 포스터가 가운데로), 오른쪽 클릭: -1 (오른쪽 포스터가 가운데로)
-                      setPosterIndex((prev) => {
-                        const newIndex = prev + (idx === 0 ? 1 : -1);
-                        return ((newIndex % 3) + 3) % 3;
-                      });
-                    }
-                  }}
-                  style={{
-                    width: isCenter ? '280px' : '200px',
-                    left: '50%',
-                    transform: `translateX(${(idx - 1) * 300 - 50}%) translateZ(${isCenter ? 0 : -50}px) rotateY(${rotateY}deg) scale(${isCenter ? 1 : 0.85})`,
-                    transformStyle: 'preserve-3d',
-                    opacity: isCenter ? 1 : 0.5,
-                    transformOrigin: 'center center'
-                  }}
-                >
-                  <img
-                    src={`/poster/poster${actualIndex + 1}.png`}
-                    alt={`Poster ${actualIndex + 1}`}
-                    className="w-full h-auto rounded-lg shadow-lg"
-                    style={{ backfaceVisibility: 'hidden' }}
-                  />
-                </div>
-              );
-            })}
+            {/* Poster 1 - 왼쪽 상단 */}
+            <div
+              className="poster-item absolute pointer-events-auto"
+              style={{
+                width: '180px',
+                left: '15%',
+                top: '8%',
+                transform: 'translateX(-50%)',
+                opacity: 1,
+                zIndex: 10
+              }}
+            >
+              <img
+                src="/poster/poster1.png"
+                alt="Poster 1"
+                className="w-full h-auto rounded-lg shadow-lg"
+              />
+            </div>
+
+            {/* Poster 2 - 중앙 */}
+            <div
+              className="poster-item absolute pointer-events-auto"
+              style={{
+                width: '240px',
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                opacity: 1,
+                zIndex: 11
+              }}
+            >
+              <img
+                src="/poster/poster2.png"
+                alt="Poster 2"
+                className="w-full h-auto rounded-lg shadow-lg"
+              />
+            </div>
+
+            {/* Poster 3 - 오른쪽 하단 */}
+            <div
+              className="poster-item absolute pointer-events-auto"
+              style={{
+                width: '160px',
+                left: '75%',
+                top: '72%',
+                transform: 'translateX(-50%)',
+                opacity: 1,
+                zIndex: 10
+              }}
+            >
+              <img
+                src="/poster/poster3.png"
+                alt="Poster 3"
+                className="w-full h-auto rounded-lg shadow-lg"
+              />
+            </div>
           </div>
 
           {/* 검은색 박스 - 아래에서 올라오는 애니메이션 */}

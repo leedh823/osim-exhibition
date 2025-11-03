@@ -401,11 +401,11 @@ export default function Landing() {
       titleKo2: '표정과 움직임, 말하지 않은 감정까지 읽어내려 합니다.',
       boxes: [
         // 왼쪽 상단: 임시 이미지 (sample A 왼쪽 위) - 1856x2464 (3:4 비율)
-        { style: 'top-[12%] left-[5%]', tooltip: 'Prompt: sample C', image: '/gallery/gallery-1-c.png', maxW: 181, maxH: 240, objectFit: 'contain' },
+        { style: 'top-[12%] left-[5%]', tooltip: '따뜻한 빛이 비추는 벽면 위, 낡은 보안카메라가 고요히 시선을 고정하고 있습니다.\n\n평범한 풍경 속 이 카메라는 존재만으로도 \'감시의 시선\'을 일상의 일부로 만들어냅니다.', image: '/gallery/gallery-1-c.png', maxW: 181, maxH: 240, objectFit: 'contain' },
         // sample C와 sample B 사이: 회색 박스 (가로형)
         { style: 'top-[8%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 140, maxH: 90 },
         // 오른쪽 하단: 세로형 이미지 (더 오른쪽 아래로) - 1792x2688 (2:3 비율)
-        { style: 'bottom-[12%] right-[10%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 160, maxH: 240, objectFit: 'contain' },
+        { style: 'bottom-[12%] right-[10%]', tooltip: '도심의 높은 시점에서 내려다본 거리에는 사람들과 자전거가 여유롭게 흩어져 있습니다.\n\n질서정연한 도로와 건물 사이로 드리운 그림자는, 인간의 움직임마저 하나의 패턴처럼 기록되는 도시의 리듬을 보여줍니다.', image: '/gallery/gallery-1-a.png', maxW: 160, maxH: 240, objectFit: 'contain' },
         // 오른쪽 상단: 가로형 이미지 (원래 모양) - 2912x1632 (16:9 비율)
         { style: 'top-[8%] right-[5%]', tooltip: '화면에는 서로 다른 각도에서 촬영된 매장 내부와 복도, 창고의 풍경이 동시에 비춰지며, 각기 다른 시선이 한 화면 안에 병치되어 있습니다.\n\n4개로 분할된 CCTV 화면 속 일부에는 사람이 포착되어 있어, 일상의 공간이 감시의 대상으로 전환되는 순간을 드러냅니다.', image: '/gallery/gallery-1-b.png', maxW: 324, maxH: 182, objectFit: 'contain' },
         // 텍스트 아래 중앙: 회색 박스 (세로형)

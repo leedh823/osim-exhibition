@@ -707,9 +707,9 @@ export default function Landing() {
                   className="poster-item absolute cursor-pointer pointer-events-auto"
                   onClick={() => {
                     if (!isCenter) {
-                      // 왼쪽 클릭: -1, 오른쪽 클릭: +1
+                      // 왼쪽 클릭: +1 (왼쪽 포스터가 가운데로), 오른쪽 클릭: -1 (오른쪽 포스터가 가운데로)
                       setPosterIndex((prev) => {
-                        const newIndex = prev + (idx === 0 ? -1 : 1);
+                        const newIndex = prev + (idx === 0 ? 1 : -1);
                         return ((newIndex % 3) + 3) % 3;
                       });
                     }

@@ -428,7 +428,7 @@ export default function Landing() {
         // 상단 가운데: 회색 박스 (가로형)
         { style: 'top-[8%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 160, maxH: 85 },
         // 텍스트 왼쪽 아래 대각선: 세로형 이미지 (텍스트와 겹치지 않게) - 508x816 (2:3 비율)
-        { style: 'bottom-[1%] left-[25%]', tooltip: '그 움직임은 고요한 도시의 시간 속에서, 일상의 리듬을 조용히 기록하고 있습니다.', image: '/gallery/gallery-1-i.png', maxW: 134, maxH: 216, objectFit: 'contain' },
+        { style: 'bottom-[1%] left-[25%]', tooltip: '그 움직임은 고요한 도시의 시간 속에서, 일상의 리듬을 조용히 기록하고 있습니다.', image: '/gallery/gallery-1-i.png', maxW: 134, maxH: 216, objectFit: 'contain', tooltipWidth: 220 },
         // 오른쪽 상단 위쪽: 가로형 이미지 - 1456x816 (16:9 비율)
         { style: 'top-[6%] right-[8%]', tooltip: '푸른빛이 감도는 거대한 홀 안, 광활한 공간 속에 흩어진 인물들은 마치 시간의 흐름 속을 유영하는 작은 존재처럼 보입니다.', image: '/gallery/gallery-1-h.png', maxW: 300, maxH: 169, objectFit: 'contain' },
         // 오른쪽 중앙: 가로형 이미지 - 1456x816 (16:9 비율)
@@ -447,13 +447,13 @@ export default function Landing() {
         // 왼쪽 위: 회색 박스 (가로형)
         { style: 'top-[23%] left-[30%]', tooltip: '', image: null, maxW: 130, maxH: 75 },
         // 중앙 하단: 세로형 이미지 (더 아래로) - 612x815 (3:4 비율)
-        { style: 'bottom-[18%] left-[35%]', tooltip: '빛과 어둠의 경계 위에서, 그는 존재 자체로 하나의 시선을 형성합니다.', image: '/gallery/gallery-1-o.png', maxW: 200, maxH: 267, objectFit: 'contain' },
+        { style: 'bottom-[18%] left-[35%]', tooltip: '빛과 어둠의 경계 위에서, 그는 존재 자체로 하나의 시선을 형성합니다.', image: '/gallery/gallery-1-o.png', maxW: 200, maxH: 267, objectFit: 'contain', tooltipWidth: 280 },
         // 중앙 하단 오른쪽: 회색 박스 (세로형)
         { style: 'bottom-[27%] right-[30%]', tooltip: '', image: null, maxW: 65, maxH: 130 },
         // 오른쪽 상단 위쪽: 가로형 이미지 - 2912x1632 (16:9 비율)
         { style: 'top-[6%] right-[15%]', tooltip: '거대한 자연을 마주한 그의 작은 실루엣은, 인간의 존재가 지닌 사유와 고요한 경외심을 함께 담아냅니다.', image: '/gallery/gallery-1-e.png', maxW: 300, maxH: 169, objectFit: 'contain' },
         // 오른쪽 중앙: 세로형 이미지 - 896x1344 (2:3 비율)
-        { style: 'top-[48%] right-[5%]', tooltip: '붉은 지붕과 푸른 벽, 나무 그늘이 만들어내는 따뜻한 리듬 속에 시간은 느리게 흐릅니다.', image: '/gallery/gallery-1-j.png', maxW: 161, maxH: 240, objectFit: 'contain' },
+        { style: 'top-[48%] right-[5%]', tooltip: '붉은 지붕과 푸른 벽, 나무 그늘이 만들어내는 따뜻한 리듬 속에 시간은 느리게 흐릅니다.', image: '/gallery/gallery-1-j.png', maxW: 161, maxH: 240, objectFit: 'contain', tooltipWidth: 280 },
       ],
     },
     {

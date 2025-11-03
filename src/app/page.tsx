@@ -447,15 +447,13 @@ export default function Landing() {
         // 왼쪽 위: 회색 박스 (가로형)
         { style: 'top-[20%] left-[30%]', tooltip: '', image: null, maxW: 130, maxH: 75 },
         // 중앙 하단: 세로형 이미지 (더 아래로) - 612x815 (3:4 비율)
-        { style: 'bottom-[25%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 200, maxH: 267, objectFit: 'contain' },
+        { style: 'bottom-[15%] left-[35%]', tooltip: 'Prompt: sample O', image: '/gallery/gallery-1-o.png', maxW: 200, maxH: 267, objectFit: 'contain' },
         // 중앙 하단 오른쪽: 회색 박스 (세로형)
         { style: 'bottom-[30%] right-[30%]', tooltip: '', image: null, maxW: 65, maxH: 130 },
         // 오른쪽 상단 위쪽: 가로형 이미지 - 2912x1632 (16:9 비율)
         { style: 'top-[3%] right-[15%]', tooltip: 'Prompt: sample E', image: '/gallery/gallery-1-e.png', maxW: 250, maxH: 141, objectFit: 'contain' },
         // 오른쪽 중앙: 세로형 이미지 - 896x1344 (2:3 비율)
         { style: 'top-[45%] right-[5%]', tooltip: 'Prompt: sample J', image: '/gallery/gallery-1-j.png', maxW: 134, maxH: 200, objectFit: 'contain' },
-        // 왼쪽 하단: 세로형 이미지 - 928x1232 (약 3:4 비율)
-        { style: 'bottom-[8%] left-[5%]', tooltip: 'Prompt: sample F', image: '/gallery/gallery-1-f.png', maxW: 141, maxH: 187, objectFit: 'contain' },
       ],
     },
     {

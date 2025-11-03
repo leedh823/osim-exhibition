@@ -409,25 +409,6 @@ export default function Landing() {
       }
     }, rootRef);
     
-    // 포스터 클릭 애니메이션 처리
-    useLayoutEffect(() => {
-      const posterItems = document.querySelectorAll('.poster-item');
-      if (posterItems.length === 0) return;
-      
-      posterItems.forEach((item, idx) => {
-        const isCenter = idx === 1;
-        
-        gsap.to(item, {
-          opacity: isCenter ? 1 : 0.4,
-          scale: isCenter ? 1 : 0.9,
-          x: (idx - 1) * 420, // 가운데: 0, 왼쪽: -420, 오른쪽: 420
-          width: isCenter ? 400 : 300,
-          duration: 0.5,
-          ease: 'power2.out'
-        });
-      });
-    }, [posterIndex]);
-    
     // 모든 애니메이션 설정 후 ScrollTrigger refresh로 타이밍 보정 (첫 글자 문제 해결)
     ScrollTrigger.refresh();
 
@@ -466,6 +447,31 @@ export default function Landing() {
       ctx.revert();
     };
   }, []);
+
+  // 포스터 클릭 애니메이션 처리
+  useLayoutEffect(() => {
+    const posterItems = document.querySelectorAll('.poster-item');
+    if (posterItems.length === 0) return;
+    
+    const ctx2 = gsap.context(() => {
+      posterItems.forEach((item, idx) => {
+        const isCenter = idx === 1;
+        
+        gsap.to(item, {
+          opacity: isCenter ? 1 : 0.4,
+          scale: isCenter ? 1 : 0.9,
+          x: (idx - 1) * 420, // 가운데: 0, 왼쪽: -420, 오른쪽: 420
+          width: isCenter ? 400 : 300,
+          duration: 0.5,
+          ease: 'power2.out'
+        });
+      });
+    });
+    
+    return () => {
+      ctx2.revert();
+    };
+  }, [posterIndex]);
 
   // 데이터 주도 블록 정의: 타이틀과 박스(좌표/크기/툴팁)
   const blocks = [
@@ -596,8 +602,6 @@ export default function Landing() {
               <h2 className={`section-title relative ${idx === 2 ? 'z-[1200] text-white' : 'z-[100] text-black'} text-3xl md:text-5xl text-center mb-10 px-4 py-8 ${idx === 2 ? '' : 'bg-white/90'} rounded-lg`}>{block.title}</h2>
             )}
             {block.boxes.map((b, i) => {
-              // 하단 박스인지 확인 (bottom-으로 시작하는 스타일)
-              const isBottomBox = b.style.includes('bottom-');
               // style에서 위치만 추출 (w-*, h-* 제거)
               const positionStyle = b.style.split(' ').filter(s => !s.startsWith('w-') && !s.startsWith('h-')).join(' ');
               // 이미지 박스는 더 높은 z-index, 회색 박스는 낮은 z-index

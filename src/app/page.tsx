@@ -321,21 +321,6 @@ export default function Landing() {
           }, 1.3);
         }
 
-        // 검은색 박스가 아래에서 올라오는 애니메이션
-        const blackBox = document.querySelector('#exhibit-black-box') as HTMLElement;
-        if (blackBox) {
-          // 초기 위치: 화면 아래쪽 밖으로 (top: 50% + 100vh = 화면 아래)
-          gsap.set(blackBox, { y: '100vh', opacity: 0, transformOrigin: 'center center' });
-          
-          // 스크롤 시 박스가 올라오면서 나타남 (1.0 ~ 1.5)
-          exhibitTl.to(blackBox, {
-            y: '-50%',
-            opacity: 1,
-            duration: 0.5,
-            ease: 'power2.out'
-          }, 1.0);
-        }
-
         // 채팅 UI 안 영어 텍스트 단어별로 등장 (3단계와 동시 시작)
         if (exhibitChatText) {
           const chatText = exhibitChatText.innerText;
@@ -363,6 +348,22 @@ export default function Landing() {
             }, 
             1.3
           );
+        }
+
+        // 검은색 박스가 아래에서 올라오는 애니메이션 (영어 텍스트 애니메이션 완료 후)
+        const blackBox = document.querySelector('#exhibit-black-box') as HTMLElement;
+        if (blackBox) {
+          // 초기 위치: 화면 아래쪽 밖으로 (top: 50% + 100vh = 화면 아래)
+          gsap.set(blackBox, { y: '100vh', opacity: 0, transformOrigin: 'center center' });
+          
+          // 스크롤 시 박스가 올라오면서 나타남 (영어 텍스트 완료 후, 약 2.3 지점부터 시작)
+          // duration을 더 길게 하여 천천히 등장
+          exhibitTl.to(blackBox, {
+            y: '-50%',
+            opacity: 1,
+            duration: 1.2,
+            ease: 'power2.out'
+          }, 2.3);
         }
       }
     }, rootRef);
@@ -636,7 +637,7 @@ export default function Landing() {
           {/* 검은색 박스 - 아래에서 올라오는 애니메이션 */}
           <div 
             id="exhibit-black-box"
-            className="absolute inset-x-8 h-[60vh] bg-black border border-white/30 rounded-lg z-20"
+            className="absolute inset-x-8 h-[75vh] bg-black border border-white/30 rounded-lg z-20"
             style={{ top: '50%', opacity: 0 }}
           />
         </div>

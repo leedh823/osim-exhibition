@@ -411,7 +411,7 @@ export default function Landing() {
         // 텍스트 아래 중앙: 회색 박스 (세로형)
         { style: 'bottom-[19%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 70, maxH: 110 },
         // 왼쪽 중앙: 가로형 이미지 - 1616x1238 (약 4:3 비율)
-        { style: 'top-[53%] left-[8%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 240, maxH: 184, objectFit: 'contain' },
+        { style: 'top-[61%] left-[8%]', tooltip: 'Prompt: sample D', image: '/gallery/gallery-1-d.png', maxW: 240, maxH: 184, objectFit: 'contain' },
       ],
     },
     {

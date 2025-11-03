@@ -554,11 +554,11 @@ export default function Landing() {
                       }}
                     />
                   )}
-                  {/* 하단 박스는 위쪽, 그 외는 아래쪽에 툴팁 표시 */}
+                  {/* 모든 툴팁을 아래쪽에 표시 */}
                   {b.tooltip && (
-                    <div className={`z-20 absolute left-1/2 -translate-x-1/2 w-[260px] max-w-[70vw] ${isBottomBox ? 'bottom-full mb-2 flex flex-col-reverse' : 'top-full mt-2'}`}>
+                    <div className={`z-20 absolute left-1/2 -translate-x-1/2 w-[260px] max-w-[70vw] top-full mt-2`}>
                       <div className={`mx-auto h-[3px] rounded-full w-0 group-hover:w-24 transition-all duration-300 ${idx === 2 ? 'bg-white/30' : 'bg-black/20'}`}></div>
-                      <div className={`${isBottomBox ? 'mb-2' : 'mt-2'} px-4 py-3 rounded-xl border shadow text-sm opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center ${idx === 2 ? 'bg-black text-white border-white/20' : 'bg-white text-black border-black/10'}`}>
+                      <div className={`mt-2 px-4 py-3 rounded-xl border shadow text-sm opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center ${idx === 2 ? 'bg-black text-white border-white/20' : 'bg-white text-black border-black/10'}`}>
                         {b.tooltip}
                       </div>
                     </div>

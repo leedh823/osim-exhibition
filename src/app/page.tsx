@@ -673,24 +673,22 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* 포스터 배치 - 검은색 박스 안에 자유롭게 배치 */}
+          {/* 포스터 배치 - 검은색 박스 가운데에 배치 */}
           <div 
             id="poster-carousel"
-            className="absolute inset-x-8 h-[50vh] pointer-events-none"
+            className="absolute inset-x-8 h-[50vh] pointer-events-none flex items-center justify-center"
             style={{ 
               opacity: 0, 
               zIndex: 25, 
-              top: '47.5%'
+              top: '47.5%',
+              gap: '20px'
             }}
           >
             {/* Poster 1 - 포스터 2 왼쪽 */}
             <div
-              className="poster-item absolute pointer-events-auto"
+              className="poster-item pointer-events-auto flex-shrink-0"
               style={{
-                width: '200px',
-                left: '30%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
+                width: '180px',
                 opacity: 0.5,
                 zIndex: 10
               }}
@@ -704,12 +702,9 @@ export default function Landing() {
 
             {/* Poster 2 - 중앙 (큰 크기) */}
             <div
-              className="poster-item absolute pointer-events-auto"
+              className="poster-item pointer-events-auto flex-shrink-0"
               style={{
-                width: '280px',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
+                width: '240px',
                 opacity: 1,
                 zIndex: 11
               }}
@@ -723,12 +718,9 @@ export default function Landing() {
 
             {/* Poster 3 - 포스터 2 오른쪽 */}
             <div
-              className="poster-item absolute pointer-events-auto"
+              className="poster-item pointer-events-auto flex-shrink-0"
               style={{
-                width: '200px',
-                left: '70%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
+                width: '180px',
                 opacity: 0.5,
                 zIndex: 10
               }}

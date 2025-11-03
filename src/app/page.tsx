@@ -556,7 +556,10 @@ export default function Landing() {
                   )}
                   {/* 모든 툴팁을 아래쪽에 표시 */}
                   {b.tooltip && (
-                    <div className={`z-20 absolute left-1/2 -translate-x-1/2 w-[260px] max-w-[70vw] top-full mt-2`}>
+                    <div 
+                      className={`z-20 absolute left-1/2 -translate-x-1/2 max-w-[70vw] top-full mt-2`}
+                      style={{ width: b.maxW ? `${b.maxW}px` : '260px' }}
+                    >
                       <div className={`mx-auto h-[3px] rounded-full w-0 group-hover:w-24 transition-all duration-300 ${idx === 2 ? 'bg-white/30' : 'bg-black/20'}`}></div>
                       <div className={`mt-2 px-4 py-3 rounded-xl border shadow text-sm opacity-0 translate-y-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center ${idx === 2 ? 'bg-black text-white border-white/20' : 'bg-white text-black border-black/10'}`}>
                         {b.tooltip}

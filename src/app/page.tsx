@@ -351,21 +351,11 @@ export default function Landing() {
           );
         }
 
-        // 포스터 캐러셀 등장 애니메이션 (영어 텍스트 완료 후, 박스 등장 전)
-        const posterContainer = document.querySelector('#poster-carousel') as HTMLElement;
-        if (posterContainer) {
-          gsap.set(posterContainer, { opacity: 0, y: 50 });
-          exhibitTl.to(posterContainer, {
-            opacity: 1,
-            y: 0,
-            duration: 1.0,
-            ease: 'power2.out'
-          }, 2.0);
-        }
-
-        // 검은색 박스가 아래에서 올라오는 애니메이션 (포스터 등장 후)
+        // 검은색 박스가 아래에서 올라오는 애니메이션 (영어 텍스트 완료 후)
         const blackBox = document.querySelector('#exhibit-black-box') as HTMLElement;
         const regenerateButton = document.querySelector('#regenerate-button') as HTMLElement;
+        const posterContainer = document.querySelector('#poster-carousel') as HTMLElement;
+        
         if (blackBox) {
           // 초기 위치: 화면 아래쪽 밖으로 (top: 50% + 100vh = 화면 아래)
           gsap.set(blackBox, { y: '100vh', opacity: 0, transformOrigin: 'center center', rotationX: 0 });
@@ -374,23 +364,33 @@ export default function Landing() {
             gsap.set(regenerateButton, { opacity: 0, y: 20 });
           }
           
-          // 스크롤 시 박스가 올라오면서 나타남 (포스터 등장 후, 약 3.0 지점부터 시작)
-          // duration을 더 길게 하여 천천히 등장
+          // 스크롤 시 박스가 올라오면서 나타남 (영어 텍스트 완료 후, 약 2.3 지점부터 시작)
           exhibitTl.to(blackBox, {
             y: '-50%',
             opacity: 1,
             duration: 1.2,
             ease: 'power2.out'
-          }, 3.0);
+          }, 2.3);
           
-          // 버튼은 박스 등장이 끝난 후에 따라 나오는 느낌으로
+          // 포스터 캐러셀이 박스 위에 올라오는 느낌으로 등장 (박스 등장 후)
+          if (posterContainer) {
+            gsap.set(posterContainer, { opacity: 0, y: 150 });
+            exhibitTl.to(posterContainer, {
+              opacity: 1,
+              y: 0,
+              duration: 1.0,
+              ease: 'power2.out'
+            }, 3.5);
+          }
+          
+          // 버튼은 포스터 등장이 끝난 후에 따라 나오는 느낌으로
           if (regenerateButton) {
             exhibitTl.to(regenerateButton, {
               opacity: 1,
               y: 0,
               duration: 0.6,
               ease: 'power2.out'
-            }, 4.2);
+            }, 4.5);
           }
           
           // 박스가 끝까지 올라간 후 약간 눕혀졌다가 원상복귀 (천천히, 30% 더 길게, 약간의 기울기)
@@ -398,13 +398,13 @@ export default function Landing() {
             rotationX: 5,
             duration: 1.04,
             ease: 'power2.inOut'
-          }, 4.2);
+          }, 4.5);
           
           exhibitTl.to(blackBox, {
             rotationX: 0,
             duration: 1.04,
             ease: 'power2.inOut'
-          }, 5.24);
+          }, 5.54);
         }
       }
     }, rootRef);
@@ -412,6 +412,8 @@ export default function Landing() {
     // 포스터 클릭 애니메이션 처리
     useLayoutEffect(() => {
       const posterItems = document.querySelectorAll('.poster-item');
+      if (posterItems.length === 0) return;
+      
       posterItems.forEach((item, idx) => {
         const isCenter = idx === 1;
         
@@ -692,11 +694,11 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* 포스터 캐러셀 */}
+          {/* 포스터 캐러셀 - 검은색 박스 위에 */}
           <div 
             id="poster-carousel"
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            style={{ opacity: 0, zIndex: 25 }}
+            style={{ opacity: 0, zIndex: 25, top: '47.5%', transform: 'translateY(-50%)' }}
           >
             {[0, 1, 2].map((idx) => {
               const actualIndex = (posterIndex + idx) % 3;

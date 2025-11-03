@@ -352,9 +352,13 @@ export default function Landing() {
 
         // 검은색 박스가 아래에서 올라오는 애니메이션 (영어 텍스트 애니메이션 완료 후)
         const blackBox = document.querySelector('#exhibit-black-box') as HTMLElement;
+        const regenerateButton = document.querySelector('#regenerate-button') as HTMLElement;
         if (blackBox) {
           // 초기 위치: 화면 아래쪽 밖으로 (top: 50% + 100vh = 화면 아래)
-          gsap.set(blackBox, { y: '100vh', opacity: 0, transformOrigin: 'center center' });
+          gsap.set(blackBox, { y: '100vh', opacity: 0, transformOrigin: 'center center', rotationX: 0 });
+          if (regenerateButton) {
+            gsap.set(regenerateButton, { opacity: 0 });
+          }
           
           // 스크롤 시 박스가 올라오면서 나타남 (영어 텍스트 완료 후, 약 2.3 지점부터 시작)
           // duration을 더 길게 하여 천천히 등장
@@ -364,6 +368,28 @@ export default function Landing() {
             duration: 1.2,
             ease: 'power2.out'
           }, 2.3);
+          
+          // 버튼도 같이 등장
+          if (regenerateButton) {
+            exhibitTl.to(regenerateButton, {
+              opacity: 1,
+              duration: 1.2,
+              ease: 'power2.out'
+            }, 2.3);
+          }
+          
+          // 박스가 끝까지 올라간 후 약간 눕혀졌다가 원상복귀
+          exhibitTl.to(blackBox, {
+            rotationX: 15,
+            duration: 0.4,
+            ease: 'power2.inOut'
+          }, 3.5);
+          
+          exhibitTl.to(blackBox, {
+            rotationX: 0,
+            duration: 0.4,
+            ease: 'power2.inOut'
+          }, 3.9);
         }
       }
     }, rootRef);
@@ -639,7 +665,16 @@ export default function Landing() {
             id="exhibit-black-box"
             className="absolute inset-x-8 h-[75vh] bg-black border border-white/30 rounded-lg z-20"
             style={{ top: '50%', opacity: 0 }}
-          />
+          >
+            {/* Regenerate 버튼 */}
+            <button
+              id="regenerate-button"
+              className="absolute bottom-[4%] left-1/2 -translate-x-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
+              style={{ opacity: 0 }}
+            >
+              Regenerate
+            </button>
+          </div>
         </div>
       </section>
     </div>

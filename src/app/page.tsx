@@ -456,14 +456,19 @@ export default function Landing() {
     const ctx2 = gsap.context(() => {
       posterItems.forEach((item, idx) => {
         const isCenter = idx === 1;
+        const rotateY = isCenter ? 0 : (idx === 0 ? 35 : -35);
         
         gsap.to(item, {
-          opacity: isCenter ? 1 : 0.4,
-          scale: isCenter ? 1 : 0.9,
-          x: (idx - 1) * 420, // 가운데: 0, 왼쪽: -420, 오른쪽: 420
-          width: isCenter ? 400 : 300,
-          duration: 0.5,
-          ease: 'power2.out'
+          opacity: isCenter ? 1 : 0.5,
+          scale: isCenter ? 1 : 0.85,
+          x: (idx - 1) * 300, // 가운데: 0, 왼쪽: -300, 오른쪽: 300
+          z: isCenter ? 0 : -50,
+          rotateY: rotateY,
+          width: isCenter ? 280 : 200,
+          duration: 0.6,
+          ease: 'power2.out',
+          transformStyle: 'preserve-3d',
+          transformOrigin: 'center center'
         });
       });
     });
@@ -702,15 +707,22 @@ export default function Landing() {
           <div 
             id="poster-carousel"
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            style={{ opacity: 0, zIndex: 25, top: '47.5%', transform: 'translateY(-50%)' }}
+            style={{ 
+              opacity: 0, 
+              zIndex: 25, 
+              top: '47.5%', 
+              transform: 'translateY(-50%)',
+              perspective: '1000px'
+            }}
           >
             {[0, 1, 2].map((idx) => {
               const actualIndex = (posterIndex + idx) % 3;
               const isCenter = idx === 1;
+              const rotateY = isCenter ? 0 : (idx === 0 ? 35 : -35); // 왼쪽은 +35도, 오른쪽은 -35도
               return (
                 <div
                   key={`${posterIndex}-${idx}`}
-                  className="poster-item absolute cursor-pointer pointer-events-auto"
+                  className="poster-item absolute cursor-pointer pointer-events-auto transition-all duration-500"
                   onClick={() => {
                     if (!isCenter) {
                       // 왼쪽 클릭: +1 (왼쪽 포스터가 가운데로), 오른쪽 클릭: -1 (오른쪽 포스터가 가운데로)
@@ -721,16 +733,19 @@ export default function Landing() {
                     }
                   }}
                   style={{
-                    width: isCenter ? '400px' : '300px',
+                    width: isCenter ? '280px' : '200px',
                     left: '50%',
-                    transform: `translateX(${(idx - 1) * 420 - 50}%) scale(${isCenter ? 1 : 0.9})`,
-                    opacity: isCenter ? 1 : 0.4
+                    transform: `translateX(${(idx - 1) * 300 - 50}%) translateZ(${isCenter ? 0 : -50}px) rotateY(${rotateY}deg) scale(${isCenter ? 1 : 0.85})`,
+                    transformStyle: 'preserve-3d',
+                    opacity: isCenter ? 1 : 0.5,
+                    transformOrigin: 'center center'
                   }}
                 >
                   <img
                     src={`/poster/poster${actualIndex + 1}.png`}
                     alt={`Poster ${actualIndex + 1}`}
-                    className="w-full h-auto rounded-lg"
+                    className="w-full h-auto rounded-lg shadow-lg"
+                    style={{ backfaceVisibility: 'hidden' }}
                   />
                 </div>
               );
@@ -740,7 +755,7 @@ export default function Landing() {
           {/* 검은색 박스 - 아래에서 올라오는 애니메이션 */}
           <div 
             id="exhibit-black-box"
-            className="absolute inset-x-8 h-[65vh] bg-black border border-white/30 rounded-lg z-20"
+            className="absolute inset-x-8 h-[50vh] bg-black border border-white/30 rounded-lg z-20 overflow-hidden"
             style={{ top: '47.5%', opacity: 0 }}
           />
           
@@ -748,7 +763,7 @@ export default function Landing() {
           <button
             id="regenerate-button"
             className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
-            style={{ top: 'calc(47.5% + 32.5vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
+            style={{ top: 'calc(47.5% + 25vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
           >
             Regenerate
           </button>

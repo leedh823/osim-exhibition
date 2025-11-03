@@ -407,7 +407,7 @@ export default function Landing() {
         // 오른쪽 하단: 세로형 이미지 (더 오른쪽 아래로) - 1792x2688 (2:3 비율)
         { style: 'bottom-[12%] right-[10%]', tooltip: 'Prompt: sample A', image: '/gallery/gallery-1-a.png', maxW: 160, maxH: 240, objectFit: 'contain' },
         // 오른쪽 상단: 가로형 이미지 (원래 모양) - 2912x1632 (16:9 비율)
-        { style: 'top-[8%] right-[5%]', tooltip: 'Prompt: sample B', image: '/gallery/gallery-1-b.png', maxW: 324, maxH: 182, objectFit: 'contain' },
+        { style: 'top-[8%] right-[5%]', tooltip: '화면에는 서로 다른 각도에서 촬영된 매장 내부와 복도, 창고의 풍경이 동시에 비춰지며, 각기 다른 시선이 한 화면 안에 병치되어 있습니다.\n\n4개로 분할된 CCTV 화면 속 일부에는 사람이 포착되어 있어, 일상의 공간이 감시의 대상으로 전환되는 순간을 드러냅니다.', image: '/gallery/gallery-1-b.png', maxW: 324, maxH: 182, objectFit: 'contain' },
         // 텍스트 아래 중앙: 회색 박스 (세로형)
         { style: 'bottom-[19%] left-[50%] -translate-x-1/2', tooltip: '', image: null, maxW: 70, maxH: 110 },
         // 왼쪽 중앙: 가로형 이미지 - 1616x1238 (약 4:3 비율)

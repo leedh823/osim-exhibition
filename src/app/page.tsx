@@ -680,7 +680,7 @@ export default function Landing() {
             style={{ 
               opacity: 0, 
               zIndex: 25, 
-              top: '47.5%',
+              top: '45%',
               gap: '20px'
             }}
           >

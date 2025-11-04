@@ -367,7 +367,7 @@ export default function Landing() {
           exhibitTl.to(blackBox, {
             y: '-50%',
             opacity: 1,
-            duration: 1.2,
+            duration: 1.8,
             ease: 'power2.out'
           }, 2.3);
           
@@ -377,9 +377,9 @@ export default function Landing() {
             exhibitTl.to(posterContainer, {
               opacity: 1,
               y: '-50%',
-              duration: 1.0,
+              duration: 1.5,
               ease: 'power2.out'
-            }, 3.5);
+            }, 3.8);
           }
           
           // 버튼은 포스터 등장이 끝난 후에 따라 나오는 느낌으로
@@ -387,9 +387,9 @@ export default function Landing() {
             exhibitTl.to(regenerateButton, {
               opacity: 1,
               y: 0,
-              duration: 0.6,
+              duration: 1.0,
               ease: 'power2.out'
-            }, 4.5);
+            }, 5.2);
           }
           
           // 박스가 끝까지 올라간 후 약간 눕혀졌다가 원상복귀 (천천히, 30% 더 길게, 약간의 기울기)
@@ -397,13 +397,13 @@ export default function Landing() {
             rotationX: 5,
             duration: 1.04,
             ease: 'power2.inOut'
-          }, 4.5);
+          }, 4.2);
           
           exhibitTl.to(blackBox, {
             rotationX: 0,
             duration: 1.04,
             ease: 'power2.inOut'
-          }, 5.54);
+          }, 5.24);
         }
       }
     }, rootRef);
@@ -680,7 +680,7 @@ export default function Landing() {
             style={{ 
               opacity: 0, 
               zIndex: 25, 
-              top: '50%',
+              top: '42%',
               gap: '20px'
             }}
           >

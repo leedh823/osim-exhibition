@@ -371,12 +371,12 @@ export default function Landing() {
             ease: 'power2.out'
           }, 2.3);
           
-          // 포스터 캐러셀이 박스 위에 올라오는 느낌으로 등장 (박스 등장 후)
+          // 포스터 캐러셀이 화면 중앙에 올라오는 느낌으로 등장 (박스 등장 후)
           if (posterContainer) {
-            gsap.set(posterContainer, { opacity: 0, y: 150 });
+            gsap.set(posterContainer, { opacity: 0, y: '150px' });
             exhibitTl.to(posterContainer, {
               opacity: 1,
-              y: 0,
+              y: '-50%',
               duration: 1.0,
               ease: 'power2.out'
             }, 3.5);
@@ -673,14 +673,14 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* 포스터 배치 - 검은색 박스 가운데에 배치 */}
+          {/* 포스터 배치 - 화면 중앙에 배치 */}
           <div 
             id="poster-carousel"
             className="absolute inset-x-8 h-[50vh] pointer-events-none flex items-center justify-center"
             style={{ 
               opacity: 0, 
               zIndex: 25, 
-              top: '45%',
+              top: '50%',
               gap: '20px'
             }}
           >

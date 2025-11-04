@@ -373,10 +373,10 @@ export default function Landing() {
           
           // 포스터 캐러셀이 박스 위에 올라오는 느낌으로 등장 (박스 등장 후)
           if (posterContainer) {
-            gsap.set(posterContainer, { opacity: 0, y: '150px' });
+            gsap.set(posterContainer, { opacity: 0, y: 150 });
             exhibitTl.to(posterContainer, {
               opacity: 1,
-              y: '-50%',
+              y: 0,
               duration: 1.0,
               ease: 'power2.out'
             }, 3.5);
@@ -680,8 +680,7 @@ export default function Landing() {
             style={{ 
               opacity: 0, 
               zIndex: 25, 
-              top: '50%',
-              transform: 'translateY(-50%)',
+              top: '47.5%',
               gap: '20px'
             }}
           >
@@ -738,7 +737,7 @@ export default function Landing() {
           <div 
             id="exhibit-black-box"
             className="absolute inset-x-8 h-[50vh] bg-black border border-white/30 rounded-lg z-20 overflow-hidden"
-            style={{ top: '50%', transform: 'translateY(-50%)', opacity: 0 }}
+            style={{ top: '47.5%', opacity: 0 }}
           />
           
           {/* Regenerate 버튼 - 박스 아래 */}

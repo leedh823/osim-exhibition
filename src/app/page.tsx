@@ -1,6 +1,7 @@
 'use client';
 
 import { useLayoutEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -8,6 +9,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const handleRegenerateClick = () => {
+    router.push('/start');
+  };
 
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -745,6 +750,8 @@ export default function Landing() {
             id="regenerate-button"
             className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
             style={{ top: 'calc(47.5% + 25vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
+            type="button"
+            onClick={handleRegenerateClick}
           >
             Regenerate
           </button>

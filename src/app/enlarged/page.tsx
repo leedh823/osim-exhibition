@@ -178,7 +178,7 @@ export default function EnlargedVideo() {
 
       {/* 채팅 오버레이 */}
       {showChat && (
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-black/60 backdrop-blur-sm z-20">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-transparent backdrop-blur-sm z-20">
           {/* 채팅 메시지 영역 */}
           <div className="h-3/4 overflow-y-auto p-4 space-y-3">
             {chatMessages.map((msg, index) => (

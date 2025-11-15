@@ -10,6 +10,7 @@ export default function PosterPage1() {
   const handlePersonClick = (person: DetectedObject) => {
     try {
       localStorage.setItem('selectedPerson', JSON.stringify(person));
+      localStorage.setItem('selectedPoster', '1'); // 포스터 1 선택 표시
       router.push('/enlarged');
       setTimeout(() => {
         window.location.href = '/enlarged';

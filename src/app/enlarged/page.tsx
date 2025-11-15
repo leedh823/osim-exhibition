@@ -18,6 +18,7 @@ export default function EnlargedVideo() {
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<DetectedObject | null>(null);
+  const [videoSrc, setVideoSrc] = useState('/2.mp4'); // 기본 영상
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -82,11 +83,19 @@ export default function EnlargedVideo() {
     }
   }, [chatMessages, currentTurn, selectedPerson, router]);
 
-  // 선택된 인물 정보 로드
+  // 선택된 인물 정보 및 포스터 정보 로드
   useEffect(() => {
     const storedPerson = localStorage.getItem('selectedPerson');
     if (storedPerson) {
       setSelectedPerson(JSON.parse(storedPerson));
+    }
+    
+    // 포스터 번호 확인하여 영상 경로 설정
+    const selectedPoster = localStorage.getItem('selectedPoster');
+    if (selectedPoster === '3') {
+      setVideoSrc('/poster video 3/4.mp4');
+    } else {
+      setVideoSrc('/2.mp4'); // 기본 영상
     }
   }, []);
 
@@ -160,7 +169,7 @@ export default function EnlargedVideo() {
       {/* 왼쪽: 영상 영역 */}
       <div className="w-1/2 h-full relative">
         <VideoTracker
-          videoSrc="/2.mp4"
+          videoSrc={videoSrc}
           onPersonClick={handlePersonClick}
           className="w-full h-full"
           selectedPerson={selectedPerson}

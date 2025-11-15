@@ -73,29 +73,51 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 transform을 먼저 초기화
-          // 모든 포스터의 transform을 0으로 설정 (아직 순서는 변경 전)
-          posterOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              gsap.set(ref, { 
-                x: 0, 
-                clearProps: 'transform' 
-              });
-            }
-          });
-          
-          // transform 초기화 후 순서 업데이트 (DOM 재배치)
-          // requestAnimationFrame을 사용하여 transform 초기화가 완전히 렌더링된 후 실행
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              setPosterOrder(newOrder);
-              // 애니메이션 완료 플래그 해제
-              setTimeout(() => {
-                isAnimatingRef.current = false;
-              }, 50);
+          // 애니메이션이 완전히 끝난 후 충분한 시간을 두고 처리
+          // 여러 프레임을 기다려서 애니메이션이 완전히 렌더링되도록 함
+          setTimeout(() => {
+            // 모든 포스터의 transform을 현재 위치에서 0으로 부드럽게 이동
+            posterOrder.forEach((posterIndex) => {
+              const ref = posterRefs[posterIndex].current;
+              if (ref) {
+                // 현재 transform 값을 가져와서 0으로 부드럽게 이동
+                const currentX = gsap.getProperty(ref, "x") as number;
+                if (Math.abs(currentX) > 0.1) {
+                  // 아직 이동 중이면 완료될 때까지 기다림
+                  gsap.to(ref, {
+                    x: 0,
+                    duration: 0.1,
+                    ease: 'none',
+                    onComplete: () => {
+                      gsap.set(ref, { clearProps: 'transform' });
+                    }
+                  });
+                } else {
+                  gsap.set(ref, { 
+                    x: 0, 
+                    clearProps: 'transform' 
+                  });
+                }
+              }
             });
-          });
+            
+            // transform 초기화가 완료된 후 순서 업데이트
+            setTimeout(() => {
+              setPosterOrder(newOrder);
+              // 순서 업데이트 후 한 번 더 기다려서 DOM 재배치 완료
+              setTimeout(() => {
+                // 모든 포스터의 transform이 완전히 제거되었는지 확인
+                newOrder.forEach((posterIndex) => {
+                  const ref = posterRefs[posterIndex].current;
+                  if (ref) {
+                    gsap.set(ref, { clearProps: 'transform' });
+                  }
+                });
+                // 애니메이션 완료 플래그 해제
+                isAnimatingRef.current = false;
+              }, 100);
+            }, 150);
+          }, 100);
         }
       });
       

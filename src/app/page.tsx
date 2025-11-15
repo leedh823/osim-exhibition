@@ -45,9 +45,6 @@ export default function Landing() {
       newOrder[2] = posterOrder[0];
     }
     
-    // 포스터 간격 계산 - 화면 전체 너비 기준 (vw 단위)
-    const oneStepDistance = 100; // 100vw (화면 너비 100%)
-    
     // 모든 포스터 ref 가져오기
     const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
     
@@ -104,19 +101,6 @@ export default function Landing() {
         
         // 새로운 위치 찾기
         const newPosition = newOrder.indexOf(posterIndex);
-        const positionDiff = newPosition - currentPosition;
-        
-        // 이동 거리 계산 (vw 단위)
-        let moveX = 0;
-        if (positionDiff === 1) {
-          moveX = oneStepDistance; // 100vw (오른쪽으로)
-        } else if (positionDiff === -1) {
-          moveX = -oneStepDistance; // -100vw (왼쪽으로)
-        } else if (positionDiff === 2) {
-          moveX = oneStepDistance * 2; // 200vw (오른쪽으로 2칸)
-        } else if (positionDiff === -2) {
-          moveX = -oneStepDistance * 2; // -200vw (왼쪽으로 2칸)
-        }
         
         // 현재 위치와 목표 위치 계산 (vw 단위)
         const currentX = (currentPosition - 1) * 100; // -100, 0, 100

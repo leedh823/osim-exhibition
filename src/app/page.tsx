@@ -156,24 +156,35 @@ export default function Landing() {
         const targetZIndex = isNewCenter ? 11 : 10;
         
         // 속도 조절: 2칸 이동은 2배 빠름, 1칸 이동은 기본 속도
-        // duration은 제거하고 velocity를 사용하여 자연스러운 속도로 이동
-        const baseVelocity = 400; // 기본 속도 (픽셀/초)
+        // 자연스러운 속도로 이동 (너무 빠르지 않게)
+        const baseVelocity = 250; // 기본 속도 (픽셀/초) - 더 느리게
         let velocity;
         if (moveDistance === 2) {
           // 2칸 이동: 2배 빠른 속도
-          velocity = baseVelocity * 2;
+          velocity = baseVelocity * 2; // 500 픽셀/초
         } else {
           // 1칸 이동: 기본 속도
-          velocity = baseVelocity;
+          velocity = baseVelocity; // 250 픽셀/초
         }
         
         // duration 계산: 거리 / 속도
         const distance = Math.abs(moveX);
         const duration = distance / velocity;
         
+        // 최소 duration 보장 (너무 빠른 이동 방지)
+        const minDuration = 0.3; // 최소 0.3초
+        const finalDuration = Math.max(duration, minDuration);
+        
         // 가운데 포스터의 경우 정확한 중앙 위치로 조정
-        // moveX를 그대로 사용 (이미 정확히 계산됨)
-        const finalX = moveX;
+        // positionDiff를 기반으로 정확한 이동 거리 계산
+        let finalX = moveX;
+        
+        // 가운데로 이동하는 경우 추가 확인
+        if (isNewCenter) {
+          // 가운데 위치는 항상 x: 0이어야 함
+          // 하지만 현재 위치에서 가운데로 이동하는 거리는 moveX가 맞음
+          // 추가 조정 불필요
+        }
         
         // 애니메이션 - 모든 포스터가 동시에 시작
         timeline.to(ref, {
@@ -181,7 +192,7 @@ export default function Landing() {
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: duration, // 거리 기반 duration으로 자연스러운 속도
+          duration: finalDuration, // 최소 duration 보장된 자연스러운 속도
           ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작
       });

@@ -111,44 +111,6 @@ export default function Landing() {
         }
       });
       
-      // 기본 속도: 1칸을 1초에 이동
-      const baseDuration = 1.0; // 1칸 이동 시 duration
-      
-      posterOrder.forEach((posterIndex, currentPosition) => {
-        const ref = posterRefs[posterIndex].current;
-        if (!ref) return;
-        
-        // 새로운 위치 찾기
-        const newPosition = newOrder.indexOf(posterIndex);
-        const positionDiff = newPosition - currentPosition;
-        
-        // 실제 이동 거리 계산 - 상대적 이동
-        let moveX = 0;
-        let moveDistance = 0; // 이동 칸 수 (속도 조절용)
-        if (positionDiff === 1) {
-          // 오른쪽으로 1칸 이동
-          moveX = oneStepDistance;
-          moveDistance = 1;
-        } else if (positionDiff === -1) {
-          // 왼쪽으로 1칸 이동
-          moveX = -oneStepDistance;
-          moveDistance = 1;
-        } else if (positionDiff === 2) {
-          // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
-          moveX = oneStepDistance * 2;
-          moveDistance = 2;
-        } else if (positionDiff === -2) {
-          // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
-          moveX = -oneStepDistance * 2;
-          moveDistance = 2;
-        }
-        
-        // 목표 속성
-        const isNewCenter = newPosition === 1;
-        const targetWidth = isNewCenter ? '304px' : '228px';
-        const targetOpacity = isNewCenter ? 1 : 0.5;
-        const targetZIndex = isNewCenter ? 11 : 10;
-        
       // 애니메이션 시작 전에 모든 transform을 0으로 초기화
       // 깨끗한 상태에서 시작하여 회전 애니메이션이 올바르게 작동하도록
       posterOrder.forEach((posterIndex) => {
@@ -209,7 +171,6 @@ export default function Landing() {
           duration: duration, // 모든 애니메이션이 정확히 2초에 끝남
           ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작 (position: 0)
-      });
       });
     } else {
       // ref가 없으면 즉시 순서 변경

@@ -18,6 +18,7 @@ export default function EnlargedVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoSrc, setVideoSrc] = useState('/2.mp4'); // 기본 영상
   const [selectedPoster, setSelectedPoster] = useState<string | null>(null); // 선택된 포스터 번호
+  const [videoIndex, setVideoIndex] = useState(2); // 현재 비디오 인덱스 (2.mp4부터 시작)
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -88,15 +89,21 @@ export default function EnlargedVideo() {
     const poster = localStorage.getItem('selectedPoster');
     setSelectedPoster(poster);
     console.log('📋 선택된 포스터:', poster);
+    
+    // 포스터별 초기 비디오 인덱스 설정
     if (poster === '1') {
+      setVideoIndex(2); // 2.mp4부터 시작
       setVideoSrc('/poster video 1/2.mp4');
     } else if (poster === '2') {
+      setVideoIndex(2); // 2.mp4부터 시작
       setVideoSrc('/poster video 2/2.mp4');
     } else if (poster === '3') {
+      setVideoIndex(4); // 4.mp4부터 시작
       const poster3VideoSrc = '/poster video 3/4.mp4';
       console.log('🎬 포스터 3 영상 경로 설정:', poster3VideoSrc);
       setVideoSrc(poster3VideoSrc);
     } else {
+      setVideoIndex(2);
       setVideoSrc('/2.mp4'); // 기본 영상 (fallback)
     }
   }, []);
@@ -152,6 +159,18 @@ export default function EnlargedVideo() {
 
   // 6턴 완료 시 분석 결과로 전환 (3초 후) - handleAIMessage에서 처리하므로 제거
 
+  // 비디오 경로 생성 함수
+  const getVideoPath = (poster: string | null, index: number): string => {
+    if (poster === '1') {
+      return `/poster video 1/${index}.mp4`;
+    } else if (poster === '2') {
+      return `/poster video 2/${index}.mp4`;
+    } else if (poster === '3') {
+      return `/poster video 3/${index}.mp4`;
+    }
+    return `/2.mp4`;
+  };
+
   // 채팅 메시지 전송
   const handleSendMessage = async () => {
     if (userInput.trim()) {
@@ -162,6 +181,18 @@ export default function EnlargedVideo() {
       setChatMessages(prev => [...prev, newMessage]);
       setUserInput('');
       setCurrentTurn(prev => prev + 1);
+      
+      // 채팅 전송 시 다음 비디오로 변경 (최대 6.mp4까지)
+      setVideoIndex(prev => {
+        const nextIndex = prev + 1;
+        if (nextIndex <= 6) {
+          const nextVideoPath = getVideoPath(selectedPoster, nextIndex);
+          console.log('🎬 다음 비디오로 변경:', nextVideoPath);
+          setVideoSrc(nextVideoPath);
+          return nextIndex;
+        }
+        return prev; // 6.mp4를 넘어가면 유지
+      });
     }
   };
 

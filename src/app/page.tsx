@@ -81,38 +81,12 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 transform을 초기화하고 순서 업데이트
-          // 모든 포스터의 transform을 0으로 초기화
-          posterOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              gsap.set(ref, { 
-                x: 0,
-                clearProps: 'transform' 
-              });
-            }
-          });
+          // 순서만 업데이트 (transform은 그대로 유지)
+          // 포스터가 목표 위치에 도착한 상태로 유지
+          setPosterOrder(newOrder);
           
-          // transform 초기화 후 순서 업데이트
-          requestAnimationFrame(() => {
-            setPosterOrder(newOrder);
-            
-            // 순서 업데이트 후 한 번 더 확인
-            requestAnimationFrame(() => {
-              newOrder.forEach((posterIndex) => {
-                const ref = posterRefs[posterIndex].current;
-                if (ref) {
-                  gsap.set(ref, { 
-                    x: 0,
-                    clearProps: 'transform' 
-                  });
-                }
-              });
-              
-              // 애니메이션 완료 플래그 해제
-              isAnimatingRef.current = false;
-            });
-          });
+          // 애니메이션 완료 플래그 해제
+          isAnimatingRef.current = false;
         }
       });
       
@@ -165,13 +139,14 @@ export default function Landing() {
           duration = baseDuration; // 1칸을 1초에 이동
         }
         
-        // 초기 transform 설정 - 항상 0에서 시작 (깨끗한 상태)
-        gsap.set(ref, { x: 0 });
+        // 현재 transform 값을 가져와서 상대적 이동으로 계산
+        // 이전 애니메이션의 transform이 있으면 그대로 사용
+        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
         
         // 애니메이션 - 모든 포스터가 동시에 시작 (0초부터)
-        // moveX는 절대 이동 거리 (항상 0에서 시작)
+        // 현재 위치에서 상대적으로 이동
         timeline.to(ref, {
-          x: moveX,
+          x: currentX + moveX, // 현재 위치 + 이동 거리
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,

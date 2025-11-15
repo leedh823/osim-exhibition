@@ -118,10 +118,9 @@ export default function Landing() {
         }
       });
       
-      // 중앙 포스터의 기본 속도 (픽셀/초)
-      const baseSpeed = oneStepDistance / 1.0; // 1칸을 1초에 이동하는 속도
-      const centerDuration = 1.0; // 중앙 포스터 duration
-      const sideDuration = 0.5; // 양쪽 포스터 duration (2배 빠름)
+      // 기본 속도: 1칸을 1초에 이동
+      const baseSpeed = oneStepDistance / 1.0;
+      const baseDuration = 1.0; // 1칸 이동 시 duration
       
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
@@ -131,46 +130,47 @@ export default function Landing() {
         const newPosition = newOrder.indexOf(posterIndex);
         const positionDiff = newPosition - currentPosition;
         
-        // 실제 이동 거리 계산 (정확한 거리)
+        // 실제 이동 거리 계산
         let moveX = 0;
+        let moveDistance = 0; // 이동 칸 수
         if (positionDiff === 1) {
           // 오른쪽으로 1칸 이동
           moveX = oneStepDistance;
+          moveDistance = 1;
         } else if (positionDiff === -1) {
           // 왼쪽으로 1칸 이동
           moveX = -oneStepDistance;
+          moveDistance = 1;
         } else if (positionDiff === 2) {
           // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
           moveX = oneStepDistance * 2;
+          moveDistance = 2;
         } else if (positionDiff === -2) {
           // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
           moveX = -oneStepDistance * 2;
+          moveDistance = 2;
         }
         
         // 목표 속성
         const isNewCenter = newPosition === 1;
-        const isCurrentCenter = currentPosition === 1;
         const targetWidth = isNewCenter ? '304px' : '228px';
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // duration 결정: 중앙 포스터는 기본 속도, 양쪽 포스터는 2배 빠름
+        // duration 결정: 2칸 이동은 2배 빠름 (duration 절반), 1칸 이동은 기본 속도
         let duration;
-        if (isCurrentCenter || isNewCenter) {
-          // 중앙 포스터가 이동하는 경우: 기본 duration
-          // 이동 거리에 따라 duration 계산 (속도 일정 유지)
-          const distance = Math.abs(moveX);
-          duration = distance / baseSpeed;
+        if (moveDistance === 2) {
+          // 2칸 이동: 2배 빠른 속도 (duration 절반)
+          duration = baseDuration; // 2칸을 1초에 이동 = 1칸을 0.5초에 이동
         } else {
-          // 양쪽 포스터가 이동하는 경우: 2배 빠름 (duration 절반)
-          const distance = Math.abs(moveX);
-          duration = (distance / baseSpeed) / 2; // 2배 빠른 속도
+          // 1칸 이동: 기본 속도
+          duration = baseDuration; // 1칸을 1초에 이동
         }
         
         // 초기 transform 설정 (현재 위치에서 시작, 이전 transform 완전히 제거)
         gsap.set(ref, { x: 0, clearProps: 'transform' });
         
-        // 애니메이션 - 중앙 포스터는 기본 속도, 양쪽 포스터는 2배 빠름
+        // 애니메이션 - 모든 포스터가 동시에 시작 (0초부터)
         timeline.to(ref, {
           x: moveX,
           width: targetWidth,
@@ -178,7 +178,7 @@ export default function Landing() {
           zIndex: targetZIndex,
           duration: duration,
           ease: 'power2.inOut'
-        }, 0);
+        }, 0); // 모든 애니메이션이 동시에 시작
       });
     } else {
       // ref가 없으면 즉시 순서 변경

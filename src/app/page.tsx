@@ -733,7 +733,7 @@ export default function Landing() {
           {/* 포스터 배치 - 화면 중앙에 배치 */}
           <div 
             id="poster-carousel"
-            className="absolute inset-x-8 h-[65vh] pointer-events-none flex items-center justify-center"
+            className="absolute inset-x-8 h-[72vh] pointer-events-none flex items-center justify-center"
             style={{ 
               opacity: 0, 
               zIndex: 25, 

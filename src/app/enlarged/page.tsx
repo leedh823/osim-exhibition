@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import VideoTracker from '@/components/VideoTracker';
-import { DetectedObject } from '@/utils/realObjectDetection';
 
 interface ChatMessage {
   role: string;
@@ -17,7 +15,7 @@ export default function EnlargedVideo() {
   const [currentTurn, setCurrentTurn] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<DetectedObject | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [videoSrc, setVideoSrc] = useState('/2.mp4'); // 기본 영상
   const [isPoster3, setIsPoster3] = useState(false); // 포스터 3 여부
 
@@ -40,7 +38,7 @@ export default function EnlargedVideo() {
         body: JSON.stringify({
           messages: chatMessages,
           turnCount: currentTurn,
-          selectedPerson: selectedPerson
+          selectedPerson: null // 트래킹 비활성화
         }),
       });
 
@@ -82,15 +80,10 @@ export default function EnlargedVideo() {
     } finally {
       setIsLoading(false);
     }
-  }, [chatMessages, currentTurn, selectedPerson, router]);
+  }, [chatMessages, currentTurn, router]);
 
   // 선택된 인물 정보 및 포스터 정보 로드
   useEffect(() => {
-    const storedPerson = localStorage.getItem('selectedPerson');
-    if (storedPerson) {
-      setSelectedPerson(JSON.parse(storedPerson));
-    }
-    
     // 포스터 번호 확인하여 영상 경로 설정
     const selectedPoster = localStorage.getItem('selectedPoster');
     console.log('📋 선택된 포스터:', selectedPoster);
@@ -110,6 +103,18 @@ export default function EnlargedVideo() {
       setIsPoster3(false);
     }
   }, []);
+
+  // 비디오 소스 변경 시 비디오 업데이트
+  useEffect(() => {
+    if (videoRef.current && videoSrc) {
+      const video = videoRef.current;
+      const source = video.querySelector('source');
+      if (source) {
+        source.src = videoSrc;
+        video.load();
+      }
+    }
+  }, [videoSrc]);
 
   // AI 질문 자동 표시 (첫 번째 질문만)
   useEffect(() => {
@@ -170,10 +175,6 @@ export default function EnlargedVideo() {
     }
   };
 
-  // 트래킹 영역 클릭 핸들러 (사용하지 않지만 VideoTracker에 전달 필요)
-  const handlePersonClick = (person: DetectedObject) => {
-    // 클릭으로 채팅 시작하지 않음 - 페이지 로드 시 바로 표시
-  };
 
 
   console.log('🎥 현재 영상 경로:', videoSrc);
@@ -183,13 +184,22 @@ export default function EnlargedVideo() {
     <div className={`w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden ${isPoster3 ? '' : 'flex'}`}>
       {/* 영상 영역 - 포스터 3은 전체화면, 나머지는 왼쪽 50% */}
       <div className={isPoster3 ? "w-full h-full relative z-10" : "w-1/2 h-full relative"}>
-        <VideoTracker
-          videoSrc={videoSrc}
-          onPersonClick={handlePersonClick}
-          className="w-full h-full"
-          selectedPerson={selectedPerson}
-          followPerson={false}
-        />
+        <video
+          key={videoSrc}
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+          controls={false}
+          onError={(e) => {
+            console.error('비디오 로드 에러:', e);
+            console.error('비디오 경로:', videoSrc);
+          }}
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
       </div>
       
       {/* AI 채팅 영역 - 포스터 3은 오른쪽 오버레이, 나머지는 오른쪽 50% */}

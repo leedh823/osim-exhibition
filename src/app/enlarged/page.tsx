@@ -19,6 +19,7 @@ export default function EnlargedVideo() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<DetectedObject | null>(null);
   const [videoSrc, setVideoSrc] = useState('/2.mp4'); // 기본 영상
+  const [isPoster3, setIsPoster3] = useState(false); // 포스터 3 여부
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -94,12 +95,16 @@ export default function EnlargedVideo() {
     const selectedPoster = localStorage.getItem('selectedPoster');
     if (selectedPoster === '1') {
       setVideoSrc('/poster%20video%201/2.mp4');
+      setIsPoster3(false);
     } else if (selectedPoster === '2') {
       setVideoSrc('/poster%20video%202/2.mp4');
+      setIsPoster3(false);
     } else if (selectedPoster === '3') {
       setVideoSrc('/poster%20video%203/4.mp4');
+      setIsPoster3(true); // 포스터 3은 전체화면 레이아웃
     } else {
       setVideoSrc('/2.mp4'); // 기본 영상 (fallback)
+      setIsPoster3(false);
     }
   }, []);
 
@@ -169,9 +174,9 @@ export default function EnlargedVideo() {
 
 
   return (
-    <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden flex">
-      {/* 왼쪽: 영상 영역 */}
-      <div className="w-1/2 h-full relative">
+    <div className={`w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden ${isPoster3 ? '' : 'flex'}`}>
+      {/* 영상 영역 - 포스터 3은 전체화면, 나머지는 왼쪽 50% */}
+      <div className={isPoster3 ? "w-full h-full relative" : "w-1/2 h-full relative"}>
         <VideoTracker
           videoSrc={videoSrc}
           onPersonClick={handlePersonClick}
@@ -181,8 +186,11 @@ export default function EnlargedVideo() {
         />
       </div>
       
-      {/* 오른쪽: AI 채팅 영역 */}
-      <div className="w-1/2 h-full bg-transparent backdrop-blur-sm flex flex-col">
+      {/* AI 채팅 영역 - 포스터 3은 오른쪽 오버레이, 나머지는 오른쪽 50% */}
+      <div className={isPoster3 
+        ? "absolute top-0 right-0 w-1/2 h-full bg-transparent backdrop-blur-sm flex flex-col z-20"
+        : "w-1/2 h-full bg-transparent backdrop-blur-sm flex flex-col"
+      }>
         {/* 채팅 메시지 영역 */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {chatMessages.map((msg, index) => (

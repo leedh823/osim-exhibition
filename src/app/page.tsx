@@ -737,7 +737,7 @@ export default function Landing() {
             style={{ 
               opacity: 0, 
               zIndex: 25, 
-              top: '46%',
+              top: 'calc(47.5% - 5vh)',
               gap: '20px'
             }}
           >

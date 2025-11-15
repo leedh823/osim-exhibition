@@ -26,7 +26,7 @@ export default function PosterPage2() {
         <source src="/2.mp4" type="video/mp4" />
       </video>
       <VideoTracker
-        videoSrc="/poster video 2/1.mp4"
+        videoSrc="/poster%20video%202/1.mp4"
         onPersonClick={handlePersonClick}
         className="w-full h-full"
       />

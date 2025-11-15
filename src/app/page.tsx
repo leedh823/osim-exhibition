@@ -91,12 +91,14 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 transform을 초기화하고 순서 업데이트
-          // 이렇게 하면 포스터가 새로운 DOM 위치에서 시작
+          // 애니메이션 완료 후 모든 transform을 확실하게 초기화
           posterOrder.forEach((posterIndex) => {
             const ref = posterRefs[posterIndex].current;
             if (ref) {
-              gsap.set(ref, { x: 0, clearProps: 'transform' });
+              gsap.set(ref, { 
+                x: 0,
+                clearProps: 'transform' 
+              });
             }
           });
           
@@ -104,17 +106,38 @@ export default function Landing() {
           requestAnimationFrame(() => {
             setPosterOrder(newOrder);
             
-            // 순서 업데이트 후 한 번 더 확인하여 transform이 0인지 확인
+            // 순서 업데이트 후 DOM 재배치 완료 대기
             requestAnimationFrame(() => {
-              newOrder.forEach((posterIndex) => {
-                const ref = posterRefs[posterIndex].current;
-                if (ref) {
-                  gsap.set(ref, { x: 0, clearProps: 'transform' });
-                }
+              requestAnimationFrame(() => {
+                // 모든 포스터의 transform을 확실하게 0으로 설정
+                newOrder.forEach((posterIndex, positionIndex) => {
+                  const ref = posterRefs[posterIndex].current;
+                  if (ref) {
+                    // 중앙 포스터는 명시적으로 x: 0으로 설정
+                    const isCenter = positionIndex === 1;
+                    gsap.set(ref, { 
+                      x: 0,
+                      clearProps: 'transform' 
+                    });
+                    
+                    // 중앙 포스터의 경우 한 번 더 확인
+                    if (isCenter) {
+                      requestAnimationFrame(() => {
+                        const centerRef = posterRefs[posterIndex].current;
+                        if (centerRef) {
+                          gsap.set(centerRef, { 
+                            x: 0,
+                            clearProps: 'transform' 
+                          });
+                        }
+                      });
+                    }
+                  }
+                });
+                
+                // 애니메이션 완료 플래그 해제
+                isAnimatingRef.current = false;
               });
-              
-              // 애니메이션 완료 플래그 해제
-              isAnimatingRef.current = false;
             });
           });
         }

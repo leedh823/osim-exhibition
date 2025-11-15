@@ -62,7 +62,13 @@ export default function Landing() {
       allRefs.forEach(ref => {
         if (ref) {
           gsap.killTweensOf(ref);
-          gsap.set(ref, { clearProps: 'all' });
+          // scale 속성도 명시적으로 제거
+          gsap.set(ref, { 
+            x: 0,
+            y: 0,
+            scale: 1,
+            clearProps: 'transform,width,opacity,zIndex' 
+          });
         }
       });
       
@@ -119,19 +125,21 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 초기 상태 설정 (모든 transform 제거)
+        // 초기 상태 설정 (모든 transform 제거, scale 명시적으로 1로 설정)
         gsap.set(ref, { 
           x: 0, 
           y: 0,
+          scale: 1,
           clearProps: 'transform' 
         });
         
-        // 애니메이션 실행
+        // 애니메이션 실행 (scale은 변경하지 않음)
         timeline.to(ref, {
           x: moveX,
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
+          scale: 1, // scale 고정
           duration: uniformDuration,
           ease: 'power2.inOut',
           immediateRender: false
@@ -835,13 +843,14 @@ export default function Landing() {
                 <div
                   key={`poster-${posterIndex}`}
                   ref={posterRefs[posterIndex]}
-                  className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
+                  className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer"
                   style={{
                     width,
                     opacity,
                     zIndex,
                     order: positionIndex,
-                    transformStyle: 'preserve-3d'
+                    transformStyle: 'preserve-3d',
+                    willChange: 'transform'
                   }}
                   onClick={() => handlePosterClick(positionIndex)}
                 >

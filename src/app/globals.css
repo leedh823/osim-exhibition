@@ -339,7 +339,7 @@ button:active {
 
 /* 프린트 스타일 */
 @media print {
-  body {
+body {
     background: white !important;
     color: black !important;
   }

@@ -13,6 +13,54 @@ export default function Landing() {
   const handleRegenerateClick = () => {
     router.push('/start');
   };
+  
+  // 포스터 순서 관리: [왼쪽, 중앙, 오른쪽]
+  const [posterOrder, setPosterOrder] = useState([0, 1, 2]); // poster1, poster2, poster3
+  const posterRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
+  
+  // 포스터 클릭 핸들러
+  const handlePosterClick = (clickedIndex: number) => {
+    // 중앙 포스터(인덱스 1)는 클릭 불가
+    if (clickedIndex === 1) return;
+    
+    // 현재 순서에서 클릭한 포스터의 실제 인덱스 찾기
+    const clickedPosterIndex = posterOrder[clickedIndex];
+    const centerPosterIndex = posterOrder[1];
+    
+    // 순서 변경: 클릭한 포스터가 중앙으로, 중앙 포스터가 클릭한 위치로
+    const newOrder = [...posterOrder];
+    newOrder[1] = clickedPosterIndex;
+    newOrder[clickedIndex] = centerPosterIndex;
+    
+    // GSAP 애니메이션
+    const clickedRef = posterRefs[clickedPosterIndex].current;
+    const centerRef = posterRefs[centerPosterIndex].current;
+    
+    if (clickedRef && centerRef) {
+      // 두 포스터 모두 애니메이션
+      const timeline = gsap.timeline();
+      
+      // 클릭한 포스터: 작은 크기 → 큰 크기, 반투명 → 불투명
+      timeline.to(clickedRef, {
+        width: '240px',
+        opacity: 1,
+        zIndex: 11,
+        duration: 0.6,
+        ease: 'power2.out'
+      }, 0);
+      
+      // 중앙 포스터: 큰 크기 → 작은 크기, 불투명 → 반투명
+      timeline.to(centerRef, {
+        width: '180px',
+        opacity: 0.5,
+        zIndex: 10,
+        duration: 0.6,
+        ease: 'power2.out'
+      }, 0);
+    }
+    
+    setPosterOrder(newOrder);
+  };
 
   useLayoutEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -689,53 +737,39 @@ export default function Landing() {
               gap: '20px'
             }}
           >
-            {/* Poster 1 - 포스터 2 왼쪽 */}
-            <div
-              className="poster-item pointer-events-auto flex-shrink-0"
-              style={{
-                width: '180px',
-                opacity: 0.5,
-                zIndex: 10
-              }}
-            >
-              <img
-                src="/poster/poster1.png"
-                alt="Poster 1"
-                className="w-full h-auto rounded-lg shadow-lg"
-              />
-            </div>
-
-            {/* Poster 2 - 중앙 (큰 크기) */}
-            <div
-              className="poster-item pointer-events-auto flex-shrink-0"
-              style={{
-                width: '240px',
-                opacity: 1,
-                zIndex: 11
-              }}
-            >
-              <img
-                src="/poster/poster2.png"
-                alt="Poster 2"
-                className="w-full h-auto rounded-lg shadow-lg"
-              />
-            </div>
-
-            {/* Poster 3 - 포스터 2 오른쪽 */}
-            <div
-              className="poster-item pointer-events-auto flex-shrink-0"
-              style={{
-                width: '180px',
-                opacity: 0.5,
-                zIndex: 10
-              }}
-            >
-              <img
-                src="/poster/poster3.png"
-                alt="Poster 3"
-                className="w-full h-auto rounded-lg shadow-lg"
-              />
-            </div>
+            {posterOrder.map((posterIndex, positionIndex) => {
+              const posterData = [
+                { src: '/poster/poster1.png', alt: 'Poster 1' },
+                { src: '/poster/poster2.png', alt: 'Poster 2' },
+                { src: '/poster/poster3.png', alt: 'Poster 3' }
+              ];
+              
+              const isCenter = positionIndex === 1;
+              const width = isCenter ? '240px' : '180px';
+              const opacity = isCenter ? 1 : 0.5;
+              const zIndex = isCenter ? 11 : 10;
+              
+              return (
+                <div
+                  key={`poster-${posterIndex}`}
+                  ref={posterRefs[posterIndex]}
+                  className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
+                  style={{
+                    width,
+                    opacity,
+                    zIndex,
+                    order: positionIndex
+                  }}
+                  onClick={() => handlePosterClick(positionIndex)}
+                >
+                  <img
+                    src={posterData[posterIndex].src}
+                    alt={posterData[posterIndex].alt}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                </div>
+              );
+            })}
           </div>
 
           {/* 검은색 박스 - 아래에서 올라오는 애니메이션 */}

@@ -45,11 +45,8 @@ export default function Landing() {
       newOrder[2] = posterOrder[0];
     }
     
-    // 포스터 간격 계산
-    const centerWidth = 304;
-    const sideWidth = 228;
-    const gap = 20;
-    const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
+    // 포스터 간격 계산 - 화면 전체 너비 기준 (vw 단위)
+    const oneStepDistance = 100; // 100vw (화면 너비 100%)
     
     // 모든 포스터 ref 가져오기
     const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
@@ -76,12 +73,14 @@ export default function Landing() {
       const timeline = gsap.timeline({
         onComplete: () => {
           // 애니메이션 완료 후 모든 transform 완전히 제거
-          allRefs.forEach(ref => {
+          newOrder.forEach((posterIndex, positionIndex) => {
+            const ref = posterRefs[posterIndex].current;
             if (ref) {
+              const targetX = (positionIndex - 1) * 100; // 새로운 위치
               gsap.set(ref, { 
-                x: 0, 
+                xPercent: targetX,
                 y: 0,
-                clearProps: 'transform,width,opacity,zIndex' 
+                clearProps: 'transform' 
               });
             }
           });
@@ -107,38 +106,33 @@ export default function Landing() {
         const newPosition = newOrder.indexOf(posterIndex);
         const positionDiff = newPosition - currentPosition;
         
-        // 이동 거리 계산
+        // 이동 거리 계산 (vw 단위)
         let moveX = 0;
         if (positionDiff === 1) {
-          moveX = oneStepDistance;
+          moveX = oneStepDistance; // 100vw (오른쪽으로)
         } else if (positionDiff === -1) {
-          moveX = -oneStepDistance;
+          moveX = -oneStepDistance; // -100vw (왼쪽으로)
         } else if (positionDiff === 2) {
-          moveX = oneStepDistance * 2;
+          moveX = oneStepDistance * 2; // 200vw (오른쪽으로 2칸)
         } else if (positionDiff === -2) {
-          moveX = -oneStepDistance * 2;
+          moveX = -oneStepDistance * 2; // -200vw (왼쪽으로 2칸)
         }
         
-        // 목표 속성
-        const isNewCenter = newPosition === 1;
-        const targetWidth = isNewCenter ? '304px' : '228px';
-        const targetOpacity = isNewCenter ? 1 : 0.5;
-        const targetZIndex = isNewCenter ? 11 : 10;
+        // 현재 위치와 목표 위치 계산 (vw 단위)
+        const currentX = (currentPosition - 1) * 100; // -100, 0, 100
+        const targetX = (newPosition - 1) * 100; // -100, 0, 100
         
-        // 초기 상태 설정 (모든 transform 제거, scale 명시적으로 1로 설정)
+        // 초기 상태 설정 - 현재 위치로 설정
         gsap.set(ref, { 
-          x: 0, 
+          xPercent: currentX, // vw 단위로 현재 위치 설정
           y: 0,
           scale: 1,
           clearProps: 'transform' 
         });
         
-        // 애니메이션 실행 (scale은 변경하지 않음)
+        // 애니메이션 실행 - 위치 이동만 (크기, 투명도 변경 없음)
         timeline.to(ref, {
-          x: moveX,
-          width: targetWidth,
-          opacity: targetOpacity,
-          zIndex: targetZIndex,
+          xPercent: targetX, // 목표 vw 위치로 이동
           scale: 1, // scale 고정
           duration: uniformDuration,
           ease: 'power2.inOut',
@@ -815,15 +809,13 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* 포스터 배치 - 화면 중앙에 배치 */}
+          {/* 포스터 배치 - 화면 전체에 배치 */}
           <div 
             id="poster-carousel"
-            className="absolute inset-x-8 h-[72vh] pointer-events-none flex items-center justify-center"
+            className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden"
             style={{ 
               opacity: 0, 
-              zIndex: 25, 
-              top: 'calc(47.5% - 1vh)',
-              gap: '20px',
+              zIndex: 25,
               perspective: '1000px'
             }}
           >
@@ -834,21 +826,20 @@ export default function Landing() {
                 { src: '/poster/poster3.png', alt: 'Poster 3' }
               ];
               
-              const isCenter = positionIndex === 1;
-              const width = isCenter ? '304px' : '228px';
-              const opacity = isCenter ? 1 : 0.5;
-              const zIndex = isCenter ? 11 : 10;
+              // 초기 x 위치 계산 (왼쪽: -100vw, 중앙: 0, 오른쪽: 100vw)
+              const initialX = (positionIndex - 1) * 100; // -100, 0, 100
               
               return (
                 <div
                   key={`poster-${posterIndex}`}
                   ref={posterRefs[posterIndex]}
-                  className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer"
+                  className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer absolute"
                   style={{
-                    width,
-                    opacity,
-                    zIndex,
-                    order: positionIndex,
+                    width: '100vw',
+                    height: '100vh',
+                    left: '50%',
+                    top: '50%',
+                    transform: `translate(${initialX}vw, -50%)`,
                     transformStyle: 'preserve-3d',
                     willChange: 'transform'
                   }}
@@ -857,7 +848,7 @@ export default function Landing() {
                   <img
                     src={posterData[posterIndex].src}
                     alt={posterData[posterIndex].alt}
-                    className="w-full h-auto rounded-lg shadow-lg"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               );

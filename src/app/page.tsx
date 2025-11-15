@@ -46,7 +46,7 @@ export default function Landing() {
       
       // 클릭한 포스터: 작은 크기 → 큰 크기, 반투명 → 불투명
       timeline.to(clickedRef, {
-        width: '320px',
+        width: '304px',
         opacity: 1,
         zIndex: 11,
         duration: 0.6,
@@ -55,7 +55,7 @@ export default function Landing() {
       
       // 중앙 포스터: 큰 크기 → 작은 크기, 불투명 → 반투명
       timeline.to(centerRef, {
-        width: '240px',
+        width: '228px',
         opacity: 0.5,
         zIndex: 10,
         duration: 0.6,
@@ -737,7 +737,7 @@ export default function Landing() {
             style={{ 
               opacity: 0, 
               zIndex: 25, 
-              top: 'calc(47.5% - 5vh)',
+              top: 'calc(47.5% - 1vh)',
               gap: '20px'
             }}
           >
@@ -749,7 +749,7 @@ export default function Landing() {
               ];
               
               const isCenter = positionIndex === 1;
-              const width = isCenter ? '320px' : '240px';
+              const width = isCenter ? '304px' : '228px';
               const opacity = isCenter ? 1 : 0.5;
               const zIndex = isCenter ? 11 : 10;
               

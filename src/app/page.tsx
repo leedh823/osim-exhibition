@@ -134,24 +134,18 @@ export default function Landing() {
         const currentX = (gsap.getProperty(ref, "x") as number) || 0;
         
         // 모든 애니메이션이 정확히 2초에 동시에 끝나도록 duration 고정
-        // 2칸 이동은 더 빠른 속도로 (duration을 줄여서)
-        let duration;
-        if (moveDistance === 2) {
-          // 2칸 이동: 1초에 2칸 이동 (2배 빠름)
-          duration = 1.0;
-        } else {
-          // 1칸 이동: 2초에 1칸 이동
-          duration = 2.0;
-        }
+        // 같은 duration을 사용하면 거리가 다를 때 속도가 자동으로 조절됨
+        // 2칸 이동은 1칸 이동보다 2배 빠르게 이동 (같은 2초 동안)
+        const duration = 2.0; // 모든 애니메이션이 정확히 2초에 끝남
         
-        // 애니메이션 - 모든 포스터가 동시에 시작
+        // 애니메이션 - 모든 포스터가 동시에 시작하고 동시에 끝남
         // 현재 위치에서 상대적으로 이동하여 회전하는 것처럼 보이게
         timeline.to(ref, {
           x: currentX + moveX, // 현재 위치 + 이동 거리
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: duration,
+          duration: duration, // 모든 애니메이션이 정확히 2초에 끝남
           ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작 (position: 0)
       });

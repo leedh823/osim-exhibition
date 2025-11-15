@@ -17,6 +17,7 @@ export default function EnlargedVideo() {
   const [isLoading, setIsLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoSrc, setVideoSrc] = useState('/2.mp4'); // 기본 영상
+  const [selectedPoster, setSelectedPoster] = useState<string | null>(null); // 선택된 포스터 번호
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -84,13 +85,14 @@ export default function EnlargedVideo() {
   // 선택된 인물 정보 및 포스터 정보 로드
   useEffect(() => {
     // 포스터 번호 확인하여 영상 경로 설정
-    const selectedPoster = localStorage.getItem('selectedPoster');
-    console.log('📋 선택된 포스터:', selectedPoster);
-    if (selectedPoster === '1') {
+    const poster = localStorage.getItem('selectedPoster');
+    setSelectedPoster(poster);
+    console.log('📋 선택된 포스터:', poster);
+    if (poster === '1') {
       setVideoSrc('/poster video 1/2.mp4');
-    } else if (selectedPoster === '2') {
+    } else if (poster === '2') {
       setVideoSrc('/poster video 2/2.mp4');
-    } else if (selectedPoster === '3') {
+    } else if (poster === '3') {
       const poster3VideoSrc = '/poster video 3/4.mp4';
       console.log('🎬 포스터 3 영상 경로 설정:', poster3VideoSrc);
       setVideoSrc(poster3VideoSrc);
@@ -197,6 +199,7 @@ export default function EnlargedVideo() {
       </div>
       
       {/* AI 채팅 영역 - 오른쪽 오버레이 */}
+      {/* 포스터 1번과 3번은 동일한 배경 구조 사용 (bg-transparent backdrop-blur-sm) */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-transparent backdrop-blur-sm flex flex-col z-20">
         {/* 채팅 메시지 영역 */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">

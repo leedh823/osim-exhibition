@@ -71,25 +71,18 @@ export default function Landing() {
         }
       });
       
+      // 모든 애니메이션의 최대 duration 계산 (새로운 로직에 맞게)
+      const maxDuration = Math.max(...posterOrder.map((posterIndex, currentPosition) => {
+        const newPosition = newOrder.indexOf(posterIndex);
+        const positionDiff = Math.abs(newPosition - currentPosition);
+        // 2칸 이동은 1.0초, 1칸 이동은 1.0초 (모두 동일)
+        return 1.0; // 모든 애니메이션이 1초에 완료
+      }));
+      
       const timeline = gsap.timeline({
         onComplete: () => {
           // 애니메이션이 완전히 끝난 후 충분히 기다림
-          // 모든 애니메이션이 완료되고 렌더링될 때까지 대기
-          const maxDuration = Math.max(...posterOrder.map((posterIndex, currentPosition) => {
-            const newPosition = newOrder.indexOf(posterIndex);
-            const positionDiff = newPosition - currentPosition;
-            const moveX = Math.abs(positionDiff) * oneStepDistance;
-            const isCurrentCenter = currentPosition === 1;
-            const isNewCenter = newPosition === 1;
-            const baseSpeed = oneStepDistance / 1.0;
-            if (isCurrentCenter || isNewCenter) {
-              return moveX / baseSpeed;
-            } else {
-              return (moveX / baseSpeed) / 2;
-            }
-          }));
-          
-          // 가장 긴 애니메이션이 완료된 후 추가로 기다림
+          // 최대 duration + 여유 시간
           setTimeout(() => {
             // 순서를 먼저 업데이트 (transform은 아직 유지)
             setPosterOrder(newOrder);
@@ -114,7 +107,7 @@ export default function Landing() {
                 });
               });
             });
-          }, 200); // 충분한 시간 대기
+          }, 100); // 최대 duration(1000ms) 후 100ms 여유
         }
       });
       

@@ -31,13 +31,11 @@ export default function Landing() {
     const newOrder = [...posterOrder];
     if (clickedIndex === 0) {
       // 왼쪽 포스터(1번) 클릭: [1, 2, 3] → [3, 1, 2]
-      // 1번이 가운데, 2번이 오른쪽, 3번이 왼쪽
       newOrder[0] = posterOrder[2]; // 3번이 왼쪽으로
       newOrder[1] = posterOrder[0]; // 1번이 가운데로
       newOrder[2] = posterOrder[1]; // 2번이 오른쪽으로
     } else if (clickedIndex === 2) {
       // 오른쪽 포스터(3번) 클릭: [1, 2, 3] → [2, 3, 1]
-      // 3번이 가운데, 2번이 왼쪽, 1번이 오른쪽
       newOrder[0] = posterOrder[1]; // 2번이 왼쪽으로
       newOrder[1] = posterOrder[2]; // 3번이 가운데로
       newOrder[2] = posterOrder[0]; // 1번이 오른쪽으로
@@ -47,13 +45,12 @@ export default function Landing() {
     const centerWidth = 304;
     const sideWidth = 228;
     const gap = 20;
-    const moveDistance = (centerWidth / 2) + gap + (sideWidth / 2); // 약 286px
+    const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2); // 1칸 이동 거리
     
     // 모든 포스터 ref 가져오기
     const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
     
     if (allRefs.length === 3) {
-      // 애니메이션 중에는 order를 변경하지 않음 (순간이동 방지)
       const timeline = gsap.timeline({
         onComplete: () => {
           // 애니메이션 완료 후에만 순서 변경 및 transform 초기화
@@ -62,7 +59,7 @@ export default function Landing() {
           newOrder.forEach((posterIndex) => {
             const ref = posterRefs[posterIndex].current;
             if (ref) {
-              gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
+              gsap.set(ref, { x: 0, rotateY: 0, scale: 1, clearProps: 'transform' });
             }
           });
         }
@@ -77,14 +74,20 @@ export default function Landing() {
         const newPosition = newOrder.indexOf(posterIndex);
         const positionDiff = newPosition - currentPosition;
         
-        // 이동 거리 계산 (정확한 거리)
+        // 실제 이동 거리 계산 (칸 수에 따라)
         let moveX = 0;
-        if (positionDiff === 1 || positionDiff === -2) {
-          // 오른쪽으로 이동 (1칸 또는 2칸 왼쪽으로)
-          moveX = moveDistance;
-        } else if (positionDiff === -1 || positionDiff === 2) {
-          // 왼쪽으로 이동 (1칸 또는 2칸 오른쪽으로)
-          moveX = -moveDistance;
+        if (positionDiff === 1) {
+          // 오른쪽으로 1칸 이동
+          moveX = oneStepDistance;
+        } else if (positionDiff === -1) {
+          // 왼쪽으로 1칸 이동
+          moveX = -oneStepDistance;
+        } else if (positionDiff === 2) {
+          // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
+          moveX = oneStepDistance * 2;
+        } else if (positionDiff === -2) {
+          // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
+          moveX = -oneStepDistance * 2;
         }
         
         // 목표 속성
@@ -93,14 +96,14 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 3D 회전 효과 (카드 셔플 느낌)
+        // 3D 회전 효과
         const rotateY = positionDiff !== 0 ? (positionDiff > 0 ? 25 : -25) : 0;
-        const scale = positionDiff !== 0 ? 0.95 : 1; // 이동 중 약간 축소
+        const scale = positionDiff !== 0 ? 0.95 : 1;
         
-        // 초기 transform 설정 (현재 위치에서 시작)
+        // 초기 transform 설정
         gsap.set(ref, { x: 0, rotateY: 0, scale: 1 });
         
-        // 애니메이션
+        // 애니메이션 - 실제로 이동
         timeline.to(ref, {
           x: moveX,
           rotateY: rotateY,

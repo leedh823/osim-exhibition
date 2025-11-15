@@ -79,19 +79,47 @@ export default function Landing() {
         return 1.0; // 모든 애니메이션이 1초에 완료
       }));
       
+      // 애니메이션 시작 전에 모든 transform을 0으로 초기화
+      // 깨끗한 상태에서 시작하여 누적 문제 방지
+      posterOrder.forEach((posterIndex) => {
+        const ref = posterRefs[posterIndex].current;
+        if (ref) {
+          gsap.set(ref, { x: 0, clearProps: 'transform' });
+        }
+      });
+      
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 순서만 업데이트 (transform은 그대로 유지)
-          // 포스터가 목표 위치에 도착한 상태로 유지
-          setPosterOrder(newOrder);
+          // 애니메이션 완료 후 transform을 초기화하고 순서 업데이트
+          // 이렇게 하면 포스터가 새로운 DOM 위치에서 시작
+          posterOrder.forEach((posterIndex) => {
+            const ref = posterRefs[posterIndex].current;
+            if (ref) {
+              gsap.set(ref, { x: 0, clearProps: 'transform' });
+            }
+          });
           
-          // 애니메이션 완료 플래그 해제
-          isAnimatingRef.current = false;
+          // transform 초기화 후 순서 업데이트
+          requestAnimationFrame(() => {
+            setPosterOrder(newOrder);
+            
+            // 순서 업데이트 후 한 번 더 확인하여 transform이 0인지 확인
+            requestAnimationFrame(() => {
+              newOrder.forEach((posterIndex) => {
+                const ref = posterRefs[posterIndex].current;
+                if (ref) {
+                  gsap.set(ref, { x: 0, clearProps: 'transform' });
+                }
+              });
+              
+              // 애니메이션 완료 플래그 해제
+              isAnimatingRef.current = false;
+            });
+          });
         }
       });
       
       // 기본 속도: 1칸을 1초에 이동
-      const baseSpeed = oneStepDistance / 1.0;
       const baseDuration = 1.0; // 1칸 이동 시 duration
       
       posterOrder.forEach((posterIndex, currentPosition) => {
@@ -133,20 +161,16 @@ export default function Landing() {
         let duration;
         if (moveDistance === 2) {
           // 2칸 이동: 2배 빠른 속도 (duration 절반)
-          duration = baseDuration / 2; // 0.5초에 2칸 이동 = 1칸당 0.25초 (4배 빠름)
+          duration = baseDuration / 2; // 0.5초에 2칸 이동
         } else {
           // 1칸 이동: 기본 속도
           duration = baseDuration; // 1칸을 1초에 이동
         }
         
-        // 현재 transform 값을 가져와서 상대적 이동으로 계산
-        // 이전 애니메이션의 transform이 있으면 그대로 사용
-        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
-        
-        // 애니메이션 - 모든 포스터가 동시에 시작 (0초부터)
-        // 현재 위치에서 상대적으로 이동
+        // 항상 0에서 시작 (transform 초기화 후이므로)
+        // 선택된 카드가 가운데로 오고, 나머지 카드들이 자연스럽게 이동
         timeline.to(ref, {
-          x: currentX + moveX, // 현재 위치 + 이동 거리
+          x: moveX, // 항상 0에서 시작하므로 절대 이동 거리 사용
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,

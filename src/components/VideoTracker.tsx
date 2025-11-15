@@ -248,6 +248,19 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
   }, [isDetecting, detectAndDrawObjects]);
 
+  // 비디오 소스 변경 시 비디오 업데이트
+  useEffect(() => {
+    if (videoRef.current && videoSrc) {
+      console.log('🔄 비디오 소스 변경:', videoSrc);
+      const video = videoRef.current;
+      const source = video.querySelector('source');
+      if (source) {
+        source.src = videoSrc;
+        video.load(); // 비디오 재로드
+      }
+    }
+  }, [videoSrc]);
+
   // 비디오 로드 완료 시 감지 시작
   const handleVideoLoaded = useCallback(() => {
     console.log('🎬 비디오 로드 완료, 감지 시작');
@@ -255,7 +268,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       videoWidth: videoRef.current?.videoWidth,
       videoHeight: videoRef.current?.videoHeight,
       duration: videoRef.current?.duration,
-      readyState: videoRef.current?.readyState
+      readyState: videoRef.current?.readyState,
+      src: videoRef.current?.querySelector('source')?.getAttribute('src')
     });
     setIsDetecting(true);
   }, []);
@@ -306,6 +320,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     <div className={`relative ${className}`}>
       {/* 비디오 */}
       <video
+        key={videoSrc} // videoSrc가 변경되면 video 요소 재생성
         ref={videoRef}
         className="w-full h-full object-cover"
         autoPlay
@@ -314,7 +329,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         playsInline
         controls={false}
         onLoadedData={handleVideoLoaded}
-        onError={(e) => console.error('비디오 로드 에러:', e)}
+        onError={(e) => {
+          console.error('비디오 로드 에러:', e);
+          console.error('비디오 경로:', videoSrc);
+          console.error('비디오 요소:', videoRef.current);
+        }}
       >
         <source src={videoSrc} type="video/mp4" />
       </video>

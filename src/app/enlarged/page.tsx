@@ -93,6 +93,7 @@ export default function EnlargedVideo() {
     
     // 포스터 번호 확인하여 영상 경로 설정
     const selectedPoster = localStorage.getItem('selectedPoster');
+    console.log('📋 선택된 포스터:', selectedPoster);
     if (selectedPoster === '1') {
       setVideoSrc('/poster video 1/2.mp4');
       setIsPoster3(false);
@@ -100,7 +101,9 @@ export default function EnlargedVideo() {
       setVideoSrc('/poster video 2/2.mp4');
       setIsPoster3(false);
     } else if (selectedPoster === '3') {
-      setVideoSrc('/poster video 3/4.mp4');
+      const poster3VideoSrc = '/poster video 3/4.mp4';
+      console.log('🎬 포스터 3 영상 경로 설정:', poster3VideoSrc);
+      setVideoSrc(poster3VideoSrc);
       setIsPoster3(true); // 포스터 3은 전체화면 레이아웃
     } else {
       setVideoSrc('/2.mp4'); // 기본 영상 (fallback)
@@ -172,6 +175,9 @@ export default function EnlargedVideo() {
     // 클릭으로 채팅 시작하지 않음 - 페이지 로드 시 바로 표시
   };
 
+
+  console.log('🎥 현재 영상 경로:', videoSrc);
+  console.log('📐 포스터 3 여부:', isPoster3);
 
   return (
     <div className={`w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden ${isPoster3 ? '' : 'flex'}`}>

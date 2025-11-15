@@ -91,11 +91,8 @@ export default function Landing() {
         }
       });
       
-      // 고정된 포스터 위치 값 정의
-      // 왼쪽 끝, 가운데, 오른쪽 끝 위치를 고정
-      const leftPosition = -oneStepDistance;   // 왼쪽 끝 (position 0)
-      const centerPosition = 0;                  // 가운데 (position 1)
-      const rightPosition = oneStepDistance;     // 오른쪽 끝 (position 2)
+      // 기본 속도: 1칸을 1초에 이동
+      const baseDuration = 1.0; // 1칸 이동 시 duration
       
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
@@ -103,27 +100,28 @@ export default function Landing() {
         
         // 새로운 위치 찾기
         const newPosition = newOrder.indexOf(posterIndex);
+        const positionDiff = newPosition - currentPosition;
         
-        // 목표 위치를 고정된 값으로 설정
-        let targetX = 0;
-        if (newPosition === 0) {
-          // 왼쪽 끝 위치
-          targetX = leftPosition;
-        } else if (newPosition === 1) {
-          // 가운데 위치
-          targetX = centerPosition;
-        } else if (newPosition === 2) {
-          // 오른쪽 끝 위치
-          targetX = rightPosition;
+        // 실제 이동 거리 계산 - 상대적 이동
+        let moveX = 0;
+        let moveDistance = 0; // 이동 칸 수 (속도 조절용)
+        if (positionDiff === 1) {
+          // 오른쪽으로 1칸 이동
+          moveX = oneStepDistance;
+          moveDistance = 1;
+        } else if (positionDiff === -1) {
+          // 왼쪽으로 1칸 이동
+          moveX = -oneStepDistance;
+          moveDistance = 1;
+        } else if (positionDiff === 2) {
+          // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
+          moveX = oneStepDistance * 2;
+          moveDistance = 2;
+        } else if (positionDiff === -2) {
+          // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
+          moveX = -oneStepDistance * 2;
+          moveDistance = 2;
         }
-        
-        // 현재 위치에서 목표 위치까지의 거리 계산 (속도 조절용)
-        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
-        const distance = Math.abs(targetX - currentX);
-        
-        // 이동 칸 수 계산 (속도 조절용)
-        const positionDiff = Math.abs(newPosition - currentPosition);
-        const moveDistance = positionDiff;
         
         // 목표 속성
         const isNewCenter = newPosition === 1;
@@ -131,32 +129,27 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 속도 조절: 2칸 이동은 2배 빠름, 1칸 이동은 기본 속도
-        const baseVelocity = 250; // 기본 속도 (픽셀/초)
-        let velocity;
+        // duration 결정: 2칸 이동은 2배 빠름 (duration 절반), 1칸 이동은 기본 속도
+        let duration;
         if (moveDistance === 2) {
-          // 2칸 이동: 2배 빠른 속도
-          velocity = baseVelocity * 2; // 500 픽셀/초
+          // 2칸 이동: 2배 빠른 속도 (duration 절반)
+          duration = baseDuration / 2; // 0.5초에 2칸 이동
         } else {
           // 1칸 이동: 기본 속도
-          velocity = baseVelocity; // 250 픽셀/초
+          duration = baseDuration; // 1칸을 1초에 이동
         }
         
-        // duration 계산: 거리 / 속도
-        const duration = distance / velocity;
+        // 현재 transform 값을 가져와서 상대적 이동으로 계산
+        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
         
-        // 최소 duration 보장 (너무 빠른 이동 방지)
-        const minDuration = 0.3; // 최소 0.3초
-        const finalDuration = Math.max(duration, minDuration);
-        
-        // 애니메이션 - 모든 포스터가 동시에 시작
-        // 목표 위치에 도달하면 멈춤
+        // 애니메이션 - 모든 포스터가 동시에 시작 (0초부터)
+        // 현재 위치에서 상대적으로 이동
         timeline.to(ref, {
-          x: targetX, // 고정된 목표 위치 값
+          x: currentX + moveX, // 현재 위치 + 이동 거리
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: finalDuration,
+          duration: duration,
           ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작
       });

@@ -787,7 +787,7 @@ export default function Landing() {
           <button
             id="regenerate-button"
             className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
-            style={{ top: 'calc(47.5% + 25vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
+            style={{ top: 'calc(47.5% + 28.75vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
             type="button"
             onClick={handleRegenerateClick}
           >

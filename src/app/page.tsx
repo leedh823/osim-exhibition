@@ -71,21 +71,19 @@ export default function Landing() {
           // 애니메이션 완료 후 순서를 먼저 업데이트
           setPosterOrder(newOrder);
           
-          // 순서 업데이트 후 DOM 재배치가 완료될 때까지 대기
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              // DOM 재배치 완료 후 transform 초기화
-              // 이제 포스터가 새로운 DOM 위치에 있으므로 transform을 초기화해도 올바른 위치에 있음
-              newOrder.forEach((posterIndex) => {
-                const ref = posterRefs[posterIndex].current;
-                if (ref) {
-                  gsap.set(ref, { x: 0, clearProps: 'transform' });
-                }
-              });
-              
-              isAnimatingRef.current = false;
+          // DOM 재배치 완료 대기 (setTimeout 사용 - 무한 반복 방지)
+          setTimeout(() => {
+            // DOM 재배치 완료 후 transform 초기화
+            // 이제 포스터가 새로운 DOM 위치에 있으므로 transform을 초기화해도 올바른 위치에 있음
+            newOrder.forEach((posterIndex) => {
+              const ref = posterRefs[posterIndex].current;
+              if (ref) {
+                gsap.set(ref, { x: 0, clearProps: 'transform' });
+              }
             });
-          });
+            
+            isAnimatingRef.current = false;
+          }, 100); // 100ms 지연으로 DOM 재배치 완료 대기
         }
       });
       

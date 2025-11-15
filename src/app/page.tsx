@@ -81,25 +81,43 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 순서 업데이트
-          setPosterOrder(newOrder);
+          // 애니메이션 완료 후 transform을 먼저 초기화 (현재 순서 기준)
+          // 이렇게 하면 포스터가 목표 위치에 도착한 상태에서 transform만 제거됨
+          posterOrder.forEach((posterIndex) => {
+            const ref = posterRefs[posterIndex].current;
+            if (ref) {
+              gsap.set(ref, { 
+                x: 0,
+                clearProps: 'transform' 
+              });
+            }
+          });
           
-          // DOM 재배치가 완료된 후 transform 초기화
+          // transform 초기화가 완전히 렌더링된 후 순서 업데이트
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              // 모든 포스터의 transform을 0으로 초기화
-              newOrder.forEach((posterIndex) => {
-                const ref = posterRefs[posterIndex].current;
-                if (ref) {
-                  gsap.set(ref, { 
-                    x: 0,
-                    clearProps: 'transform' 
-                  });
-                }
-              });
+              // 순서 업데이트 (이제 transform이 0이므로 자연스럽게 재배치됨)
+              setPosterOrder(newOrder);
               
-              // 애니메이션 완료 플래그 해제
-              isAnimatingRef.current = false;
+              // 순서 업데이트 후 한 번 더 확인하여 transform이 0인지 확인
+              requestAnimationFrame(() => {
+                newOrder.forEach((posterIndex) => {
+                  const ref = posterRefs[posterIndex].current;
+                  if (ref) {
+                    // transform이 0이 아닌 경우 다시 초기화
+                    const currentX = gsap.getProperty(ref, "x") as number;
+                    if (Math.abs(currentX) > 0.1) {
+                      gsap.set(ref, { 
+                        x: 0,
+                        clearProps: 'transform' 
+                      });
+                    }
+                  }
+                });
+                
+                // 애니메이션 완료 플래그 해제
+                isAnimatingRef.current = false;
+              });
             });
           });
         }

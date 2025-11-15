@@ -41,11 +41,21 @@ export default function Landing() {
     const centerRef = posterRefs[centerPosterIndex].current;
     
     if (clickedRef && centerRef) {
+      // 포스터 간격 계산 (gap: 20px + 포스터 너비의 절반)
+      const centerWidth = 304;
+      const sideWidth = 228;
+      const gap = 20;
+      const moveDistance = (centerWidth / 2) + gap + (sideWidth / 2); // 약 286px
+      
       // 두 포스터 모두 애니메이션
       const timeline = gsap.timeline();
       
-      // 클릭한 포스터: 작은 크기 → 큰 크기, 반투명 → 불투명
+      // 클릭한 포스터의 이동 방향 결정
+      const clickedMoveX = clickedIndex === 0 ? moveDistance : -moveDistance; // 왼쪽(0)이면 오른쪽으로, 오른쪽(2)이면 왼쪽으로
+      
+      // 클릭한 포스터: 위치 이동 + 작은 크기 → 큰 크기, 반투명 → 불투명
       timeline.to(clickedRef, {
+        x: clickedMoveX,
         width: '304px',
         opacity: 1,
         zIndex: 11,
@@ -53,13 +63,21 @@ export default function Landing() {
         ease: 'power2.out'
       }, 0);
       
-      // 중앙 포스터: 큰 크기 → 작은 크기, 불투명 → 반투명
+      // 중앙 포스터의 이동 방향 결정
+      const centerMoveX = clickedIndex === 0 ? -moveDistance : moveDistance; // 클릭한 포스터의 반대 방향
+      
+      // 중앙 포스터: 위치 이동 + 큰 크기 → 작은 크기, 불투명 → 반투명
       timeline.to(centerRef, {
+        x: centerMoveX,
         width: '228px',
         opacity: 0.5,
         zIndex: 10,
         duration: 0.6,
-        ease: 'power2.out'
+        ease: 'power2.out',
+        onComplete: () => {
+          // 애니메이션 완료 후 x 위치 초기화 (order 속성이 위치를 결정)
+          gsap.set([clickedRef, centerRef], { x: 0 });
+        }
       }, 0);
     }
     

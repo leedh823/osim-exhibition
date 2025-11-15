@@ -14,6 +14,7 @@ export default function Landing() {
   // 포스터 순서 관리: [왼쪽, 중앙, 오른쪽]
   const [posterOrder, setPosterOrder] = useState([0, 1, 2]); // poster1, poster2, poster3
   const posterRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
+  const isAnimatingRef = useRef(false); // 애니메이션 진행 중 플래그
   
   // Regenerate 버튼 클릭 핸들러 - 선택된 포스터(중앙)에 따라 다른 페이지로 이동
   const handleRegenerateClick = () => {
@@ -26,6 +27,9 @@ export default function Landing() {
   const handlePosterClick = (clickedIndex: number) => {
     // 중앙 포스터(인덱스 1)는 클릭 불가
     if (clickedIndex === 1) return;
+    
+    // 애니메이션 진행 중이면 클릭 무시
+    if (isAnimatingRef.current) return;
     
     // 새로운 순서 계산
     const newOrder = [...posterOrder];
@@ -51,17 +55,25 @@ export default function Landing() {
     const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
     
     if (allRefs.length === 3) {
+      // 애니메이션 시작
+      isAnimatingRef.current = true;
+      
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후에만 순서 변경 및 transform 초기화
-          setPosterOrder(newOrder);
-          // 모든 포스터의 transform 초기화
-          newOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              gsap.set(ref, { x: 0, rotateY: 0, scale: 1, clearProps: 'transform' });
-            }
-          });
+          // 애니메이션이 100% 완료된 후에만 순서 변경 및 transform 초기화
+          // 약간의 지연을 추가하여 완전히 끝난 것을 보장
+          setTimeout(() => {
+            setPosterOrder(newOrder);
+            // 모든 포스터의 transform 초기화
+            newOrder.forEach((posterIndex) => {
+              const ref = posterRefs[posterIndex].current;
+              if (ref) {
+                gsap.set(ref, { x: 0, rotateY: 0, scale: 1, clearProps: 'transform' });
+              }
+            });
+            // 애니메이션 완료 플래그 해제
+            isAnimatingRef.current = false;
+          }, 50); // 50ms 추가 지연으로 완전히 끝난 것을 보장
         }
       });
       
@@ -100,10 +112,10 @@ export default function Landing() {
         const rotateY = positionDiff !== 0 ? (positionDiff > 0 ? 25 : -25) : 0;
         const scale = positionDiff !== 0 ? 0.95 : 1;
         
-        // 초기 transform 설정
+        // 초기 transform 설정 (현재 위치에서 시작)
         gsap.set(ref, { x: 0, rotateY: 0, scale: 1 });
         
-        // 애니메이션 - 실제로 이동
+        // 애니메이션 - 실제로 이동 (duration을 조금 늘려서 더 부드럽게)
         timeline.to(ref, {
           x: moveX,
           rotateY: rotateY,
@@ -111,7 +123,7 @@ export default function Landing() {
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: 0.9,
+          duration: 1.0, // 0.9에서 1.0으로 증가
           ease: 'power2.inOut'
         }, 0);
       });

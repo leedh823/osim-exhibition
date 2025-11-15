@@ -58,12 +58,26 @@ export default function Landing() {
       // 애니메이션 시작
       isAnimatingRef.current = true;
       
+      // 애니메이션 시작 전 모든 포스터의 현재 위치 확인
+      const initialPositions = new Map();
+      posterOrder.forEach((posterIndex, position) => {
+        const ref = posterRefs[posterIndex].current;
+        if (ref) {
+          const rect = ref.getBoundingClientRect();
+          initialPositions.set(posterIndex, {
+            x: rect.left,
+            position: position
+          });
+        }
+      });
+      
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션이 100% 완료된 후에만 순서 변경
-          setPosterOrder(newOrder);
-          // 모든 포스터의 transform 즉시 초기화 (부드러운 전환 없이)
-          requestAnimationFrame(() => {
+          // 애니메이션 완료 후 순서 변경 및 transform 초기화
+          // 약간의 지연을 두어 애니메이션이 완전히 렌더링되도록 함
+          setTimeout(() => {
+            setPosterOrder(newOrder);
+            // 모든 포스터의 transform 초기화
             newOrder.forEach((posterIndex) => {
               const ref = posterRefs[posterIndex].current;
               if (ref) {
@@ -72,11 +86,13 @@ export default function Landing() {
             });
             // 애니메이션 완료 플래그 해제
             isAnimatingRef.current = false;
-          });
+          }, 50); // 50ms 지연으로 순간이동 방지
         }
       });
       
-      // 각 포스터의 이동 방향과 목표 속성 계산
+      // 모든 포스터가 동일한 duration으로 이동 (동일한 시간에 도착)
+      const uniformDuration = 1.0; // 모든 포스터가 동일한 시간에 이동 완료
+      
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
         if (!ref) return;
@@ -107,16 +123,17 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 초기 transform 설정 (현재 위치에서 시작)
-        gsap.set(ref, { x: 0 });
+        // 초기 transform 설정 (현재 위치에서 시작, 이전 transform 완전히 제거)
+        gsap.set(ref, { x: 0, clearProps: 'transform' });
         
-        // 애니메이션 - 실제로 이동 (회전과 scale 제거하여 자연스럽게)
+        // 애니메이션 - 모든 포스터가 동일한 duration으로 이동
+        // 이동 거리가 다르더라도 동일한 시간에 도착하므로 시각적으로 동일한 속도로 보임
         timeline.to(ref, {
           x: moveX,
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: 1.0,
+          duration: uniformDuration, // 모든 포스터 동일한 duration
           ease: 'power2.inOut'
         }, 0);
       });

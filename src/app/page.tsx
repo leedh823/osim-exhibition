@@ -130,18 +130,23 @@ export default function Landing() {
         
         // 실제 이동 거리 계산 - 정확한 위치 계산
         let moveX = 0;
+        let moveDistance = 0; // 이동 칸 수 (속도 조절용)
         if (positionDiff === 1) {
           // 오른쪽으로 1칸 이동
           moveX = oneStepDistance;
+          moveDistance = 1;
         } else if (positionDiff === -1) {
           // 왼쪽으로 1칸 이동
           moveX = -oneStepDistance;
+          moveDistance = 1;
         } else if (positionDiff === 2) {
           // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
           moveX = oneStepDistance * 2;
+          moveDistance = 2;
         } else if (positionDiff === -2) {
           // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
           moveX = -oneStepDistance * 2;
+          moveDistance = 2;
         }
         
         // 목표 속성
@@ -150,30 +155,34 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 가운데 포스터의 경우 정확한 중앙 위치로 조정
-        // 현재 위치에서 목표 위치까지의 정확한 거리 계산
-        let finalX = moveX;
-        if (isNewCenter && currentPosition !== 1) {
-          // 가운데로 이동하는 경우: 현재 위치에서 정확히 중앙(0)으로 이동
-          const currentX = (gsap.getProperty(ref, "x") as number) || 0;
-          // 현재 DOM 위치 기준으로 중앙까지의 거리 계산
-          if (currentPosition === 0) {
-            // 왼쪽에서 가운데로: 오른쪽으로 oneStepDistance만큼
-            finalX = oneStepDistance;
-          } else if (currentPosition === 2) {
-            // 오른쪽에서 가운데로: 왼쪽으로 oneStepDistance만큼
-            finalX = -oneStepDistance;
-          }
+        // 속도 조절: 2칸 이동은 2배 빠름, 1칸 이동은 기본 속도
+        // duration은 제거하고 velocity를 사용하여 자연스러운 속도로 이동
+        const baseVelocity = 400; // 기본 속도 (픽셀/초)
+        let velocity;
+        if (moveDistance === 2) {
+          // 2칸 이동: 2배 빠른 속도
+          velocity = baseVelocity * 2;
+        } else {
+          // 1칸 이동: 기본 속도
+          velocity = baseVelocity;
         }
         
-        // duration 제한 없음 - 자연스러운 속도로 이동
-        // ease를 조정하여 부드러운 이동
+        // duration 계산: 거리 / 속도
+        const distance = Math.abs(moveX);
+        const duration = distance / velocity;
+        
+        // 가운데 포스터의 경우 정확한 중앙 위치로 조정
+        // moveX를 그대로 사용 (이미 정확히 계산됨)
+        const finalX = moveX;
+        
+        // 애니메이션 - 모든 포스터가 동시에 시작
         timeline.to(ref, {
           x: finalX, // 정확한 목표 위치
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          ease: 'power2.inOut' // duration 없이 자연스러운 속도로 이동
+          duration: duration, // 거리 기반 duration으로 자연스러운 속도
+          ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작
       });
     } else {

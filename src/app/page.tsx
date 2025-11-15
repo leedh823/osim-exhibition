@@ -52,7 +52,19 @@ export default function Landing() {
     const newRefs = newOrder.map(index => posterRefs[index].current).filter(Boolean);
     
     if (allRefs.length === 3) {
-      const timeline = gsap.timeline();
+      const timeline = gsap.timeline({
+        onComplete: () => {
+          // 애니메이션 완료 후 순서 변경 및 transform 초기화
+          setPosterOrder(newOrder);
+          // 모든 포스터의 transform 초기화
+          posterOrder.forEach((posterIndex) => {
+            const ref = posterRefs[posterIndex].current;
+            if (ref) {
+              gsap.set(ref, { x: 0, rotateY: 0 });
+            }
+          });
+        }
+      });
       
       // 각 포스터의 이동 방향과 목표 속성 계산
       posterOrder.forEach((posterIndex, currentPosition) => {
@@ -79,8 +91,8 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 3D 회전 효과를 위한 rotateY (선택적)
-        const rotateY = positionDiff !== 0 ? (positionDiff > 0 ? 15 : -15) : 0;
+        // 3D 회전 효과를 위한 rotateY
+        const rotateY = positionDiff !== 0 ? (positionDiff > 0 ? 20 : -20) : 0;
         
         // 애니메이션
         timeline.to(ref, {
@@ -90,18 +102,13 @@ export default function Landing() {
           opacity: targetOpacity,
           zIndex: targetZIndex,
           duration: 0.8,
-          ease: 'power2.inOut',
-          onComplete: () => {
-            // 애니메이션 완료 후 transform 초기화
-            if (positionDiff !== 0) {
-              gsap.set(ref, { x: 0, rotateY: 0 });
-            }
-          }
+          ease: 'power2.inOut'
         }, 0);
       });
+    } else {
+      // ref가 없으면 즉시 순서 변경
+      setPosterOrder(newOrder);
     }
-    
-    setPosterOrder(newOrder);
   };
 
   useLayoutEffect(() => {

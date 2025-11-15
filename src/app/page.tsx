@@ -140,13 +140,13 @@ export default function Landing() {
           duration = baseDuration; // 1칸을 1초에 이동
         }
         
-        // 초기 transform 설정 - 항상 0에서 시작
-        gsap.set(ref, { x: 0 });
+        // 현재 transform 값을 가져와서 상대적 이동으로 계산
+        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
         
         // 애니메이션 - 모든 포스터가 동시에 시작 (0초부터)
-        // moveX는 절대 위치가 아니라 상대 이동 거리
+        // 현재 위치에서 상대적으로 이동
         timeline.to(ref, {
-          x: moveX,
+          x: currentX + moveX, // 현재 위치 + 이동 거리
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,

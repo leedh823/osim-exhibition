@@ -92,10 +92,14 @@ export default function EnlargedVideo() {
     
     // 포스터 번호 확인하여 영상 경로 설정
     const selectedPoster = localStorage.getItem('selectedPoster');
-    if (selectedPoster === '3') {
+    if (selectedPoster === '1') {
+      setVideoSrc('/poster video 1/2.mp4');
+    } else if (selectedPoster === '2') {
+      setVideoSrc('/poster video 2/2.mp4');
+    } else if (selectedPoster === '3') {
       setVideoSrc('/poster video 3/4.mp4');
     } else {
-      setVideoSrc('/2.mp4'); // 기본 영상
+      setVideoSrc('/2.mp4'); // 기본 영상 (fallback)
     }
   }, []);
 

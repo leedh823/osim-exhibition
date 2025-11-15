@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import VideoTracker from '@/components/VideoTracker';
 import { DetectedObject } from '@/utils/realObjectDetection';
 
-export default function StartExhibition2() {
+export default function PosterPage2() {
   const router = useRouter();
 
   const handlePersonClick = (person: DetectedObject) => {
@@ -25,7 +25,7 @@ export default function StartExhibition2() {
         <source src="/2.mp4" type="video/mp4" />
       </video>
       <VideoTracker
-        videoSrc="/2.mp4"
+        videoSrc="/1.mp4"
         onPersonClick={handlePersonClick}
         className="w-full h-full"
       />

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import VideoTracker from '@/components/VideoTracker';
 import { DetectedObject } from '@/utils/realObjectDetection';
 
-export default function StartExhibition3() {
+export default function PosterPage3() {
   const router = useRouter();
 
   const handlePersonClick = (person: DetectedObject) => {

@@ -45,6 +45,12 @@ export default function Landing() {
       newOrder[2] = posterOrder[0];
     }
     
+    // 포스터 간격 계산
+    const centerWidth = 304;
+    const sideWidth = 228;
+    const gap = 20;
+    const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2); // 1칸 이동 거리
+    
     // 모든 포스터 ref 가져오기
     const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
     
@@ -52,48 +58,40 @@ export default function Landing() {
       // 애니메이션 시작
       isAnimatingRef.current = true;
       
-      // 모든 기존 애니메이션 중지 및 제거
-      allRefs.forEach(ref => {
+      // 애니메이션 시작 전 모든 포스터의 현재 위치 확인
+      const initialPositions = new Map();
+      posterOrder.forEach((posterIndex, position) => {
+        const ref = posterRefs[posterIndex].current;
         if (ref) {
-          gsap.killTweensOf(ref);
-          // scale 속성도 명시적으로 제거
-          gsap.set(ref, { 
-            x: 0,
-            y: 0,
-            scale: 1,
-            clearProps: 'transform,width,opacity,zIndex' 
+          const rect = ref.getBoundingClientRect();
+          initialPositions.set(posterIndex, {
+            x: rect.left,
+            position: position
           });
         }
       });
       
-      // 새로운 타임라인 생성
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 모든 transform 완전히 제거
-          newOrder.forEach((posterIndex, positionIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              const targetX = (positionIndex - 1) * 100; // 새로운 위치
-              gsap.set(ref, { 
-                xPercent: targetX,
-                y: 0,
-                clearProps: 'transform' 
-              });
-            }
-          });
-          
-          // 순서 업데이트
-          setPosterOrder(newOrder);
-          
-          // 애니메이션 완료 플래그 해제
+          // 애니메이션 완료 후 순서 변경 및 transform 초기화
+          // 약간의 지연을 두어 애니메이션이 완전히 렌더링되도록 함
           setTimeout(() => {
+            setPosterOrder(newOrder);
+            // 모든 포스터의 transform 초기화
+            newOrder.forEach((posterIndex) => {
+              const ref = posterRefs[posterIndex].current;
+              if (ref) {
+                gsap.set(ref, { x: 0, clearProps: 'transform' });
+              }
+            });
+            // 애니메이션 완료 플래그 해제
             isAnimatingRef.current = false;
-          }, 100);
+          }, 50); // 50ms 지연으로 순간이동 방지
         }
       });
       
-      // 모든 포스터가 동일한 duration으로 이동
-      const uniformDuration = 1.0;
+      // 모든 포스터가 동일한 duration으로 이동 (동일한 시간에 도착)
+      const uniformDuration = 1.0; // 모든 포스터가 동일한 시간에 이동 완료
       
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
@@ -101,26 +99,42 @@ export default function Landing() {
         
         // 새로운 위치 찾기
         const newPosition = newOrder.indexOf(posterIndex);
+        const positionDiff = newPosition - currentPosition;
         
-        // 현재 위치와 목표 위치 계산 (vw 단위)
-        const currentX = (currentPosition - 1) * 100; // -100, 0, 100
-        const targetX = (newPosition - 1) * 100; // -100, 0, 100
+        // 실제 이동 거리 계산 (정확한 거리)
+        let moveX = 0;
+        if (positionDiff === 1) {
+          // 오른쪽으로 1칸 이동
+          moveX = oneStepDistance;
+        } else if (positionDiff === -1) {
+          // 왼쪽으로 1칸 이동
+          moveX = -oneStepDistance;
+        } else if (positionDiff === 2) {
+          // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
+          moveX = oneStepDistance * 2;
+        } else if (positionDiff === -2) {
+          // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
+          moveX = -oneStepDistance * 2;
+        }
         
-        // 초기 상태 설정 - 현재 위치로 설정
-        gsap.set(ref, { 
-          xPercent: currentX, // vw 단위로 현재 위치 설정
-          y: 0,
-          scale: 1,
-          clearProps: 'transform' 
-        });
+        // 목표 속성
+        const isNewCenter = newPosition === 1;
+        const targetWidth = isNewCenter ? '304px' : '228px';
+        const targetOpacity = isNewCenter ? 1 : 0.5;
+        const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 애니메이션 실행 - 위치 이동만 (크기, 투명도 변경 없음)
+        // 초기 transform 설정 (현재 위치에서 시작, 이전 transform 완전히 제거)
+        gsap.set(ref, { x: 0, clearProps: 'transform' });
+        
+        // 애니메이션 - 모든 포스터가 동일한 duration으로 이동
+        // 이동 거리가 다르더라도 동일한 시간에 도착하므로 시각적으로 동일한 속도로 보임
         timeline.to(ref, {
-          xPercent: targetX, // 목표 vw 위치로 이동
-          scale: 1, // scale 고정
-          duration: uniformDuration,
-          ease: 'power2.inOut',
-          immediateRender: false
+          x: moveX,
+          width: targetWidth,
+          opacity: targetOpacity,
+          zIndex: targetZIndex,
+          duration: uniformDuration, // 모든 포스터 동일한 duration
+          ease: 'power2.inOut'
         }, 0);
       });
     } else {
@@ -793,13 +807,15 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* 포스터 배치 - 화면 전체에 배치 */}
+          {/* 포스터 배치 - 화면 중앙에 배치 */}
           <div 
             id="poster-carousel"
-            className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden"
+            className="absolute inset-x-8 h-[72vh] pointer-events-none flex items-center justify-center"
             style={{ 
               opacity: 0, 
-              zIndex: 25,
+              zIndex: 25, 
+              top: 'calc(47.5% - 1vh)',
+              gap: '20px',
               perspective: '1000px'
             }}
           >
@@ -810,29 +826,29 @@ export default function Landing() {
                 { src: '/poster/poster3.png', alt: 'Poster 3' }
               ];
               
-              // 초기 x 위치 계산 (왼쪽: -100vw, 중앙: 0, 오른쪽: 100vw)
-              const initialX = (positionIndex - 1) * 100; // -100, 0, 100
+              const isCenter = positionIndex === 1;
+              const width = isCenter ? '304px' : '228px';
+              const opacity = isCenter ? 1 : 0.5;
+              const zIndex = isCenter ? 11 : 10;
               
               return (
                 <div
                   key={`poster-${posterIndex}`}
                   ref={posterRefs[posterIndex]}
-                  className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer absolute"
+                  className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
                   style={{
-                    width: '100vw',
-                    height: '100vh',
-                    left: '50%',
-                    top: '50%',
-                    transform: `translate(${initialX}vw, -50%)`,
-                    transformStyle: 'preserve-3d',
-                    willChange: 'transform'
+                    width,
+                    opacity,
+                    zIndex,
+                    order: positionIndex,
+                    transformStyle: 'preserve-3d'
                   }}
                   onClick={() => handlePosterClick(positionIndex)}
                 >
                   <img
                     src={posterData[posterIndex].src}
                     alt={posterData[posterIndex].alt}
-                    className="w-full h-full object-cover"
+                    className="w-full h-auto rounded-lg shadow-lg"
                   />
                 </div>
               );

@@ -68,30 +68,11 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 모든 transform을 초기화
-          posterOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              gsap.set(ref, { x: 0, clearProps: 'transform' });
-            }
-          });
-          
-          // transform 초기화 후 순서 업데이트
-          requestAnimationFrame(() => {
-            setPosterOrder(newOrder);
-            
-            // 순서 업데이트 후 한 번 더 확인하여 transform이 0인지 확인
-            requestAnimationFrame(() => {
-              newOrder.forEach((posterIndex) => {
-                const ref = posterRefs[posterIndex].current;
-                if (ref) {
-                  gsap.set(ref, { x: 0, clearProps: 'transform' });
-                }
-              });
-              
-              isAnimatingRef.current = false;
-            });
-          });
+          // 애니메이션 완료 후 순서만 업데이트
+          // transform은 그대로 유지하여 포스터가 목표 위치에 머물도록 함
+          // 이렇게 하면 텔레포트 없이 부드럽게 멈춤
+          setPosterOrder(newOrder);
+          isAnimatingRef.current = false;
         }
       });
       

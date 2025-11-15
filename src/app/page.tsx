@@ -733,7 +733,7 @@ export default function Landing() {
           {/* 포스터 배치 - 화면 중앙에 배치 */}
           <div 
             id="poster-carousel"
-            className="absolute inset-x-8 h-[50vh] pointer-events-none flex items-center justify-center"
+            className="absolute inset-x-8 h-[57.5vh] pointer-events-none flex items-center justify-center"
             style={{ 
               opacity: 0, 
               zIndex: 25, 
@@ -779,7 +779,7 @@ export default function Landing() {
           {/* 검은색 박스 - 아래에서 올라오는 애니메이션 */}
           <div 
             id="exhibit-black-box"
-            className="absolute inset-x-8 h-[50vh] bg-black border border-white/30 rounded-lg z-20 overflow-hidden"
+            className="absolute inset-x-8 h-[57.5vh] bg-black border border-white/30 rounded-lg z-20 overflow-hidden"
             style={{ top: '47.5%', opacity: 0 }}
           />
           

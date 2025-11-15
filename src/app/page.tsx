@@ -181,19 +181,20 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 모든 애니메이션이 정확히 1초에 동시에 끝나도록 duration 고정
-        // 1칸 이동과 2칸 이동 모두 같은 duration(1.0초)을 사용
+        // 모든 애니메이션이 정확히 2초에 동시에 끝나도록 duration 고정
+        // 1칸 이동과 2칸 이동 모두 같은 duration(2.0초)을 사용
         // 거리가 다르면 속도가 자동으로 조절됨 (2칸 이동이 2배 빠름)
-        const duration = 1.0; // 모든 애니메이션이 정확히 1초에 끝남
+        // 2초가 되면 각자 목표 위치에 도달
+        const duration = 2.0; // 모든 애니메이션이 정확히 2초에 끝남
         
         // 항상 0에서 시작 (transform 초기화 후이므로)
-        // 애니메이션 - 모든 포스터가 동시에 시작하고 동시에 끝남 (정확히 1초)
+        // 애니메이션 - 모든 포스터가 동시에 시작하고 동시에 끝남 (정확히 2초)
         timeline.to(ref, {
           x: moveX, // 항상 0에서 시작하므로 절대 이동 거리 사용
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: duration, // 모든 애니메이션이 정확히 1초에 끝남
+          duration: duration, // 모든 애니메이션이 정확히 2초에 끝남 (목표 위치 도달)
           ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작 (position: 0)
       });

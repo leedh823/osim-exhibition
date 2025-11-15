@@ -49,7 +49,8 @@ export default function Landing() {
     const centerWidth = 304;
     const sideWidth = 228;
     const gap = 20;
-    const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2); // 1칸 이동 거리
+    // 정확한 1칸 이동 거리: 중심에서 중심까지의 거리
+    const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
     
     // 모든 포스터 ref 가져오기
     const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
@@ -119,9 +120,6 @@ export default function Landing() {
         }
       });
       
-      // 기본 속도: 1칸을 1초에 이동
-      const baseDuration = 1.0; // 1칸 이동 시 duration
-      
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
         if (!ref) return;
@@ -130,25 +128,20 @@ export default function Landing() {
         const newPosition = newOrder.indexOf(posterIndex);
         const positionDiff = newPosition - currentPosition;
         
-        // 실제 이동 거리 계산
+        // 실제 이동 거리 계산 - 정확한 위치 계산
         let moveX = 0;
-        let moveDistance = 0; // 이동 칸 수
         if (positionDiff === 1) {
           // 오른쪽으로 1칸 이동
           moveX = oneStepDistance;
-          moveDistance = 1;
         } else if (positionDiff === -1) {
           // 왼쪽으로 1칸 이동
           moveX = -oneStepDistance;
-          moveDistance = 1;
         } else if (positionDiff === 2) {
           // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
           moveX = oneStepDistance * 2;
-          moveDistance = 2;
         } else if (positionDiff === -2) {
           // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
           moveX = -oneStepDistance * 2;
-          moveDistance = 2;
         }
         
         // 목표 속성
@@ -157,25 +150,30 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // duration 결정: 2칸 이동은 2배 빠름 (duration 절반), 1칸 이동은 기본 속도
-        let duration;
-        if (moveDistance === 2) {
-          // 2칸 이동: 2배 빠른 속도 (duration 절반)
-          duration = baseDuration / 2; // 0.5초에 2칸 이동
-        } else {
-          // 1칸 이동: 기본 속도
-          duration = baseDuration; // 1칸을 1초에 이동
+        // 가운데 포스터의 경우 정확한 중앙 위치로 조정
+        // 현재 위치에서 목표 위치까지의 정확한 거리 계산
+        let finalX = moveX;
+        if (isNewCenter && currentPosition !== 1) {
+          // 가운데로 이동하는 경우: 현재 위치에서 정확히 중앙(0)으로 이동
+          const currentX = (gsap.getProperty(ref, "x") as number) || 0;
+          // 현재 DOM 위치 기준으로 중앙까지의 거리 계산
+          if (currentPosition === 0) {
+            // 왼쪽에서 가운데로: 오른쪽으로 oneStepDistance만큼
+            finalX = oneStepDistance;
+          } else if (currentPosition === 2) {
+            // 오른쪽에서 가운데로: 왼쪽으로 oneStepDistance만큼
+            finalX = -oneStepDistance;
+          }
         }
         
-        // 항상 0에서 시작 (transform 초기화 후이므로)
-        // 선택된 카드가 가운데로 오고, 나머지 카드들이 자연스럽게 이동
+        // duration 제한 없음 - 자연스러운 속도로 이동
+        // ease를 조정하여 부드러운 이동
         timeline.to(ref, {
-          x: moveX, // 항상 0에서 시작하므로 절대 이동 거리 사용
+          x: finalX, // 정확한 목표 위치
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: duration,
-          ease: 'power2.inOut'
+          ease: 'power2.inOut' // duration 없이 자연스러운 속도로 이동
         }, 0); // 모든 애니메이션이 동시에 시작
       });
     } else {

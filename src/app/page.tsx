@@ -10,13 +10,17 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const handleRegenerateClick = () => {
-    router.push('/start');
-  };
   
   // 포스터 순서 관리: [왼쪽, 중앙, 오른쪽]
   const [posterOrder, setPosterOrder] = useState([0, 1, 2]); // poster1, poster2, poster3
   const posterRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
+  
+  // Regenerate 버튼 클릭 핸들러 - 선택된 포스터(중앙)에 따라 다른 페이지로 이동
+  const handleRegenerateClick = () => {
+    const selectedPosterIndex = posterOrder[1]; // 중앙 포스터 인덱스
+    // poster1(0) → /start/1, poster2(1) → /start/2, poster3(2) → /start/3
+    router.push(`/start/${selectedPosterIndex + 1}`);
+  };
   
   // 포스터 클릭 핸들러
   const handlePosterClick = (clickedIndex: number) => {

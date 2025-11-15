@@ -120,34 +120,39 @@ export default function Landing() {
         }
       });
       
+      // 고정된 포스터 위치 값 정의
+      // 왼쪽 끝, 가운데, 오른쪽 끝 위치를 고정
+      const leftPosition = -oneStepDistance;   // 왼쪽 끝 (position 0)
+      const centerPosition = 0;                  // 가운데 (position 1)
+      const rightPosition = oneStepDistance;     // 오른쪽 끝 (position 2)
+      
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
         if (!ref) return;
         
         // 새로운 위치 찾기
         const newPosition = newOrder.indexOf(posterIndex);
-        const positionDiff = newPosition - currentPosition;
         
-        // 실제 이동 거리 계산 - 정확한 위치 계산
-        let moveX = 0;
-        let moveDistance = 0; // 이동 칸 수 (속도 조절용)
-        if (positionDiff === 1) {
-          // 오른쪽으로 1칸 이동
-          moveX = oneStepDistance;
-          moveDistance = 1;
-        } else if (positionDiff === -1) {
-          // 왼쪽으로 1칸 이동
-          moveX = -oneStepDistance;
-          moveDistance = 1;
-        } else if (positionDiff === 2) {
-          // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
-          moveX = oneStepDistance * 2;
-          moveDistance = 2;
-        } else if (positionDiff === -2) {
-          // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
-          moveX = -oneStepDistance * 2;
-          moveDistance = 2;
+        // 목표 위치를 고정된 값으로 설정
+        let targetX = 0;
+        if (newPosition === 0) {
+          // 왼쪽 끝 위치
+          targetX = leftPosition;
+        } else if (newPosition === 1) {
+          // 가운데 위치
+          targetX = centerPosition;
+        } else if (newPosition === 2) {
+          // 오른쪽 끝 위치
+          targetX = rightPosition;
         }
+        
+        // 현재 위치에서 목표 위치까지의 거리 계산 (속도 조절용)
+        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
+        const distance = Math.abs(targetX - currentX);
+        
+        // 이동 칸 수 계산 (속도 조절용)
+        const positionDiff = Math.abs(newPosition - currentPosition);
+        const moveDistance = positionDiff;
         
         // 목표 속성
         const isNewCenter = newPosition === 1;
@@ -156,8 +161,7 @@ export default function Landing() {
         const targetZIndex = isNewCenter ? 11 : 10;
         
         // 속도 조절: 2칸 이동은 2배 빠름, 1칸 이동은 기본 속도
-        // 자연스러운 속도로 이동 (너무 빠르지 않게)
-        const baseVelocity = 250; // 기본 속도 (픽셀/초) - 더 느리게
+        const baseVelocity = 250; // 기본 속도 (픽셀/초)
         let velocity;
         if (moveDistance === 2) {
           // 2칸 이동: 2배 빠른 속도
@@ -168,31 +172,20 @@ export default function Landing() {
         }
         
         // duration 계산: 거리 / 속도
-        const distance = Math.abs(moveX);
         const duration = distance / velocity;
         
         // 최소 duration 보장 (너무 빠른 이동 방지)
         const minDuration = 0.3; // 최소 0.3초
         const finalDuration = Math.max(duration, minDuration);
         
-        // 가운데 포스터의 경우 정확한 중앙 위치로 조정
-        // positionDiff를 기반으로 정확한 이동 거리 계산
-        let finalX = moveX;
-        
-        // 가운데로 이동하는 경우 추가 확인
-        if (isNewCenter) {
-          // 가운데 위치는 항상 x: 0이어야 함
-          // 하지만 현재 위치에서 가운데로 이동하는 거리는 moveX가 맞음
-          // 추가 조정 불필요
-        }
-        
         // 애니메이션 - 모든 포스터가 동시에 시작
+        // 목표 위치에 도달하면 멈춤
         timeline.to(ref, {
-          x: finalX, // 정확한 목표 위치
+          x: targetX, // 고정된 목표 위치 값
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: finalDuration, // 최소 duration 보장된 자연스러운 속도
+          duration: finalDuration,
           ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작
       });

@@ -60,20 +60,19 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션이 100% 완료된 후에만 순서 변경 및 transform 초기화
-          // 약간의 지연을 추가하여 완전히 끝난 것을 보장
-          setTimeout(() => {
-            setPosterOrder(newOrder);
-            // 모든 포스터의 transform 초기화
+          // 애니메이션이 100% 완료된 후에만 순서 변경
+          setPosterOrder(newOrder);
+          // 모든 포스터의 transform 즉시 초기화 (부드러운 전환 없이)
+          requestAnimationFrame(() => {
             newOrder.forEach((posterIndex) => {
               const ref = posterRefs[posterIndex].current;
               if (ref) {
-                gsap.set(ref, { x: 0, rotateY: 0, scale: 1, clearProps: 'transform' });
+                gsap.set(ref, { x: 0, clearProps: 'transform' });
               }
             });
             // 애니메이션 완료 플래그 해제
             isAnimatingRef.current = false;
-          }, 50); // 50ms 추가 지연으로 완전히 끝난 것을 보장
+          });
         }
       });
       
@@ -86,7 +85,7 @@ export default function Landing() {
         const newPosition = newOrder.indexOf(posterIndex);
         const positionDiff = newPosition - currentPosition;
         
-        // 실제 이동 거리 계산 (칸 수에 따라)
+        // 실제 이동 거리 계산 (정확한 거리)
         let moveX = 0;
         if (positionDiff === 1) {
           // 오른쪽으로 1칸 이동
@@ -108,22 +107,16 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 3D 회전 효과
-        const rotateY = positionDiff !== 0 ? (positionDiff > 0 ? 25 : -25) : 0;
-        const scale = positionDiff !== 0 ? 0.95 : 1;
-        
         // 초기 transform 설정 (현재 위치에서 시작)
-        gsap.set(ref, { x: 0, rotateY: 0, scale: 1 });
+        gsap.set(ref, { x: 0 });
         
-        // 애니메이션 - 실제로 이동 (duration을 조금 늘려서 더 부드럽게)
+        // 애니메이션 - 실제로 이동 (회전과 scale 제거하여 자연스럽게)
         timeline.to(ref, {
           x: moveX,
-          rotateY: rotateY,
-          scale: scale,
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: 1.0, // 0.9에서 1.0으로 증가
+          duration: 1.0,
           ease: 'power2.inOut'
         }, 0);
       });

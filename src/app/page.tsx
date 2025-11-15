@@ -81,12 +81,27 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 순서만 업데이트
-          // transform은 그대로 유지하여 포스터가 목표 위치에 멈춤
+          // 애니메이션 완료 후 순서 업데이트
           setPosterOrder(newOrder);
           
-          // 애니메이션 완료 플래그 해제
-          isAnimatingRef.current = false;
+          // DOM 재배치가 완료된 후 transform 초기화
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              // 모든 포스터의 transform을 0으로 초기화
+              newOrder.forEach((posterIndex) => {
+                const ref = posterRefs[posterIndex].current;
+                if (ref) {
+                  gsap.set(ref, { 
+                    x: 0,
+                    clearProps: 'transform' 
+                  });
+                }
+              });
+              
+              // 애니메이션 완료 플래그 해제
+              isAnimatingRef.current = false;
+            });
+          });
         }
       });
       

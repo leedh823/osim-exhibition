@@ -181,24 +181,35 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // duration 결정: 2칸 이동은 2배 빠름 (duration 절반), 1칸 이동은 기본 속도
-        let duration;
+        // 모든 애니메이션이 1초 안에 끝나도록 속도 조절
+        // 1칸 이동: 1초에 1칸 (기본 속도)
+        // 2칸 이동: 1초에 2칸 (2배 빠른 속도)
+        const targetDuration = 1.0; // 모든 애니메이션이 1초에 끝남
+        
+        // 이동 거리에 따라 속도 계산
+        const distance = Math.abs(moveX);
+        const baseVelocity = oneStepDistance / targetDuration; // 1칸을 1초에 이동하는 속도
+        
+        let velocity;
         if (moveDistance === 2) {
-          // 2칸 이동: 2배 빠른 속도 (duration 절반)
-          duration = baseDuration / 2; // 0.5초에 2칸 이동
+          // 2칸 이동: 2배 빠른 속도로 1초에 2칸 이동
+          velocity = baseVelocity * 2;
         } else {
-          // 1칸 이동: 기본 속도
-          duration = baseDuration; // 1칸을 1초에 이동
+          // 1칸 이동: 기본 속도로 1초에 1칸 이동
+          velocity = baseVelocity;
         }
         
+        // duration 계산: 거리 / 속도 = 항상 1초
+        const duration = distance / velocity;
+        
         // 항상 0에서 시작 (transform 초기화 후이므로)
-        // 애니메이션 - 모든 포스터가 동시에 시작 (0초부터)
+        // 애니메이션 - 모든 포스터가 동시에 시작하고 동시에 끝남 (1초)
         timeline.to(ref, {
           x: moveX, // 항상 0에서 시작하므로 절대 이동 거리 사용
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: duration,
+          duration: duration, // 모든 애니메이션이 1초에 끝남
           ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작
       });

@@ -52,19 +52,48 @@ export default function Landing() {
       // 애니메이션 시작
       isAnimatingRef.current = true;
       
-      const timeline = gsap.timeline({
-        onComplete: () => {
-          // 애니메이션 완료 후 순서 업데이트
-          setPosterOrder(newOrder);
-          isAnimatingRef.current = false;
-        }
-      });
-      
       // 포스터 간격 계산
       const centerWidth = 304;
       const sideWidth = 228;
       const gap = 20;
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
+      
+      // 애니메이션 시작 전 모든 transform을 0으로 초기화
+      posterOrder.forEach((posterIndex) => {
+        const ref = posterRefs[posterIndex].current;
+        if (ref) {
+          gsap.set(ref, { x: 0, clearProps: 'transform' });
+        }
+      });
+      
+      const timeline = gsap.timeline({
+        onComplete: () => {
+          // 애니메이션 완료 후 모든 transform을 초기화
+          posterOrder.forEach((posterIndex) => {
+            const ref = posterRefs[posterIndex].current;
+            if (ref) {
+              gsap.set(ref, { x: 0, clearProps: 'transform' });
+            }
+          });
+          
+          // transform 초기화 후 순서 업데이트
+          requestAnimationFrame(() => {
+            setPosterOrder(newOrder);
+            
+            // 순서 업데이트 후 한 번 더 확인하여 transform이 0인지 확인
+            requestAnimationFrame(() => {
+              newOrder.forEach((posterIndex) => {
+                const ref = posterRefs[posterIndex].current;
+                if (ref) {
+                  gsap.set(ref, { x: 0, clearProps: 'transform' });
+                }
+              });
+              
+              isAnimatingRef.current = false;
+            });
+          });
+        }
+      });
       
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
@@ -92,9 +121,9 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 회전 애니메이션 - 간단하게
+        // 회전 애니메이션 - 항상 0에서 시작
         timeline.to(ref, {
-          x: moveX,
+          x: moveX, // 항상 0에서 시작하므로 절대 이동 거리 사용
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,

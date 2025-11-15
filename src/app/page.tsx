@@ -82,41 +82,12 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 transform을 초기화하고 순서 업데이트
-          // 이렇게 하면 포스터가 새로운 DOM 위치에서 올바르게 시작
-          posterOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              gsap.set(ref, { x: 0, clearProps: 'transform' });
-            }
-          });
+          // 애니메이션 완료 후 순서만 업데이트
+          // transform은 그대로 유지하여 포스터가 회전하는 것처럼 보이게
+          setPosterOrder(newOrder);
           
-          // transform 초기화 후 순서 업데이트
-          requestAnimationFrame(() => {
-            setPosterOrder(newOrder);
-            
-            // 순서 업데이트 후 한 번 더 확인
-            requestAnimationFrame(() => {
-              newOrder.forEach((posterIndex) => {
-                const ref = posterRefs[posterIndex].current;
-                if (ref) {
-                  gsap.set(ref, { x: 0, clearProps: 'transform' });
-                }
-              });
-              
-              // 애니메이션 완료 플래그 해제
-              isAnimatingRef.current = false;
-            });
-          });
-        }
-      });
-      
-      // 애니메이션 시작 전에 모든 transform을 0으로 초기화
-      // 깨끗한 상태에서 시작하여 회전 애니메이션이 올바르게 작동하도록
-      posterOrder.forEach((posterIndex) => {
-        const ref = posterRefs[posterIndex].current;
-        if (ref) {
-          gsap.set(ref, { x: 0, clearProps: 'transform' });
+          // 애니메이션 완료 플래그 해제
+          isAnimatingRef.current = false;
         }
       });
       
@@ -155,16 +126,19 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
+        // 현재 transform 값을 가져와서 상대적 이동으로 계산
+        // 포스터가 회전하는 것처럼 보이도록 현재 위치에서 이동
+        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
+        
         // 모든 애니메이션이 정확히 2초에 동시에 끝나도록 duration 고정
         // 같은 duration을 사용하면 거리가 다를 때 속도가 자동으로 조절됨
         // 2칸 이동은 1칸 이동보다 2배 빠르게 이동 (같은 2초 동안)
         const duration = 2.0; // 모든 애니메이션이 정확히 2초에 끝남
         
-        // 항상 0에서 시작 (transform 초기화 후이므로)
         // 애니메이션 - 모든 포스터가 동시에 시작하고 동시에 끝남
-        // 회전하는 것처럼 보이도록 부드럽게 이동
+        // 현재 위치에서 상대적으로 이동하여 회전하는 것처럼 보이게
         timeline.to(ref, {
-          x: moveX, // 항상 0에서 시작하므로 절대 이동 거리 사용
+          x: currentX + moveX, // 현재 위치 + 이동 거리 (회전 효과)
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,

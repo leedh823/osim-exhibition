@@ -81,45 +81,34 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 transform을 먼저 초기화 (현재 순서 기준)
-          // 이렇게 하면 포스터가 목표 위치에 도착한 상태에서 transform만 제거됨
-          posterOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              gsap.set(ref, { 
-                x: 0,
-                clearProps: 'transform' 
-              });
-            }
-          });
+          // 애니메이션 완료 후 순서를 먼저 업데이트
+          // transform은 아직 유지된 상태 (포스터가 목표 위치에 있음)
+          setPosterOrder(newOrder);
           
-          // transform 초기화가 완전히 렌더링된 후 순서 업데이트
-          requestAnimationFrame(() => {
+          // DOM 재배치가 완료될 때까지 충분히 기다림
+          // 여러 프레임을 기다려서 React의 재렌더링과 DOM 업데이트가 완료되도록 함
+          setTimeout(() => {
             requestAnimationFrame(() => {
-              // 순서 업데이트 (이제 transform이 0이므로 자연스럽게 재배치됨)
-              setPosterOrder(newOrder);
-              
-              // 순서 업데이트 후 한 번 더 확인하여 transform이 0인지 확인
               requestAnimationFrame(() => {
-                newOrder.forEach((posterIndex) => {
-                  const ref = posterRefs[posterIndex].current;
-                  if (ref) {
-                    // transform이 0이 아닌 경우 다시 초기화
-                    const currentX = gsap.getProperty(ref, "x") as number;
-                    if (Math.abs(currentX) > 0.1) {
+                requestAnimationFrame(() => {
+                  // 이제 순서가 업데이트되어 새로운 DOM 위치에 있으므로
+                  // transform을 0으로 초기화하면 자연스럽게 새로운 위치에 멈춤
+                  newOrder.forEach((posterIndex) => {
+                    const ref = posterRefs[posterIndex].current;
+                    if (ref) {
                       gsap.set(ref, { 
                         x: 0,
                         clearProps: 'transform' 
                       });
                     }
-                  }
+                  });
+                  
+                  // 애니메이션 완료 플래그 해제
+                  isAnimatingRef.current = false;
                 });
-                
-                // 애니메이션 완료 플래그 해제
-                isAnimatingRef.current = false;
               });
             });
-          });
+          }, 150); // DOM 재배치를 위한 충분한 시간
         }
       });
       

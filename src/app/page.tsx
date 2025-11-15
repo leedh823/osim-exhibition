@@ -801,7 +801,8 @@ export default function Landing() {
                     width,
                     opacity,
                     zIndex,
-                    order: positionIndex
+                    order: positionIndex,
+                    transformStyle: 'preserve-3d'
                   }}
                   onClick={() => handlePosterClick(positionIndex)}
                 >

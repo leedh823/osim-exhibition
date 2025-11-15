@@ -99,8 +99,10 @@ export default function Landing() {
         }
       });
       
-      // 모든 포스터가 동일한 duration으로 이동 (동일한 시간에 도착)
-      const uniformDuration = 1.0; // 모든 포스터가 동일한 시간에 이동 완료
+      // 중앙 포스터의 기본 속도 (픽셀/초)
+      const baseSpeed = oneStepDistance / 1.0; // 1칸을 1초에 이동하는 속도
+      const centerDuration = 1.0; // 중앙 포스터 duration
+      const sideDuration = 0.5; // 양쪽 포스터 duration (2배 빠름)
       
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
@@ -128,21 +130,34 @@ export default function Landing() {
         
         // 목표 속성
         const isNewCenter = newPosition === 1;
+        const isCurrentCenter = currentPosition === 1;
         const targetWidth = isNewCenter ? '304px' : '228px';
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
+        // duration 결정: 중앙 포스터는 기본 속도, 양쪽 포스터는 2배 빠름
+        let duration;
+        if (isCurrentCenter || isNewCenter) {
+          // 중앙 포스터가 이동하는 경우: 기본 duration
+          // 이동 거리에 따라 duration 계산 (속도 일정 유지)
+          const distance = Math.abs(moveX);
+          duration = distance / baseSpeed;
+        } else {
+          // 양쪽 포스터가 이동하는 경우: 2배 빠름 (duration 절반)
+          const distance = Math.abs(moveX);
+          duration = (distance / baseSpeed) / 2; // 2배 빠른 속도
+        }
+        
         // 초기 transform 설정 (현재 위치에서 시작, 이전 transform 완전히 제거)
         gsap.set(ref, { x: 0, clearProps: 'transform' });
         
-        // 애니메이션 - 모든 포스터가 동일한 duration으로 이동
-        // 이동 거리가 다르더라도 동일한 시간에 도착하므로 시각적으로 동일한 속도로 보임
+        // 애니메이션 - 중앙 포스터는 기본 속도, 양쪽 포스터는 2배 빠름
         timeline.to(ref, {
           x: moveX,
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: uniformDuration, // 모든 포스터 동일한 duration
+          duration: duration,
           ease: 'power2.inOut'
         }, 0);
       });

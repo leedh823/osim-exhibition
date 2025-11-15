@@ -17,7 +17,6 @@ export default function EnlargedVideo() {
   const [isLoading, setIsLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoSrc, setVideoSrc] = useState('/2.mp4'); // 기본 영상
-  const [isPoster3, setIsPoster3] = useState(false); // 포스터 3 여부
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -89,18 +88,14 @@ export default function EnlargedVideo() {
     console.log('📋 선택된 포스터:', selectedPoster);
     if (selectedPoster === '1') {
       setVideoSrc('/poster video 1/2.mp4');
-      setIsPoster3(false);
     } else if (selectedPoster === '2') {
       setVideoSrc('/poster video 2/2.mp4');
-      setIsPoster3(false);
     } else if (selectedPoster === '3') {
       const poster3VideoSrc = '/poster video 3/4.mp4';
       console.log('🎬 포스터 3 영상 경로 설정:', poster3VideoSrc);
       setVideoSrc(poster3VideoSrc);
-      setIsPoster3(true); // 포스터 3은 전체화면 레이아웃
     } else {
       setVideoSrc('/2.mp4'); // 기본 영상 (fallback)
-      setIsPoster3(false);
     }
   }, []);
 
@@ -178,12 +173,11 @@ export default function EnlargedVideo() {
 
 
   console.log('🎥 현재 영상 경로:', videoSrc);
-  console.log('📐 포스터 3 여부:', isPoster3);
 
   return (
-    <div className={`w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden ${isPoster3 ? '' : 'flex'}`}>
-      {/* 영상 영역 - 포스터 3은 전체화면, 나머지는 왼쪽 50% */}
-      <div className={isPoster3 ? "w-full h-full relative z-10" : "w-1/2 h-full relative"}>
+    <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative overflow-hidden">
+      {/* 영상 영역 - 전체화면 */}
+      <div className="w-full h-full relative z-10">
         <video
           key={videoSrc}
           ref={videoRef}
@@ -202,11 +196,8 @@ export default function EnlargedVideo() {
         </video>
       </div>
       
-      {/* AI 채팅 영역 - 포스터 3은 오른쪽 오버레이, 나머지는 오른쪽 50% */}
-      <div className={isPoster3 
-        ? "absolute top-0 right-0 w-1/2 h-full bg-transparent backdrop-blur-sm flex flex-col z-20"
-        : "w-1/2 h-full bg-transparent backdrop-blur-sm flex flex-col"
-      }>
+      {/* AI 채팅 영역 - 오른쪽 오버레이 */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-transparent backdrop-blur-sm flex flex-col z-20">
         {/* 채팅 메시지 영역 */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {chatMessages.map((msg, index) => (

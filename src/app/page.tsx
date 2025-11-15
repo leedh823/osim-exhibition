@@ -34,22 +34,22 @@ export default function Landing() {
     // 새로운 순서 계산
     const newOrder = [...posterOrder];
     if (clickedIndex === 0) {
-      // 왼쪽 포스터(1번) 클릭: [1, 2, 3] → [3, 1, 2]
-      newOrder[0] = posterOrder[2]; // 3번이 왼쪽으로
-      newOrder[1] = posterOrder[0]; // 1번이 가운데로
-      newOrder[2] = posterOrder[1]; // 2번이 오른쪽으로
+      // 왼쪽 포스터 클릭: [0, 1, 2] → [2, 0, 1]
+      newOrder[0] = posterOrder[2];
+      newOrder[1] = posterOrder[0];
+      newOrder[2] = posterOrder[1];
     } else if (clickedIndex === 2) {
-      // 오른쪽 포스터(3번) 클릭: [1, 2, 3] → [2, 3, 1]
-      newOrder[0] = posterOrder[1]; // 2번이 왼쪽으로
-      newOrder[1] = posterOrder[2]; // 3번이 가운데로
-      newOrder[2] = posterOrder[0]; // 1번이 오른쪽으로
+      // 오른쪽 포스터 클릭: [0, 1, 2] → [1, 2, 0]
+      newOrder[0] = posterOrder[1];
+      newOrder[1] = posterOrder[2];
+      newOrder[2] = posterOrder[0];
     }
     
     // 포스터 간격 계산
     const centerWidth = 304;
     const sideWidth = 228;
     const gap = 20;
-    const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2); // 1칸 이동 거리
+    const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
     
     // 모든 포스터 ref 가져오기
     const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
@@ -58,40 +58,40 @@ export default function Landing() {
       // 애니메이션 시작
       isAnimatingRef.current = true;
       
-      // 애니메이션 시작 전 모든 포스터의 현재 위치 확인
-      const initialPositions = new Map();
-      posterOrder.forEach((posterIndex, position) => {
-        const ref = posterRefs[posterIndex].current;
+      // 모든 기존 애니메이션 중지 및 제거
+      allRefs.forEach(ref => {
         if (ref) {
-          const rect = ref.getBoundingClientRect();
-          initialPositions.set(posterIndex, {
-            x: rect.left,
-            position: position
-          });
+          gsap.killTweensOf(ref);
+          gsap.set(ref, { clearProps: 'all' });
         }
       });
       
+      // 새로운 타임라인 생성
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 순서 변경 및 transform 초기화
-          // 약간의 지연을 두어 애니메이션이 완전히 렌더링되도록 함
+          // 애니메이션 완료 후 모든 transform 완전히 제거
+          allRefs.forEach(ref => {
+            if (ref) {
+              gsap.set(ref, { 
+                x: 0, 
+                y: 0,
+                clearProps: 'transform,width,opacity,zIndex' 
+              });
+            }
+          });
+          
+          // 순서 업데이트
+          setPosterOrder(newOrder);
+          
+          // 애니메이션 완료 플래그 해제
           setTimeout(() => {
-            setPosterOrder(newOrder);
-            // 모든 포스터의 transform 초기화
-            newOrder.forEach((posterIndex) => {
-              const ref = posterRefs[posterIndex].current;
-              if (ref) {
-                gsap.set(ref, { x: 0, clearProps: 'transform' });
-              }
-            });
-            // 애니메이션 완료 플래그 해제
             isAnimatingRef.current = false;
-          }, 50); // 50ms 지연으로 순간이동 방지
+          }, 100);
         }
       });
       
-      // 모든 포스터가 동일한 duration으로 이동 (동일한 시간에 도착)
-      const uniformDuration = 1.0; // 모든 포스터가 동일한 시간에 이동 완료
+      // 모든 포스터가 동일한 duration으로 이동
+      const uniformDuration = 1.0;
       
       posterOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
@@ -101,19 +101,15 @@ export default function Landing() {
         const newPosition = newOrder.indexOf(posterIndex);
         const positionDiff = newPosition - currentPosition;
         
-        // 실제 이동 거리 계산 (정확한 거리)
+        // 이동 거리 계산
         let moveX = 0;
         if (positionDiff === 1) {
-          // 오른쪽으로 1칸 이동
           moveX = oneStepDistance;
         } else if (positionDiff === -1) {
-          // 왼쪽으로 1칸 이동
           moveX = -oneStepDistance;
         } else if (positionDiff === 2) {
-          // 오른쪽으로 2칸 이동 (왼쪽에서 오른쪽으로)
           moveX = oneStepDistance * 2;
         } else if (positionDiff === -2) {
-          // 왼쪽으로 2칸 이동 (오른쪽에서 왼쪽으로)
           moveX = -oneStepDistance * 2;
         }
         
@@ -123,18 +119,22 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 초기 transform 설정 (현재 위치에서 시작, 이전 transform 완전히 제거)
-        gsap.set(ref, { x: 0, clearProps: 'transform' });
+        // 초기 상태 설정 (모든 transform 제거)
+        gsap.set(ref, { 
+          x: 0, 
+          y: 0,
+          clearProps: 'transform' 
+        });
         
-        // 애니메이션 - 모든 포스터가 동일한 duration으로 이동
-        // 이동 거리가 다르더라도 동일한 시간에 도착하므로 시각적으로 동일한 속도로 보임
+        // 애니메이션 실행
         timeline.to(ref, {
           x: moveX,
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: uniformDuration, // 모든 포스터 동일한 duration
-          ease: 'power2.inOut'
+          duration: uniformDuration,
+          ease: 'power2.inOut',
+          immediateRender: false
         }, 0);
       });
     } else {

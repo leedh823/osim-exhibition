@@ -81,33 +81,12 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션이 완전히 끝난 후 충분히 기다림
-          // 최대 duration + 여유 시간
-          setTimeout(() => {
-            // 순서를 먼저 업데이트 (transform은 아직 유지)
-            setPosterOrder(newOrder);
-            
-            // DOM 재배치가 완료될 때까지 기다린 후 transform 제거
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                  // 모든 포스터의 transform 제거
-                  newOrder.forEach((posterIndex) => {
-                    const ref = posterRefs[posterIndex].current;
-                    if (ref) {
-                      gsap.set(ref, { 
-                        x: 0,
-                        clearProps: 'transform' 
-                      });
-                    }
-                  });
-                  
-                  // 애니메이션 완료 플래그 해제
-                  isAnimatingRef.current = false;
-                });
-              });
-            });
-          }, 100); // 최대 duration(1000ms) 후 100ms 여유
+          // 애니메이션 완료 후 순서만 업데이트
+          // transform은 그대로 유지하여 포스터가 목표 위치에 멈춤
+          setPosterOrder(newOrder);
+          
+          // 애니메이션 완료 플래그 해제
+          isAnimatingRef.current = false;
         }
       });
       
@@ -160,8 +139,10 @@ export default function Landing() {
           duration = baseDuration; // 1칸을 1초에 이동
         }
         
-        // 초기 transform 설정 (현재 위치에서 시작, 이전 transform 완전히 제거)
-        gsap.set(ref, { x: 0, clearProps: 'transform' });
+        // 초기 transform 설정
+        // 이전 애니메이션의 transform이 있으면 그대로 사용, 없으면 0에서 시작
+        const currentX = gsap.getProperty(ref, "x") as number || 0;
+        gsap.set(ref, { x: currentX });
         
         // 애니메이션 - 모든 포스터가 동시에 시작 (0초부터)
         timeline.to(ref, {

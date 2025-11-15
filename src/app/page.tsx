@@ -779,7 +779,7 @@ export default function Landing() {
           {/* 검은색 박스 - 아래에서 올라오는 애니메이션 */}
           <div 
             id="exhibit-black-box"
-            className="absolute inset-x-8 h-[57.5vh] bg-black border border-white/30 rounded-lg z-20 overflow-hidden"
+            className="absolute inset-x-8 h-[55vh] bg-black border border-white/30 rounded-lg z-20 overflow-hidden"
             style={{ top: '47.5%', opacity: 0 }}
           />
           
@@ -787,7 +787,7 @@ export default function Landing() {
           <button
             id="regenerate-button"
             className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
-            style={{ top: 'calc(47.5% + 28.75vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
+            style={{ top: 'calc(47.5% + 27.5vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
             type="button"
             onClick={handleRegenerateClick}
           >

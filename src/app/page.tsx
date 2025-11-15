@@ -68,11 +68,24 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 순서만 업데이트
-          // transform은 그대로 유지하여 포스터가 목표 위치에 머물도록 함
-          // 이렇게 하면 텔레포트 없이 부드럽게 멈춤
+          // 애니메이션 완료 후 순서를 먼저 업데이트
           setPosterOrder(newOrder);
-          isAnimatingRef.current = false;
+          
+          // 순서 업데이트 후 DOM 재배치가 완료될 때까지 대기
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              // DOM 재배치 완료 후 transform 초기화
+              // 이제 포스터가 새로운 DOM 위치에 있으므로 transform을 초기화해도 올바른 위치에 있음
+              newOrder.forEach((posterIndex) => {
+                const ref = posterRefs[posterIndex].current;
+                if (ref) {
+                  gsap.set(ref, { x: 0, clearProps: 'transform' });
+                }
+              });
+              
+              isAnimatingRef.current = false;
+            });
+          });
         }
       });
       

@@ -81,46 +81,13 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 transform을 즉시 0으로 초기화 (현재 순서 기준)
-          // 이렇게 하면 포스터가 목표 위치에 도착한 상태에서 transform만 제거됨
-          posterOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              gsap.set(ref, { 
-                x: 0,
-                clearProps: 'transform' 
-              });
-            }
-          });
+          // 순서만 업데이트 (transform은 그대로 유지)
+          // 포스터가 목표 위치에 도착한 상태로 유지됨
+          // 다음 애니메이션 시작 시 x: 0으로 초기화되므로 여기서 초기화 불필요
+          setPosterOrder(newOrder);
           
-          // transform 초기화가 완전히 렌더링된 후 순서 업데이트
-          // 충분한 시간을 두어 transform 초기화가 브라우저에 반영되도록 함
-          setTimeout(() => {
-            // 순서 업데이트 (이제 transform이 0이므로 자연스럽게 재배치됨)
-            setPosterOrder(newOrder);
-            
-            // 순서 업데이트 후 한 번 더 확인하여 transform이 0인지 확인
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                newOrder.forEach((posterIndex) => {
-                  const ref = posterRefs[posterIndex].current;
-                  if (ref) {
-                    // transform이 0이 아닌 경우 다시 초기화
-                    const currentX = gsap.getProperty(ref, "x") as number;
-                    if (Math.abs(currentX || 0) > 0.1) {
-                      gsap.set(ref, { 
-                        x: 0,
-                        clearProps: 'transform' 
-                      });
-                    }
-                  }
-                });
-                
-                // 애니메이션 완료 플래그 해제
-                isAnimatingRef.current = false;
-              });
-            });
-          }, 200); // transform 초기화가 완전히 렌더링될 때까지 충분한 시간
+          // 애니메이션 완료 플래그 해제
+          isAnimatingRef.current = false;
         }
       });
       
@@ -167,7 +134,7 @@ export default function Landing() {
         let duration;
         if (moveDistance === 2) {
           // 2칸 이동: 2배 빠른 속도 (duration 절반)
-          duration = baseDuration; // 2칸을 1초에 이동 = 1칸을 0.5초에 이동
+          duration = baseDuration / 2; // 0.5초에 2칸 이동 = 1칸당 0.25초 (4배 빠름)
         } else {
           // 1칸 이동: 기본 속도
           duration = baseDuration; // 1칸을 1초에 이동

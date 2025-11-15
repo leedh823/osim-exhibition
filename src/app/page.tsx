@@ -71,28 +71,29 @@ export default function Landing() {
         }
       });
       
-      // 순서를 먼저 업데이트 (애니메이션 중에 업데이트하여 DOM 재배치)
-      setPosterOrder(newOrder);
-      
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 transform 초기화
-          // requestAnimationFrame을 사용하여 DOM 업데이트 후 실행
+          // 애니메이션 완료 후 transform을 먼저 초기화
+          // 모든 포스터의 transform을 0으로 설정 (아직 순서는 변경 전)
+          posterOrder.forEach((posterIndex) => {
+            const ref = posterRefs[posterIndex].current;
+            if (ref) {
+              gsap.set(ref, { 
+                x: 0, 
+                clearProps: 'transform' 
+              });
+            }
+          });
+          
+          // transform 초기화 후 순서 업데이트 (DOM 재배치)
+          // requestAnimationFrame을 사용하여 transform 초기화가 완전히 렌더링된 후 실행
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              // 모든 포스터의 transform 초기화
-              newOrder.forEach((posterIndex, positionIndex) => {
-                const ref = posterRefs[posterIndex].current;
-                if (ref) {
-                  // transform을 완전히 제거하여 자연스러운 위치로
-                  gsap.set(ref, { 
-                    x: 0, 
-                    clearProps: 'transform' 
-                  });
-                }
-              });
+              setPosterOrder(newOrder);
               // 애니메이션 완료 플래그 해제
-              isAnimatingRef.current = false;
+              setTimeout(() => {
+                isAnimatingRef.current = false;
+              }, 50);
             });
           });
         }

@@ -80,66 +80,14 @@ export default function Landing() {
         return 1.0; // 모든 애니메이션이 1초에 완료
       }));
       
-      // 애니메이션 시작 전에 모든 transform을 0으로 초기화
-      // 깨끗한 상태에서 시작하여 누적 문제 방지
-      posterOrder.forEach((posterIndex) => {
-        const ref = posterRefs[posterIndex].current;
-        if (ref) {
-          gsap.set(ref, { x: 0, clearProps: 'transform' });
-        }
-      });
-      
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 모든 transform을 확실하게 초기화
-          posterOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              gsap.set(ref, { 
-                x: 0,
-                clearProps: 'transform' 
-              });
-            }
-          });
+          // 애니메이션 완료 후 순서만 업데이트
+          // transform은 그대로 유지하여 포스터가 회전하는 것처럼 보이게
+          setPosterOrder(newOrder);
           
-          // transform 초기화 후 순서 업데이트
-          requestAnimationFrame(() => {
-            setPosterOrder(newOrder);
-            
-            // 순서 업데이트 후 DOM 재배치 완료 대기
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                // 모든 포스터의 transform을 확실하게 0으로 설정
-                newOrder.forEach((posterIndex, positionIndex) => {
-                  const ref = posterRefs[posterIndex].current;
-                  if (ref) {
-                    // 중앙 포스터는 명시적으로 x: 0으로 설정
-                    const isCenter = positionIndex === 1;
-                    gsap.set(ref, { 
-                      x: 0,
-                      clearProps: 'transform' 
-                    });
-                    
-                    // 중앙 포스터의 경우 한 번 더 확인
-                    if (isCenter) {
-                      requestAnimationFrame(() => {
-                        const centerRef = posterRefs[posterIndex].current;
-                        if (centerRef) {
-                          gsap.set(centerRef, { 
-                            x: 0,
-                            clearProps: 'transform' 
-                          });
-                        }
-                      });
-                    }
-                  }
-                });
-                
-                // 애니메이션 완료 플래그 해제
-                isAnimatingRef.current = false;
-              });
-            });
-          });
+          // 애니메이션 완료 플래그 해제
+          isAnimatingRef.current = false;
         }
       });
       
@@ -181,20 +129,29 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 모든 애니메이션이 정확히 2초에 동시에 끝나도록 duration 고정
-        // 1칸 이동과 2칸 이동 모두 같은 duration(2.0초)을 사용
-        // 거리가 다르면 속도가 자동으로 조절됨 (2칸 이동이 2배 빠름)
-        // 2초가 되면 각자 목표 위치에 도달
-        const duration = 2.0; // 모든 애니메이션이 정확히 2초에 끝남
+        // 현재 transform 값을 가져와서 상대적 이동으로 계산
+        // 포스터가 회전하는 것처럼 보이도록 현재 위치에서 이동
+        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
         
-        // 항상 0에서 시작 (transform 초기화 후이므로)
-        // 애니메이션 - 모든 포스터가 동시에 시작하고 동시에 끝남 (정확히 2초)
+        // 모든 애니메이션이 정확히 2초에 동시에 끝나도록 duration 고정
+        // 2칸 이동은 더 빠른 속도로 (duration을 줄여서)
+        let duration;
+        if (moveDistance === 2) {
+          // 2칸 이동: 1초에 2칸 이동 (2배 빠름)
+          duration = 1.0;
+        } else {
+          // 1칸 이동: 2초에 1칸 이동
+          duration = 2.0;
+        }
+        
+        // 애니메이션 - 모든 포스터가 동시에 시작
+        // 현재 위치에서 상대적으로 이동하여 회전하는 것처럼 보이게
         timeline.to(ref, {
-          x: moveX, // 항상 0에서 시작하므로 절대 이동 거리 사용
+          x: currentX + moveX, // 현재 위치 + 이동 거리
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,
-          duration: duration, // 모든 애니메이션이 정확히 2초에 끝남 (목표 위치 도달)
+          duration: duration,
           ease: 'power2.inOut'
         }, 0); // 모든 애니메이션이 동시에 시작 (position: 0)
       });

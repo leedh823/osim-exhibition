@@ -27,58 +27,78 @@ export default function Landing() {
     // 중앙 포스터(인덱스 1)는 클릭 불가
     if (clickedIndex === 1) return;
     
-    // 현재 순서에서 클릭한 포스터의 실제 인덱스 찾기
-    const clickedPosterIndex = posterOrder[clickedIndex];
-    const centerPosterIndex = posterOrder[1];
-    
-    // 순서 변경: 클릭한 포스터가 중앙으로, 중앙 포스터가 클릭한 위치로
+    // 원형 회전: 왼쪽 클릭 시 왼쪽으로 회전, 오른쪽 클릭 시 오른쪽으로 회전
     const newOrder = [...posterOrder];
-    newOrder[1] = clickedPosterIndex;
-    newOrder[clickedIndex] = centerPosterIndex;
+    if (clickedIndex === 0) {
+      // 왼쪽 포스터 클릭: [1, 2, 3] → [3, 1, 2] (왼쪽으로 회전)
+      newOrder[0] = posterOrder[2];
+      newOrder[1] = posterOrder[0];
+      newOrder[2] = posterOrder[1];
+    } else if (clickedIndex === 2) {
+      // 오른쪽 포스터 클릭: [1, 2, 3] → [2, 3, 1] (오른쪽으로 회전)
+      newOrder[0] = posterOrder[1];
+      newOrder[1] = posterOrder[2];
+      newOrder[2] = posterOrder[0];
+    }
     
-    // GSAP 애니메이션
-    const clickedRef = posterRefs[clickedPosterIndex].current;
-    const centerRef = posterRefs[centerPosterIndex].current;
+    // 포스터 간격 계산
+    const centerWidth = 304;
+    const sideWidth = 228;
+    const gap = 20;
+    const moveDistance = (centerWidth / 2) + gap + (sideWidth / 2); // 약 286px
     
-    if (clickedRef && centerRef) {
-      // 포스터 간격 계산 (gap: 20px + 포스터 너비의 절반)
-      const centerWidth = 304;
-      const sideWidth = 228;
-      const gap = 20;
-      const moveDistance = (centerWidth / 2) + gap + (sideWidth / 2); // 약 286px
-      
-      // 두 포스터 모두 애니메이션
+    // 모든 포스터 ref 가져오기
+    const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
+    const newRefs = newOrder.map(index => posterRefs[index].current).filter(Boolean);
+    
+    if (allRefs.length === 3) {
       const timeline = gsap.timeline();
       
-      // 클릭한 포스터의 이동 방향 결정
-      const clickedMoveX = clickedIndex === 0 ? moveDistance : -moveDistance; // 왼쪽(0)이면 오른쪽으로, 오른쪽(2)이면 왼쪽으로
-      
-      // 클릭한 포스터: 위치 이동 + 작은 크기 → 큰 크기, 반투명 → 불투명
-      timeline.to(clickedRef, {
-        x: clickedMoveX,
-        width: '304px',
-        opacity: 1,
-        zIndex: 11,
-        duration: 0.6,
-        ease: 'power2.out'
-      }, 0);
-      
-      // 중앙 포스터의 이동 방향 결정
-      const centerMoveX = clickedIndex === 0 ? -moveDistance : moveDistance; // 클릭한 포스터의 반대 방향
-      
-      // 중앙 포스터: 위치 이동 + 큰 크기 → 작은 크기, 불투명 → 반투명
-      timeline.to(centerRef, {
-        x: centerMoveX,
-        width: '228px',
-        opacity: 0.5,
-        zIndex: 10,
-        duration: 0.6,
-        ease: 'power2.out',
-        onComplete: () => {
-          // 애니메이션 완료 후 x 위치 초기화 (order 속성이 위치를 결정)
-          gsap.set([clickedRef, centerRef], { x: 0 });
+      // 각 포스터의 이동 방향과 목표 속성 계산
+      posterOrder.forEach((posterIndex, currentPosition) => {
+        const ref = posterRefs[posterIndex].current;
+        if (!ref) return;
+        
+        // 새로운 위치 찾기
+        const newPosition = newOrder.indexOf(posterIndex);
+        const positionDiff = newPosition - currentPosition;
+        
+        // 이동 거리 계산
+        let moveX = 0;
+        if (positionDiff === 1 || positionDiff === -2) {
+          // 오른쪽으로 이동
+          moveX = moveDistance;
+        } else if (positionDiff === -1 || positionDiff === 2) {
+          // 왼쪽으로 이동
+          moveX = -moveDistance;
         }
-      }, 0);
+        
+        // 목표 속성
+        const isNewCenter = newPosition === 1;
+        const targetWidth = isNewCenter ? '304px' : '228px';
+        const targetOpacity = isNewCenter ? 1 : 0.5;
+        const targetZIndex = isNewCenter ? 11 : 10;
+        
+        // 3D 회전 효과를 위한 rotateY (선택적)
+        const rotateY = positionDiff !== 0 ? (positionDiff > 0 ? 15 : -15) : 0;
+        
+        // 애니메이션
+        timeline.to(ref, {
+          x: moveX,
+          rotateY: rotateY,
+          width: targetWidth,
+          opacity: targetOpacity,
+          zIndex: targetZIndex,
+          duration: 0.8,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            // 애니메이션 완료 후 transform 초기화
+            if (positionDiff !== 0) {
+              gsap.set(ref, { x: 0, rotateY: 0 });
+            }
+          }
+        }, 0);
+      });
     }
     
     setPosterOrder(newOrder);
@@ -756,7 +776,8 @@ export default function Landing() {
               opacity: 0, 
               zIndex: 25, 
               top: 'calc(47.5% - 1vh)',
-              gap: '20px'
+              gap: '20px',
+              perspective: '1000px'
             }}
           >
             {posterOrder.map((posterIndex, positionIndex) => {

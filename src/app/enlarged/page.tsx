@@ -18,7 +18,8 @@ export default function EnlargedVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoSrc, setVideoSrc] = useState('/2.mp4'); // 기본 영상
   const [selectedPoster, setSelectedPoster] = useState<string | null>(null); // 선택된 포스터 번호
-  const [videoIndex, setVideoIndex] = useState(2); // 현재 비디오 인덱스 (2.mp4부터 시작)
+  const [selectedType, setSelectedType] = useState<string | null>(null); // 선택된 타입 (people 또는 car)
+  const [videoIndex, setVideoIndex] = useState(1); // 현재 비디오 인덱스 (1부터 시작)
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -85,15 +86,32 @@ export default function EnlargedVideo() {
 
   // 선택된 인물 정보 및 포스터 정보 로드
   useEffect(() => {
-    // 포스터 번호 확인하여 영상 경로 설정
+    // 포스터 번호 및 타입 확인하여 영상 경로 설정
     const poster = localStorage.getItem('selectedPoster');
+    const type = localStorage.getItem('selectedType'); // 'people' 또는 'car'
+    
     setSelectedPoster(poster);
+    setSelectedType(type);
     console.log('📋 선택된 포스터:', poster);
+    console.log('📋 선택된 타입:', type);
     
     // 포스터별 초기 비디오 인덱스 설정
     if (poster === '1') {
-      setVideoIndex(2); // 2.mp4부터 시작
-      setVideoSrc('/poster video 1/2.mp4');
+      // 포스터 1: selectedType에 따라 people 또는 car 영상 재생
+      if (type === 'people') {
+        setVideoIndex(1);
+        setVideoSrc('/poster video 1/people 1.mp4');
+        console.log('👥 People 영상 시작: people 1.mp4');
+      } else if (type === 'car') {
+        setVideoIndex(1);
+        setVideoSrc('/poster video 1/car 1.mp4');
+        console.log('🚗 Car 영상 시작: car 1.mp4');
+      } else {
+        // 기본값: people
+        setVideoIndex(1);
+        setVideoSrc('/poster video 1/people 1.mp4');
+        console.log('👥 기본값: People 영상 시작');
+      }
     } else if (poster === '2') {
       setVideoIndex(2); // 2.mp4부터 시작
       setVideoSrc('/poster video 2/2.mp4');
@@ -160,9 +178,17 @@ export default function EnlargedVideo() {
   // 6턴 완료 시 분석 결과로 전환 (3초 후) - handleAIMessage에서 처리하므로 제거
 
   // 비디오 경로 생성 함수
-  const getVideoPath = (poster: string | null, index: number): string => {
+  const getVideoPath = (poster: string | null, type: string | null, index: number): string => {
     if (poster === '1') {
-      return `/poster video 1/${index}.mp4`;
+      // 포스터 1: selectedType에 따라 people 또는 car 영상 경로 반환
+      if (type === 'people') {
+        return `/poster video 1/people ${index}.mp4`;
+      } else if (type === 'car') {
+        return `/poster video 1/car ${index}.mp4`;
+      } else {
+        // 기본값: people
+        return `/poster video 1/people ${index}.mp4`;
+      }
     } else if (poster === '2') {
       return `/poster video 2/${index}.mp4`;
     } else if (poster === '3') {
@@ -182,16 +208,19 @@ export default function EnlargedVideo() {
       setUserInput('');
       setCurrentTurn(prev => prev + 1);
       
-      // 채팅 전송 시 다음 비디오로 변경 (최대 6.mp4까지)
+      // 채팅 전송 시 다음 비디오로 변경
       setVideoIndex(prev => {
         const nextIndex = prev + 1;
-        if (nextIndex <= 6) {
-          const nextVideoPath = getVideoPath(selectedPoster, nextIndex);
+        // 포스터 1의 경우 people/car 영상은 최대 4개까지
+        const maxIndex = selectedPoster === '1' ? 4 : 6;
+        
+        if (nextIndex <= maxIndex) {
+          const nextVideoPath = getVideoPath(selectedPoster, selectedType, nextIndex);
           console.log('🎬 다음 비디오로 변경:', nextVideoPath);
           setVideoSrc(nextVideoPath);
           return nextIndex;
         }
-        return prev; // 6.mp4를 넘어가면 유지
+        return prev; // 최대 인덱스를 넘어가면 유지
       });
     }
   };

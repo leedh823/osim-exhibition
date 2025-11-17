@@ -7,7 +7,7 @@ import { DetectedObject } from '@/utils/realObjectDetection';
 export default function PosterPage2() {
   const router = useRouter();
 
-  const handlePersonClick = (person: DetectedObject) => {
+  const handlePersonClick = (person: DetectedObject, allObjects: DetectedObject[]) => {
     try {
       localStorage.setItem('selectedPerson', JSON.stringify(person));
       localStorage.setItem('selectedPoster', '2'); // 포스터 2 선택 표시

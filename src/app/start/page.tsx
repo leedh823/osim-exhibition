@@ -7,7 +7,7 @@ import { DetectedObject } from '@/utils/realObjectDetection';
 export default function StartExhibition() {
   const router = useRouter();
 
-  const handlePersonClick = (person: DetectedObject) => {
+  const handlePersonClick = (person: DetectedObject, allObjects: DetectedObject[]) => {
     try {
       localStorage.setItem('selectedPerson', JSON.stringify(person));
       router.push('/enlarged');

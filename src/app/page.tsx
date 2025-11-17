@@ -186,6 +186,31 @@ export default function Landing() {
       // 초기 위치: 이미지 Y를 중앙 아래로 내리고, 나머지는 0
       gsap.set('.parallax', { x: 0, y: 'calc(30vh + 70px)', rotateX: 0, rotateY: 0 });
       gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
+      
+      // 포스터 초기 원형 위치 설정
+      const centerWidth = 304;
+      const sideWidth = 228;
+      const gap = 20;
+      const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
+      const rotationRadius = oneStepDistance * 1.5;
+      
+      const getInitialPosition = (position: number) => {
+        const angle = position === 0 ? -120 : position === 1 ? 0 : 120;
+        const rad = (angle * Math.PI) / 180;
+        return {
+          x: Math.sin(rad) * rotationRadius,
+          y: -Math.cos(rad) * rotationRadius * 0.3
+        };
+      };
+      
+      // 초기 포스터 위치 설정
+      posterOrder.forEach((posterIndex, position) => {
+        const ref = posterRefs[posterIndex].current;
+        if (ref) {
+          const pos = getInitialPosition(position);
+          gsap.set(ref, { x: pos.x, y: pos.y, rotateY: 0 });
+        }
+      });
       // Split titles(after hero) into per-letter spans for stagger animation
       document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title, #exhibit .section-title, #exhibit .exhibit-subtitle').forEach((titleEl) => {
         if (titleEl.getAttribute('data-split') === 'true') return;

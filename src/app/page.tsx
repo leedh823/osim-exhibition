@@ -69,7 +69,6 @@ export default function Landing() {
       const timeline = gsap.timeline({
         onComplete: () => {
           // 애니메이션이 완전히 끝난 후 transform을 명시적으로 0으로 설정
-          // setPosterOrder 전에 모든 transform을 초기화
           posterOrder.forEach((posterIndex) => {
             const ref = posterRefs[posterIndex].current;
             if (ref) {
@@ -80,7 +79,8 @@ export default function Landing() {
           // requestAnimationFrame으로 DOM 업데이트 대기
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              // 이제 순서 업데이트 (transform이 이미 0이므로 순간이동 없음)
+              // transform이 0이 된 후 순서 업데이트
+              // order 속성이 제거되었으므로 DOM 재배치가 위치에 영향을 주지 않음
               setPosterOrder(newOrder);
               
               // DOM 재배치 완료 대기
@@ -895,7 +895,7 @@ export default function Landing() {
                     width,
                     opacity,
                     zIndex,
-                    order: positionIndex,
+                    // order 속성 제거 - transform만으로 위치 관리
                     transformStyle: 'preserve-3d'
                   }}
                   onClick={() => handlePosterClick(positionIndex)}

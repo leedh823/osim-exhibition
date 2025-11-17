@@ -13,12 +13,13 @@ export default function Landing() {
   
   // 포스터 순서 관리: [왼쪽, 중앙, 오른쪽]
   const [posterOrder, setPosterOrder] = useState([0, 1, 2]); // poster1, poster2, poster3
+  const posterOrderRef = useRef([0, 1, 2]); // 내부적으로만 순서 추적 (DOM 재배치 방지)
   const posterRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
   const isAnimatingRef = useRef(false); // 애니메이션 진행 중 플래그
   
   // Regenerate 버튼 클릭 핸들러 - 선택된 포스터(중앙)에 따라 다른 페이지로 이동
   const handleRegenerateClick = () => {
-    const selectedPosterIndex = posterOrder[1]; // 중앙 포스터 인덱스
+    const selectedPosterIndex = posterOrderRef.current[1]; // 중앙 포스터 인덱스 (ref 사용)
     // poster1(0) → /start/1, poster2(1) → /start/2, poster3(2) → /start/3
     router.push(`/start/${selectedPosterIndex + 1}`);
   };
@@ -31,22 +32,25 @@ export default function Landing() {
     // 애니메이션 진행 중이면 클릭 무시
     if (isAnimatingRef.current) return;
     
+    // 현재 순서는 ref에서 가져오기 (DOM 재배치 없음)
+    const currentOrder = posterOrderRef.current;
+    
     // 새로운 순서 계산
-    const newOrder = [...posterOrder];
+    const newOrder = [...currentOrder];
     if (clickedIndex === 0) {
       // 왼쪽 포스터 클릭: [0, 1, 2] → [2, 0, 1]
-      newOrder[0] = posterOrder[2];
-      newOrder[1] = posterOrder[0];
-      newOrder[2] = posterOrder[1];
+      newOrder[0] = currentOrder[2];
+      newOrder[1] = currentOrder[0];
+      newOrder[2] = currentOrder[1];
     } else if (clickedIndex === 2) {
       // 오른쪽 포스터 클릭: [0, 1, 2] → [1, 2, 0]
-      newOrder[0] = posterOrder[1];
-      newOrder[1] = posterOrder[2];
-      newOrder[2] = posterOrder[0];
+      newOrder[0] = currentOrder[1];
+      newOrder[1] = currentOrder[2];
+      newOrder[2] = currentOrder[0];
     }
     
     // 모든 포스터 ref 가져오기
-    const allRefs = posterOrder.map(index => posterRefs[index].current).filter(Boolean);
+    const allRefs = currentOrder.map(index => posterRefs[index].current).filter(Boolean);
     
     if (allRefs.length === 3) {
       // 애니메이션 시작
@@ -59,7 +63,7 @@ export default function Landing() {
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
       
       // 애니메이션 시작 전 모든 transform을 0으로 초기화
-      posterOrder.forEach((posterIndex) => {
+      currentOrder.forEach((posterIndex) => {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
           gsap.set(ref, { x: 0, rotateY: 0 });
@@ -69,39 +73,24 @@ export default function Landing() {
       const timeline = gsap.timeline({
         onComplete: () => {
           // 애니메이션이 완전히 끝난 후 transform을 명시적으로 0으로 설정
-          posterOrder.forEach((posterIndex) => {
+          currentOrder.forEach((posterIndex) => {
             const ref = posterRefs[posterIndex].current;
             if (ref) {
               gsap.set(ref, { x: 0, rotateY: 0 });
             }
           });
           
-          // requestAnimationFrame으로 DOM 업데이트 대기
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              // transform이 0이 된 후 순서 업데이트
-              // order 속성이 제거되었으므로 DOM 재배치가 위치에 영향을 주지 않음
-              setPosterOrder(newOrder);
-              
-              // DOM 재배치 완료 대기
-              setTimeout(() => {
-                // 모든 transform이 이미 0이므로 추가 초기화 불필요
-                // 단, 혹시 모를 경우를 대비해 한 번 더 확인
-                newOrder.forEach((posterIndex) => {
-                  const ref = posterRefs[posterIndex].current;
-                  if (ref) {
-                    gsap.set(ref, { x: 0, rotateY: 0 });
-                  }
-                });
-                
-                isAnimatingRef.current = false;
-              }, 50); // 50ms 지연으로 DOM 재배치 완료 대기
-            });
-          });
+          // 내부 순서만 업데이트 (DOM 재배치 없음 - 순간이동 방지)
+          posterOrderRef.current = newOrder;
+          
+          // setPosterOrder 호출 제거 - DOM 재배치로 인한 순간이동 방지
+          // 대신 내부 ref만 업데이트하여 다음 클릭 시 올바른 순서 사용
+          
+          isAnimatingRef.current = false;
         }
       });
       
-      posterOrder.forEach((posterIndex, currentPosition) => {
+      currentOrder.forEach((posterIndex, currentPosition) => {
         const ref = posterRefs[posterIndex].current;
         if (!ref) return;
         
@@ -193,8 +182,8 @@ export default function Landing() {
         }
       });
     } else {
-      // ref가 없으면 즉시 순서 변경
-      setPosterOrder(newOrder);
+      // ref가 없으면 내부 순서만 업데이트 (DOM 재배치 없음)
+      posterOrderRef.current = newOrder;
     }
   };
 

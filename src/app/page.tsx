@@ -11,131 +11,18 @@ export default function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   
-  // 포스터 순서 관리: [왼쪽, 중앙, 오른쪽]
-  const [posterOrder, setPosterOrder] = useState([0, 1, 2]); // poster1, poster2, poster3
-  const posterOrderRef = useRef([0, 1, 2]); // 내부적으로만 순서 추적 (DOM 재배치 방지)
-  const posterRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
-  const isAnimatingRef = useRef(false); // 애니메이션 진행 중 플래그
-  
-  // Regenerate 버튼 클릭 핸들러 - 선택된 포스터(중앙)에 따라 다른 페이지로 이동
-  const handleRegenerateClick = () => {
-    const selectedPosterIndex = posterOrderRef.current[1]; // 중앙 포스터 인덱스 (ref 사용)
-    // poster1(0) → /start/1, poster2(1) → /start/2, poster3(2) → /start/3
-    router.push(`/start/${selectedPosterIndex + 1}`);
+  // 포스터 클릭 핸들러 - 간단하게 해당 페이지로 이동
+  const handlePosterClick = (posterNumber: number) => {
+    // localStorage에 선택된 포스터 저장
+    localStorage.setItem('selectedPoster', String(posterNumber));
+    // 해당 포스터 페이지로 이동
+    router.push(`/start/${posterNumber}`);
   };
   
-  // 포스터 클릭 핸들러
-  const handlePosterClick = (clickedIndex: number) => {
-    // 중앙 포스터(인덱스 1)는 클릭 불가
-    if (clickedIndex === 1) return;
-    
-    // 애니메이션 진행 중이면 클릭 무시
-    if (isAnimatingRef.current) return;
-    
-    // 현재 순서는 ref에서 가져오기 (DOM 재배치 없음)
-    const currentOrder = posterOrderRef.current;
-    
-    // 새로운 순서 계산
-    const newOrder = [...currentOrder];
-    if (clickedIndex === 0) {
-      // 왼쪽 포스터 클릭: [0, 1, 2] → [2, 0, 1]
-      newOrder[0] = currentOrder[2];
-      newOrder[1] = currentOrder[0];
-      newOrder[2] = currentOrder[1];
-    } else if (clickedIndex === 2) {
-      // 오른쪽 포스터 클릭: [0, 1, 2] → [1, 2, 0]
-      newOrder[0] = currentOrder[1];
-      newOrder[1] = currentOrder[2];
-      newOrder[2] = currentOrder[0];
-    }
-    
-    // 모든 포스터 ref 가져오기
-    const allRefs = currentOrder.map(index => posterRefs[index].current).filter(Boolean);
-    
-    if (allRefs.length === 3) {
-      // 애니메이션 시작
-      isAnimatingRef.current = true;
-      
-      // 포스터 간격 계산
-      const centerWidth = 304;
-      const sideWidth = 228;
-      const gap = 20;
-      const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
-      
-      // 애니메이션 시작 전 모든 transform을 0으로 초기화 (원래 CSS flexbox 배치 사용)
-      currentOrder.forEach((posterIndex) => {
-        const ref = posterRefs[posterIndex].current;
-        if (ref) {
-          gsap.set(ref, { x: 0, clearProps: 'transform' });
-        }
-      });
-      
-      const timeline = gsap.timeline({
-        onComplete: () => {
-          // 순서 업데이트
-          setPosterOrder(newOrder);
-          
-          // DOM 재배치 완료 대기
-          setTimeout(() => {
-            // 모든 transform 초기화 (원래 CSS 배치로 복귀)
-            newOrder.forEach((posterIndex) => {
-              const ref = posterRefs[posterIndex].current;
-              if (ref) {
-                gsap.set(ref, { x: 0, clearProps: 'transform' });
-              }
-            });
-            
-            // 내부 순서도 업데이트
-            posterOrderRef.current = newOrder;
-            
-            isAnimatingRef.current = false;
-          }, 100);
-        }
-      });
-      
-      currentOrder.forEach((posterIndex, currentPosition) => {
-        const ref = posterRefs[posterIndex].current;
-        if (!ref) return;
-        
-        // 새로운 위치 찾기
-        const newPosition = newOrder.indexOf(posterIndex);
-        const positionDiff = newPosition - currentPosition;
-        
-        // 목표 속성
-        const isNewCenter = newPosition === 1;
-        const targetWidth = isNewCenter ? '304px' : '228px';
-        const targetOpacity = isNewCenter ? 1 : 0.5;
-        const targetZIndex = isNewCenter ? 11 : 10;
-        
-        // 이동 거리 계산 (원래 CSS 배치 기준 상대 이동)
-        let moveX = 0;
-        if (positionDiff === 1) {
-          moveX = oneStepDistance;
-        } else if (positionDiff === -1) {
-          moveX = -oneStepDistance;
-        } else if (positionDiff === 2) {
-          moveX = oneStepDistance * 2;
-        } else if (positionDiff === -2) {
-          moveX = -oneStepDistance * 2;
-        }
-        
-        // 현재 x 위치 가져오기 (초기값은 0)
-        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
-        
-        // 단순 수평 이동 애니메이션 (회전 없음)
-        timeline.to(ref, {
-          x: currentX + moveX,
-          width: targetWidth,
-          opacity: targetOpacity,
-          zIndex: targetZIndex,
-          duration: 1.0,
-          ease: 'power2.inOut'
-        }, 0);
-      });
-    } else {
-      // ref가 없으면 내부 순서만 업데이트 (DOM 재배치 없음)
-      posterOrderRef.current = newOrder;
-    }
+  // Regenerate 버튼 클릭 핸들러 - 중앙 포스터(포스터 2)로 이동
+  const handleRegenerateClick = () => {
+    localStorage.setItem('selectedPoster', '2');
+    router.push('/start/2');
   };
 
   useLayoutEffect(() => {
@@ -145,19 +32,7 @@ export default function Landing() {
       gsap.set('.parallax', { x: 0, y: 'calc(30vh + 70px)', rotateX: 0, rotateY: 0 });
       gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       
-      // 포스터 초기 수평 위치 설정 (원래 배치)
-      const centerWidth = 304;
-      const sideWidth = 228;
-      const gap = 20;
-      const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
-      
-      // 초기 포스터 위치는 CSS flexbox로 배치되므로 transform 초기화만
-      posterOrder.forEach((posterIndex) => {
-        const ref = posterRefs[posterIndex].current;
-        if (ref) {
-          gsap.set(ref, { x: 0, clearProps: 'transform' });
-        }
-      });
+      // 포스터 초기 위치는 CSS flexbox로 자동 배치됨
       // Split titles(after hero) into per-letter spans for stagger animation
       document.querySelectorAll<HTMLElement>('#narratives .section-title, #gallery .section-title, #exhibit .section-title, #exhibit .exhibit-subtitle').forEach((titleEl) => {
         if (titleEl.getAttribute('data-split') === 'true') return;
@@ -828,35 +703,27 @@ export default function Landing() {
               perspective: '1000px'
             }}
           >
-            {posterOrder.map((posterIndex, positionIndex) => {
+            {[1, 2, 3].map((posterNumber) => {
               const posterData = [
                 { src: '/poster/poster1.png', alt: 'Poster 1' },
                 { src: '/poster/poster2.png', alt: 'Poster 2' },
                 { src: '/poster/poster3.png', alt: 'Poster 3' }
               ];
               
-              const isCenter = positionIndex === 1;
-              const width = isCenter ? '304px' : '228px';
-              const opacity = isCenter ? 1 : 0.5;
-              const zIndex = isCenter ? 11 : 10;
-              
               return (
                 <div
-                  key={`poster-${posterIndex}`}
-                  ref={posterRefs[posterIndex]}
+                  key={`poster-${posterNumber}`}
                   className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
                   style={{
-                    width,
-                    opacity,
-                    zIndex,
-                    // order 속성 제거 - transform만으로 위치 관리
-                    transformStyle: 'preserve-3d'
+                    width: '304px',
+                    opacity: 1,
+                    zIndex: 10
                   }}
-                  onClick={() => handlePosterClick(positionIndex)}
+                  onClick={() => handlePosterClick(posterNumber)}
                 >
                   <img
-                    src={posterData[posterIndex].src}
-                    alt={posterData[posterIndex].alt}
+                    src={posterData[posterNumber - 1].src}
+                    alt={posterData[posterNumber - 1].alt}
                     className="w-full h-auto rounded-lg shadow-lg"
                   />
                 </div>

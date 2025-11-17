@@ -68,22 +68,35 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션 완료 후 순서를 먼저 업데이트
-          setPosterOrder(newOrder);
+          // 모든 transform을 먼저 초기화 (회전 각도를 0으로)
+          posterOrder.forEach((posterIndex) => {
+            const ref = posterRefs[posterIndex].current;
+            if (ref) {
+              // 회전만 먼저 0으로 설정 (x는 아직 유지)
+              gsap.set(ref, { rotateY: 0 });
+            }
+          });
           
-          // DOM 재배치 완료 대기 (setTimeout 사용 - 무한 반복 방지)
-          setTimeout(() => {
-            // DOM 재배치 완료 후 transform 초기화
-            // 이제 포스터가 새로운 DOM 위치에 있으므로 transform을 초기화해도 올바른 위치에 있음
-            newOrder.forEach((posterIndex) => {
-              const ref = posterRefs[posterIndex].current;
-              if (ref) {
-                gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
-              }
+          // requestAnimationFrame으로 DOM 업데이트 대기
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              // 이제 순서 업데이트
+              setPosterOrder(newOrder);
+              
+              // DOM 재배치 완료 대기
+              setTimeout(() => {
+                // 모든 transform 초기화
+                newOrder.forEach((posterIndex) => {
+                  const ref = posterRefs[posterIndex].current;
+                  if (ref) {
+                    gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
+                  }
+                });
+                
+                isAnimatingRef.current = false;
+              }, 50); // 50ms 지연으로 DOM 재배치 완료 대기
             });
-            
-            isAnimatingRef.current = false;
-          }, 100); // 100ms 지연으로 DOM 재배치 완료 대기
+          });
         }
       });
       
@@ -97,64 +110,59 @@ export default function Landing() {
         
         // 이동 거리 계산
         let moveX = 0;
+        let moveDistance = 0; // 이동 단계 수 (1 또는 2)
         if (positionDiff === 1) {
           moveX = oneStepDistance;
+          moveDistance = 1;
         } else if (positionDiff === -1) {
           moveX = -oneStepDistance;
+          moveDistance = 1;
         } else if (positionDiff === 2) {
           moveX = oneStepDistance * 2;
+          moveDistance = 2;
         } else if (positionDiff === -2) {
           moveX = -oneStepDistance * 2;
+          moveDistance = 2;
         }
         
         // 목표 속성
         const isNewCenter = newPosition === 1;
-        const wasCenter = currentPosition === 1;
         const targetWidth = isNewCenter ? '304px' : '228px';
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 회전 각도 계산
+        // 회전 각도 계산: 이동 거리에 비례 (1단계 = 180도, 2단계 = 360도)
+        // 이동 방향에 따라 회전 방향 결정 (오른쪽 = 시계방향, 왼쪽 = 반시계방향)
         let rotateY = 0;
-        if (isNewCenter && !wasCenter) {
-          // 중앙으로 오는 경우: 왼쪽에서 오면 시계방향(+), 오른쪽에서 오면 반시계방향(-)
-          if (currentPosition === 0) {
-            // 왼쪽 → 중앙: 시계방향 회전
-            rotateY = 360;
-          } else if (currentPosition === 2) {
-            // 오른쪽 → 중앙: 반시계방향 회전
-            rotateY = -360;
+        if (moveDistance > 0) {
+          // 이동 거리에 비례한 회전 각도
+          const baseRotation = 180; // 1단계 이동당 180도
+          rotateY = moveDistance * baseRotation;
+          
+          // 이동 방향에 따라 회전 방향 결정
+          if (moveX < 0) {
+            // 왼쪽으로 이동: 반시계방향
+            rotateY = -rotateY;
           }
-        } else if (!isNewCenter && wasCenter) {
-          // 중앙에서 나가는 경우: 왼쪽으로 가면 반시계방향(-), 오른쪽으로 가면 시계방향(+)
-          if (newPosition === 0) {
-            // 중앙 → 왼쪽: 반시계방향 회전
-            rotateY = -360;
-          } else if (newPosition === 2) {
-            // 중앙 → 오른쪽: 시계방향 회전
-            rotateY = 360;
-          }
-        } else if (!isNewCenter && !wasCenter) {
-          // 양쪽에서 양쪽으로 이동하는 경우
-          if (currentPosition === 0 && newPosition === 2) {
-            // 왼쪽 → 오른쪽: 시계방향 회전
-            rotateY = 360;
-          } else if (currentPosition === 2 && newPosition === 0) {
-            // 오른쪽 → 왼쪽: 반시계방향 회전
-            rotateY = -360;
-          }
+          // 오른쪽으로 이동: 시계방향 (양수 유지)
         }
         
-        // 회전 애니메이션
-        timeline.to(ref, {
-          x: moveX,
-          rotateY: rotateY,
-          width: targetWidth,
-          opacity: targetOpacity,
-          zIndex: targetZIndex,
-          duration: 1.0,
-          ease: 'power2.inOut'
-        }, 0);
+        // 회전 애니메이션 (0도에서 시작)
+        timeline.fromTo(ref, 
+          {
+            rotateY: 0
+          },
+          {
+            x: moveX,
+            rotateY: rotateY,
+            width: targetWidth,
+            opacity: targetOpacity,
+            zIndex: targetZIndex,
+            duration: 1.0,
+            ease: 'power2.inOut'
+          }, 
+          0
+        );
       });
     } else {
       // ref가 없으면 즉시 순서 변경

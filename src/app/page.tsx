@@ -703,21 +703,27 @@ export default function Landing() {
               perspective: '1000px'
             }}
           >
-            {[1, 2, 3].map((posterNumber) => {
+            {[1, 2, 3].map((posterNumber, index) => {
               const posterData = [
                 { src: '/poster/poster1.png', alt: 'Poster 1' },
                 { src: '/poster/poster2.png', alt: 'Poster 2' },
                 { src: '/poster/poster3.png', alt: 'Poster 3' }
               ];
               
+              // 중앙 포스터(index 1)는 크게, 양쪽은 작게
+              const isCenter = index === 1;
+              const width = isCenter ? '304px' : '228px';
+              const opacity = isCenter ? 1 : 0.5;
+              const zIndex = isCenter ? 11 : 10;
+              
               return (
                 <div
                   key={`poster-${posterNumber}`}
                   className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
                   style={{
-                    width: '304px',
-                    opacity: 1,
-                    zIndex: 10
+                    width,
+                    opacity,
+                    zIndex
                   }}
                   onClick={() => handlePosterClick(posterNumber)}
                 >

@@ -11,18 +11,12 @@ export default function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   
-  // 포스터 클릭 핸들러 - 간단하게 해당 페이지로 이동
-  const handlePosterClick = (posterNumber: number) => {
-    // localStorage에 선택된 포스터 저장
-    localStorage.setItem('selectedPoster', String(posterNumber));
-    // 해당 포스터 페이지로 이동
-    router.push(`/start/${posterNumber}`);
-  };
-  
-  // Regenerate 버튼 클릭 핸들러 - 중앙 포스터(포스터 2)로 이동
+  // Regenerate 버튼 클릭 핸들러 - 가운데 포스터(인덱스 1, 즉 posterNumber 2)로 이동
   const handleRegenerateClick = () => {
-    localStorage.setItem('selectedPoster', '2');
-    router.push('/start/2');
+    // 가운데 포스터는 항상 인덱스 1에 있음
+    const centerPosterNumber = 2; // [1, 2, 3] 배열에서 인덱스 1 = posterNumber 2
+    localStorage.setItem('selectedPoster', String(centerPosterNumber));
+    router.push(`/start/${centerPosterNumber}`);
   };
 
   useLayoutEffect(() => {
@@ -719,13 +713,13 @@ export default function Landing() {
               return (
                 <div
                   key={`poster-${posterNumber}`}
-                  className="poster-item pointer-events-auto flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
+                  className="poster-item flex-shrink-0 transition-transform"
                   style={{
                     width,
                     opacity,
-                    zIndex
+                    zIndex,
+                    pointerEvents: 'none' // 포스터 클릭 비활성화
                   }}
-                  onClick={() => handlePosterClick(posterNumber)}
                 >
                   <img
                     src={posterData[posterNumber - 1].src}

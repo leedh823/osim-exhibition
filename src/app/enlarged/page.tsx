@@ -113,13 +113,29 @@ export default function EnlargedVideo() {
         console.log('👥 기본값: People 영상 시작');
       }
     } else if (poster === '2') {
-      setVideoIndex(2); // 2.mp4부터 시작
-      setVideoSrc('/poster video 2/2.mp4');
+      // 포스터 2: selectedType에 따라 left 영상 재생
+      if (type === 'left') {
+        setVideoIndex(1);
+        setVideoSrc('/poster video 2/left1.mp4');
+        console.log('⬅️ Left 영상 시작: left1.mp4');
+      } else {
+        // 기본값: left
+        setVideoIndex(1);
+        setVideoSrc('/poster video 2/left1.mp4');
+        console.log('⬅️ 기본값: Left 영상 시작');
+      }
     } else if (poster === '3') {
-      setVideoIndex(4); // 4.mp4부터 시작
-      const poster3VideoSrc = '/poster video 3/4.mp4';
-      console.log('🎬 포스터 3 영상 경로 설정:', poster3VideoSrc);
-      setVideoSrc(poster3VideoSrc);
+      // 포스터 3: selectedType에 따라 boat 영상 재생
+      if (type === 'boat') {
+        setVideoIndex(1);
+        setVideoSrc('/poster video 3/보트 반갈1 mp4.mp4');
+        console.log('🚤 Boat 영상 시작: 보트 반갈1 mp4.mp4');
+      } else {
+        // 기본값: boat
+        setVideoIndex(1);
+        setVideoSrc('/poster video 3/보트 반갈1 mp4.mp4');
+        console.log('🚤 기본값: Boat 영상 시작');
+      }
     } else {
       setVideoIndex(2);
       setVideoSrc('/2.mp4'); // 기본 영상 (fallback)
@@ -190,9 +206,34 @@ export default function EnlargedVideo() {
         return `/poster video 1/people ${index}.mp4`;
       }
     } else if (poster === '2') {
-      return `/poster video 2/${index}.mp4`;
+      // 포스터 2: left 영상 경로 반환
+      if (type === 'left') {
+        return `/poster video 2/left${index}.mp4`;
+      } else {
+        // 기본값: left
+        return `/poster video 2/left${index}.mp4`;
+      }
     } else if (poster === '3') {
-      return `/poster video 3/${index}.mp4`;
+      // 포스터 3: boat 영상 경로 반환
+      if (type === 'boat') {
+        // 보트 반갈 파일명 매핑
+        const boatFiles = [
+          '보트 반갈1 mp4.mp4',
+          '보트 반갈2  mp4.mp4',
+          '보트반갈3mp4.mp4',
+          '보트반갈4.mp4'
+        ];
+        return `/poster video 3/${boatFiles[index - 1] || boatFiles[0]}`;
+      } else {
+        // 기본값: boat
+        const boatFiles = [
+          '보트 반갈1 mp4.mp4',
+          '보트 반갈2  mp4.mp4',
+          '보트반갈3mp4.mp4',
+          '보트반갈4.mp4'
+        ];
+        return `/poster video 3/${boatFiles[index - 1] || boatFiles[0]}`;
+      }
     }
     return `/2.mp4`;
   };

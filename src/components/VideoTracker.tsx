@@ -15,7 +15,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
+  const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [detectedObjects, setDetectedObjects] = useState<DetectedObject[]>([]);
+  const [detectedObjectsWithTimestamp, setDetectedObjectsWithTimestamp] = useState<Array<DetectedObject & { detectedAt: number }>>([]);
   const [isDetecting, setIsDetecting] = useState(false);
   // 줌 기능 제거 (2번 화면에서 불필요)
   // const [zoomScale, setZoomScale] = useState(1);
@@ -160,8 +162,46 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   // }, [followPerson, selectedPerson, detectedObjects]);
 
 
-  // 실제 객체 감지 및 그리기 (성능 최적화)
-  const detectAndDrawObjects = useCallback(async () => {
+  // 객체 감지 함수 (초당 30회 실행)
+  const detectObjects = useCallback(() => {
+    if (!videoRef.current) {
+      return;
+    }
+
+    const video = videoRef.current;
+    const now = Date.now();
+
+    try {
+      // 2개의 노랑색 박스 감지
+      const objects = detectYellowBoxes(video);
+      
+      // 감지된 객체에 타임스탬프 추가
+      const objectsWithTimestamp = objects.map(obj => ({
+        ...obj,
+        detectedAt: now
+      }));
+      
+      // 타임스탬프가 있는 객체 목록 업데이트
+      setDetectedObjectsWithTimestamp(prev => {
+        // 새로운 객체와 1초 이내의 기존 객체 유지
+        const validObjects = prev.filter(obj => now - obj.detectedAt < 1000);
+        // 새로운 객체 추가 (중복 제거)
+        const newObjects = objectsWithTimestamp.filter(newObj => 
+          !validObjects.some(existing => existing.id === newObj.id)
+        );
+        return [...validObjects, ...newObjects];
+      });
+      
+      // 클릭 감지를 위한 객체 목록도 업데이트
+      setDetectedObjects(objects);
+      
+    } catch (error) {
+      console.error('객체 감지 중 오류:', error);
+    }
+  }, [detectYellowBoxes]);
+
+  // 렌더링 함수 (requestAnimationFrame으로 부드럽게)
+  const renderObjects = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) {
       return;
     }
@@ -172,81 +212,82 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     
     if (!ctx) return;
 
-    // 캔버스 크기를 비디오 크기에 맞춤 (한 번만 설정)
+    // 캔버스 크기를 비디오 크기에 맞춤
     if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
     }
 
-    try {
-      // 2개의 노랑색 박스 감지
-      console.log('🔍 2개의 노랑색 박스 감지 시작...', { 
-        videoWidth: video.videoWidth, 
-        videoHeight: video.videoHeight,
-        isDetecting 
-      });
-      
-      const objects = detectYellowBoxes(video);
-      console.log('📊 노랑색 박스 감지 결과:', objects);
-      console.log('📈 감지된 박스 개수:', objects.length);
-      
-      // 객체가 변경된 경우에만 상태 업데이트
-      if (objects.length !== detectedObjects.length || 
-          objects.some((obj, index) => !detectedObjects[index] || obj.id !== detectedObjects[index].id)) {
-        console.log('🔄 객체 상태 업데이트:', objects);
-        setDetectedObjects(objects);
-      } else {
-        console.log('⏸️ 객체 상태 변경 없음');
-      }
-      
-      // 줌 기능 제거 (2번 화면에서 불필요)
-      // updatePersonZoom();
-      
-      // 캔버스 클리어
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // 줌 기능 제거 - 일반 비디오 그리기
-      ctx.save();
-      
-      // 비디오 그리기 (줌 없이)
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      // 감지된 노랑색 박스 그리기
-      console.log('노랑색 박스 그리기 시작, 박스 수:', objects.length);
-      realObjectDetector.drawObjects(ctx, objects);
-      console.log('노랑색 박스 그리기 완료');
-      
-      ctx.restore();
-
-    } catch (error) {
-      console.error('객체 감지 중 오류:', error);
+    const now = Date.now();
+    
+    // 1초 이내의 객체만 필터링
+    const validObjects = detectedObjectsWithTimestamp
+      .filter(obj => now - obj.detectedAt < 1000)
+      .map(({ detectedAt, ...obj }) => obj); // 타임스탬프 제거
+    
+    // 캔버스 클리어
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 비디오 그리기
+    ctx.save();
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // 감지된 노랑색 박스 그리기 (1초 이내의 객체만)
+    if (validObjects.length > 0) {
+      realObjectDetector.drawObjects(ctx, validObjects);
     }
-  }, [detectedObjects, detectYellowBoxes]);
+    
+    ctx.restore();
+  }, [detectedObjectsWithTimestamp]);
 
-  // 감지 루프 시작/중지 (성능 최적화)
+  // 감지 루프 시작/중지 (초당 30회 = 33ms마다)
   useEffect(() => {
     console.log('🔄 감지 루프 상태:', { isDetecting });
     
     if (isDetecting) {
-      console.log('▶️ 감지 루프 시작');
-      const startDetection = () => {
-        detectAndDrawObjects();
-        animationRef.current = requestAnimationFrame(startDetection);
-      };
-      startDetection();
+      console.log('▶️ 감지 루프 시작 (초당 30회)');
+      // 초당 30회 감지 (33ms마다)
+      intervalRef.current = setInterval(() => {
+        detectObjects();
+      }, 33); // 1000ms / 30 = 33.33ms
     } else {
       console.log('⏹️ 감지 루프 중지');
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = undefined;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = undefined;
+      }
+    };
+  }, [isDetecting, detectObjects]);
+
+  // 렌더링 루프 (requestAnimationFrame으로 부드럽게)
+  useEffect(() => {
+    if (isDetecting) {
+      const startRender = () => {
+        renderObjects();
+        animationRef.current = requestAnimationFrame(startRender);
+      };
+      startRender();
+    } else {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+        animationRef.current = undefined;
       }
     }
 
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+        animationRef.current = undefined;
       }
     };
-  }, [isDetecting, detectAndDrawObjects]);
+  }, [isDetecting, renderObjects]);
 
   // 비디오 소스 변경 시 비디오 업데이트
   useEffect(() => {

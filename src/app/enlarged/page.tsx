@@ -113,11 +113,16 @@ export default function EnlargedVideo() {
         console.log('👥 기본값: People 영상 시작');
       }
     } else if (poster === '2') {
-      // 포스터 2: selectedType에 따라 left 영상 재생
+      // 포스터 2: selectedType에 따라 left 영상 재생 또는 영상 없음
       if (type === 'left') {
         setVideoIndex(1);
         setVideoSrc('/poster video 2/left1.mp4');
         console.log('⬅️ Left 영상 시작: left1.mp4');
+      } else if (type === 'taxi') {
+        // 택시 선택 시 영상 없음
+        setVideoIndex(0);
+        setVideoSrc(''); // 빈 경로로 설정하여 영상 재생 안 함
+        console.log('🚕 Taxi 선택됨 - 영상 없음');
       } else {
         // 기본값: left
         setVideoIndex(1);
@@ -206,9 +211,12 @@ export default function EnlargedVideo() {
         return `/poster video 1/people ${index}.mp4`;
       }
     } else if (poster === '2') {
-      // 포스터 2: left 영상 경로 반환
+      // 포스터 2: left 영상 경로 반환 또는 택시일 경우 빈 경로
       if (type === 'left') {
         return `/poster video 2/left${index}.mp4`;
+      } else if (type === 'taxi') {
+        // 택시 선택 시 영상 없음
+        return '';
       } else {
         // 기본값: left
         return `/poster video 2/left${index}.mp4`;
@@ -249,20 +257,25 @@ export default function EnlargedVideo() {
       setUserInput('');
       setCurrentTurn(prev => prev + 1);
       
-      // 채팅 전송 시 다음 비디오로 변경
-      setVideoIndex(prev => {
-        const nextIndex = prev + 1;
-        // 포스터 1의 경우 people/car 영상은 최대 4개까지
-        const maxIndex = selectedPoster === '1' ? 4 : 6;
-        
-        if (nextIndex <= maxIndex) {
-          const nextVideoPath = getVideoPath(selectedPoster, selectedType, nextIndex);
-          console.log('🎬 다음 비디오로 변경:', nextVideoPath);
-          setVideoSrc(nextVideoPath);
-          return nextIndex;
-        }
-        return prev; // 최대 인덱스를 넘어가면 유지
-      });
+      // 채팅 전송 시 다음 비디오로 변경 (택시 선택 시 제외)
+      if (selectedPoster === '2' && selectedType === 'taxi') {
+        // 택시 선택 시 영상 변경 없음
+        console.log('🚕 Taxi 선택 - 영상 변경 없음');
+      } else {
+        setVideoIndex(prev => {
+          const nextIndex = prev + 1;
+          // 포스터 1의 경우 people/car 영상은 최대 4개까지
+          const maxIndex = selectedPoster === '1' ? 4 : 6;
+          
+          if (nextIndex <= maxIndex) {
+            const nextVideoPath = getVideoPath(selectedPoster, selectedType, nextIndex);
+            console.log('🎬 다음 비디오로 변경:', nextVideoPath);
+            setVideoSrc(nextVideoPath);
+            return nextIndex;
+          }
+          return prev; // 최대 인덱스를 넘어가면 유지
+        });
+      }
     }
   };
 

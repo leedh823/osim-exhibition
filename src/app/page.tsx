@@ -62,29 +62,41 @@ export default function Landing() {
       const gap = 20;
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
       
-      // 애니메이션 시작 전 모든 transform을 0으로 초기화
-      currentOrder.forEach((posterIndex) => {
+      // 원형 회전을 위한 반지름 계산
+      const rotationRadius = oneStepDistance * 1.5; // 원의 반지름
+      
+      // 위치 계산 헬퍼 함수
+      const getPosition = (position: number) => {
+        const angle = position === 0 ? -120 : position === 1 ? 0 : 120;
+        const rad = (angle * Math.PI) / 180;
+        return {
+          x: Math.sin(rad) * rotationRadius,
+          y: -Math.cos(rad) * rotationRadius * 0.3 // 약간의 수직 오프셋
+        };
+      };
+      
+      // 애니메이션 시작 전 모든 transform을 초기 위치로 설정
+      currentOrder.forEach((posterIndex, position) => {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
-          gsap.set(ref, { x: 0, rotateY: 0 });
+          const pos = getPosition(position);
+          gsap.set(ref, { x: pos.x, y: pos.y, rotateY: 0 });
         }
       });
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션이 완전히 끝난 후 transform을 명시적으로 0으로 설정
-          currentOrder.forEach((posterIndex) => {
+          // 애니메이션이 완전히 끝난 후 최종 위치로 설정
+          newOrder.forEach((posterIndex, position) => {
             const ref = posterRefs[posterIndex].current;
             if (ref) {
-              gsap.set(ref, { x: 0, rotateY: 0 });
+              const pos = getPosition(position);
+              gsap.set(ref, { x: pos.x, y: pos.y, rotateY: 0 });
             }
           });
           
           // 내부 순서만 업데이트 (DOM 재배치 없음 - 순간이동 방지)
           posterOrderRef.current = newOrder;
-          
-          // setPosterOrder 호출 제거 - DOM 재배치로 인한 순간이동 방지
-          // 대신 내부 ref만 업데이트하여 다음 클릭 시 올바른 순서 사용
           
           isAnimatingRef.current = false;
         }
@@ -98,22 +110,22 @@ export default function Landing() {
         const newPosition = newOrder.indexOf(posterIndex);
         const positionDiff = newPosition - currentPosition;
         
-        // 이동 거리 계산
-        let moveX = 0;
-        let moveDistance = 0; // 이동 단계 수 (1 또는 2)
-        if (positionDiff === 1) {
-          moveX = oneStepDistance;
-          moveDistance = 1;
-        } else if (positionDiff === -1) {
-          moveX = -oneStepDistance;
-          moveDistance = 1;
-        } else if (positionDiff === 2) {
-          moveX = oneStepDistance * 2;
-          moveDistance = 2;
-        } else if (positionDiff === -2) {
-          moveX = -oneStepDistance * 2;
-          moveDistance = 2;
-        }
+        // 각 위치의 각도 (왼쪽: -120도, 중앙: 0도, 오른쪽: 120도)
+        const getAngle = (position: number) => {
+          if (position === 0) return -120; // 왼쪽
+          if (position === 1) return 0;    // 중앙
+          if (position === 2) return 120;   // 오른쪽
+          return 0;
+        };
+        
+        const currentAngle = getAngle(currentPosition);
+        const targetAngle = getAngle(newPosition);
+        const angleDiff = targetAngle - currentAngle;
+        
+        // 각도 차이를 -180 ~ 180 범위로 정규화
+        let normalizedAngleDiff = angleDiff;
+        if (normalizedAngleDiff > 180) normalizedAngleDiff -= 360;
+        if (normalizedAngleDiff < -180) normalizedAngleDiff += 360;
         
         // 목표 속성
         const isNewCenter = newPosition === 1;
@@ -121,65 +133,46 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 회전 각도 계산: 이동 거리에 비례 (1단계 = 180도, 2단계 = 360도)
-        // 이동 방향에 따라 회전 방향 결정 (오른쪽 = 시계방향, 왼쪽 = 반시계방향)
-        let rotateY = 0;
-        if (moveDistance > 0) {
-          // 이동 거리에 비례한 회전 각도
-          const baseRotation = 180; // 1단계 이동당 180도
-          rotateY = moveDistance * baseRotation;
-          
-          // 이동 방향에 따라 회전 방향 결정
-          if (moveX < 0) {
-            // 왼쪽으로 이동: 반시계방향
-            rotateY = -rotateY;
-          }
-          // 오른쪽으로 이동: 시계방향 (양수 유지)
-        }
+        // 원형 회전을 위한 위치 계산
+        const getPosition = (angle: number) => {
+          const rad = (angle * Math.PI) / 180;
+          return {
+            x: Math.sin(rad) * rotationRadius,
+            y: -Math.cos(rad) * rotationRadius * 0.3 // 약간의 수직 오프셋
+          };
+        };
         
-        // 회전 애니메이션: 0도 → 회전 → 0도로 끝나게
-        if (rotateY !== 0) {
-          // 회전이 있는 경우: 두 단계로 나눔
-          // 1단계: 이동 + 회전 (80% 시간)
-          timeline.fromTo(ref, 
-            {
-              rotateY: 0
-            },
-            {
-              x: moveX,
-              rotateY: rotateY,
-              width: targetWidth,
-              opacity: targetOpacity,
-              zIndex: targetZIndex,
-              duration: 0.8,
-              ease: 'power2.inOut'
-            }, 
-            0
-          );
-          
-          // 2단계: 회전을 0도로 복귀 (20% 시간)
-          timeline.to(ref, {
+        const currentPos = getPosition(currentAngle);
+        const targetPos = getPosition(targetAngle);
+        const moveX = targetPos.x - currentPos.x;
+        const moveY = targetPos.y - currentPos.y;
+        
+        // 회전 각도: 각도 차이만큼 회전
+        const rotateY = normalizedAngleDiff;
+        
+        // 회전 애니메이션: 원형 회전
+        timeline.fromTo(ref, 
+          {
             rotateY: 0,
-            duration: 0.2,
-            ease: 'power2.inOut'
-          }, 0.8);
-        } else {
-          // 회전이 없는 경우: 일반 이동만
-          timeline.fromTo(ref, 
-            {
-              rotateY: 0
-            },
-            {
-              x: moveX,
-              width: targetWidth,
-              opacity: targetOpacity,
-              zIndex: targetZIndex,
-              duration: 1.0,
-              ease: 'power2.inOut'
-            }, 
-            0
-          );
-        }
+            x: currentPos.x,
+            y: currentPos.y
+          },
+          {
+            x: targetPos.x,
+            y: targetPos.y,
+            rotateY: rotateY,
+            width: targetWidth,
+            opacity: targetOpacity,
+            zIndex: targetZIndex,
+            duration: 1.0,
+            ease: 'power2.inOut',
+            // 회전을 0도로 끝나게 하기 위해 마지막에 복귀
+            onComplete: function() {
+              gsap.set(ref, { rotateY: 0 });
+            }
+          }, 
+          0
+        );
       });
     } else {
       // ref가 없으면 내부 순서만 업데이트 (DOM 재배치 없음)

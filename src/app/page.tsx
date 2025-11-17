@@ -62,20 +62,13 @@ export default function Landing() {
       const gap = 20;
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
       
-      // 축 중심 회전을 위한 원형 경로 계산
-      // 원래 수평 배치 위치를 원형 경로로 변환
-      const rotationRadius = oneStepDistance * 1.2; // 원의 반지름
-      
-      // 위치 계산 헬퍼 함수 (원형 경로를 따라 이동, 포스터 자체는 회전하지 않음)
+      // 원래 수평 배치 위치 (고정)
       const getPosition = (position: number) => {
-        // 원래 수평 배치를 원형 경로로 변환
-        // 왼쪽: -120도, 중앙: 0도, 오른쪽: 120도
-        const angle = position === 0 ? -120 : position === 1 ? 0 : 120;
-        const rad = (angle * Math.PI) / 180;
-        return {
-          x: Math.sin(rad) * rotationRadius,
-          y: -Math.cos(rad) * rotationRadius * 0.2 // 약간의 수직 오프셋
-        };
+        // 원래 수평 배치: 왼쪽(-oneStepDistance), 중앙(0), 오른쪽(oneStepDistance)
+        if (position === 0) return { x: -oneStepDistance, y: 0 };
+        if (position === 1) return { x: 0, y: 0 };
+        if (position === 2) return { x: oneStepDistance, y: 0 };
+        return { x: 0, y: 0 };
       };
       
       // 애니메이션 시작 전 모든 transform을 초기 위치로 설정
@@ -175,14 +168,11 @@ export default function Landing() {
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
       
       const getInitialPosition = (position: number) => {
-        // 원형 경로를 따라 배치 (포스터 자체는 회전하지 않음)
-        const angle = position === 0 ? -120 : position === 1 ? 0 : 120;
-        const rad = (angle * Math.PI) / 180;
-        const rotationRadius = oneStepDistance * 1.2;
-        return {
-          x: Math.sin(rad) * rotationRadius,
-          y: -Math.cos(rad) * rotationRadius * 0.2
-        };
+        // 원래 수평 배치 위치 (고정)
+        if (position === 0) return { x: -oneStepDistance, y: 0 };
+        if (position === 1) return { x: 0, y: 0 };
+        if (position === 2) return { x: oneStepDistance, y: 0 };
+        return { x: 0, y: 0 };
       };
       
       // 초기 포스터 위치 설정

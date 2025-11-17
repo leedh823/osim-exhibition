@@ -68,35 +68,30 @@ export default function Landing() {
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 모든 transform을 먼저 초기화 (회전 각도를 0으로)
-          posterOrder.forEach((posterIndex) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              // 회전만 먼저 0으로 설정 (x는 아직 유지)
-              gsap.set(ref, { rotateY: 0 });
-            }
-          });
-          
-          // requestAnimationFrame으로 DOM 업데이트 대기
-          requestAnimationFrame(() => {
+          // 애니메이션이 완전히 끝난 후 약간의 지연을 두고 DOM 순서 변경
+          // 회전 애니메이션이 0도로 끝나므로 추가 초기화 불필요
+          setTimeout(() => {
+            // requestAnimationFrame으로 DOM 업데이트 대기
             requestAnimationFrame(() => {
-              // 이제 순서 업데이트
-              setPosterOrder(newOrder);
-              
-              // DOM 재배치 완료 대기
-              setTimeout(() => {
-                // 모든 transform 초기화
-                newOrder.forEach((posterIndex) => {
-                  const ref = posterRefs[posterIndex].current;
-                  if (ref) {
-                    gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
-                  }
-                });
+              requestAnimationFrame(() => {
+                // 이제 순서 업데이트
+                setPosterOrder(newOrder);
                 
-                isAnimatingRef.current = false;
-              }, 50); // 50ms 지연으로 DOM 재배치 완료 대기
+                // DOM 재배치 완료 대기
+                setTimeout(() => {
+                  // 모든 transform 초기화
+                  newOrder.forEach((posterIndex) => {
+                    const ref = posterRefs[posterIndex].current;
+                    if (ref) {
+                      gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
+                    }
+                  });
+                  
+                  isAnimatingRef.current = false;
+                }, 50); // 50ms 지연으로 DOM 재배치 완료 대기
+              });
             });
-          });
+          }, 100); // 애니메이션 완료 후 100ms 지연
         }
       });
       
@@ -147,22 +142,49 @@ export default function Landing() {
           // 오른쪽으로 이동: 시계방향 (양수 유지)
         }
         
-        // 회전 애니메이션 (0도에서 시작)
-        timeline.fromTo(ref, 
-          {
-            rotateY: 0
-          },
-          {
-            x: moveX,
-            rotateY: rotateY,
-            width: targetWidth,
-            opacity: targetOpacity,
-            zIndex: targetZIndex,
-            duration: 1.0,
+        // 회전 애니메이션: 0도 → 회전 → 0도로 끝나게
+        if (rotateY !== 0) {
+          // 회전이 있는 경우: 두 단계로 나눔
+          // 1단계: 이동 + 회전 (80% 시간)
+          timeline.fromTo(ref, 
+            {
+              rotateY: 0
+            },
+            {
+              x: moveX,
+              rotateY: rotateY,
+              width: targetWidth,
+              opacity: targetOpacity,
+              zIndex: targetZIndex,
+              duration: 0.8,
+              ease: 'power2.inOut'
+            }, 
+            0
+          );
+          
+          // 2단계: 회전을 0도로 복귀 (20% 시간)
+          timeline.to(ref, {
+            rotateY: 0,
+            duration: 0.2,
             ease: 'power2.inOut'
-          }, 
-          0
-        );
+          }, 0.8);
+        } else {
+          // 회전이 없는 경우: 일반 이동만
+          timeline.fromTo(ref, 
+            {
+              rotateY: 0
+            },
+            {
+              x: moveX,
+              width: targetWidth,
+              opacity: targetOpacity,
+              zIndex: targetZIndex,
+              duration: 1.0,
+              ease: 'power2.inOut'
+            }, 
+            0
+          );
+        }
       });
     } else {
       // ref가 없으면 즉시 순서 변경

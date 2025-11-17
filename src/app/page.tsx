@@ -62,36 +62,42 @@ export default function Landing() {
       posterOrder.forEach((posterIndex) => {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
-          gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
+          gsap.set(ref, { x: 0, rotateY: 0 });
         }
       });
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션이 완전히 끝난 후 약간의 지연을 두고 DOM 순서 변경
-          // 회전 애니메이션이 0도로 끝나므로 추가 초기화 불필요
-          setTimeout(() => {
-            // requestAnimationFrame으로 DOM 업데이트 대기
+          // 애니메이션이 완전히 끝난 후 transform을 명시적으로 0으로 설정
+          // setPosterOrder 전에 모든 transform을 초기화
+          posterOrder.forEach((posterIndex) => {
+            const ref = posterRefs[posterIndex].current;
+            if (ref) {
+              gsap.set(ref, { x: 0, rotateY: 0 });
+            }
+          });
+          
+          // requestAnimationFrame으로 DOM 업데이트 대기
+          requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                // 이제 순서 업데이트
-                setPosterOrder(newOrder);
+              // 이제 순서 업데이트 (transform이 이미 0이므로 순간이동 없음)
+              setPosterOrder(newOrder);
+              
+              // DOM 재배치 완료 대기
+              setTimeout(() => {
+                // 모든 transform이 이미 0이므로 추가 초기화 불필요
+                // 단, 혹시 모를 경우를 대비해 한 번 더 확인
+                newOrder.forEach((posterIndex) => {
+                  const ref = posterRefs[posterIndex].current;
+                  if (ref) {
+                    gsap.set(ref, { x: 0, rotateY: 0 });
+                  }
+                });
                 
-                // DOM 재배치 완료 대기
-                setTimeout(() => {
-                  // 모든 transform 초기화
-                  newOrder.forEach((posterIndex) => {
-                    const ref = posterRefs[posterIndex].current;
-                    if (ref) {
-                      gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
-                    }
-                  });
-                  
-                  isAnimatingRef.current = false;
-                }, 50); // 50ms 지연으로 DOM 재배치 완료 대기
-              });
+                isAnimatingRef.current = false;
+              }, 50); // 50ms 지연으로 DOM 재배치 완료 대기
             });
-          }, 100); // 애니메이션 완료 후 100ms 지연
+          });
         }
       });
       

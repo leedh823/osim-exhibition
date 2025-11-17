@@ -62,7 +62,7 @@ export default function Landing() {
       posterOrder.forEach((posterIndex) => {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
-          gsap.set(ref, { x: 0, clearProps: 'transform' });
+          gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
         }
       });
       
@@ -78,7 +78,7 @@ export default function Landing() {
             newOrder.forEach((posterIndex) => {
               const ref = posterRefs[posterIndex].current;
               if (ref) {
-                gsap.set(ref, { x: 0, clearProps: 'transform' });
+                gsap.set(ref, { x: 0, rotateY: 0, clearProps: 'transform' });
               }
             });
             
@@ -109,13 +109,46 @@ export default function Landing() {
         
         // 목표 속성
         const isNewCenter = newPosition === 1;
+        const wasCenter = currentPosition === 1;
         const targetWidth = isNewCenter ? '304px' : '228px';
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 회전 애니메이션 - 항상 0에서 시작
+        // 회전 각도 계산
+        let rotateY = 0;
+        if (isNewCenter && !wasCenter) {
+          // 중앙으로 오는 경우: 왼쪽에서 오면 시계방향(+), 오른쪽에서 오면 반시계방향(-)
+          if (currentPosition === 0) {
+            // 왼쪽 → 중앙: 시계방향 회전
+            rotateY = 360;
+          } else if (currentPosition === 2) {
+            // 오른쪽 → 중앙: 반시계방향 회전
+            rotateY = -360;
+          }
+        } else if (!isNewCenter && wasCenter) {
+          // 중앙에서 나가는 경우: 왼쪽으로 가면 반시계방향(-), 오른쪽으로 가면 시계방향(+)
+          if (newPosition === 0) {
+            // 중앙 → 왼쪽: 반시계방향 회전
+            rotateY = -360;
+          } else if (newPosition === 2) {
+            // 중앙 → 오른쪽: 시계방향 회전
+            rotateY = 360;
+          }
+        } else if (!isNewCenter && !wasCenter) {
+          // 양쪽에서 양쪽으로 이동하는 경우
+          if (currentPosition === 0 && newPosition === 2) {
+            // 왼쪽 → 오른쪽: 시계방향 회전
+            rotateY = 360;
+          } else if (currentPosition === 2 && newPosition === 0) {
+            // 오른쪽 → 왼쪽: 반시계방향 회전
+            rotateY = -360;
+          }
+        }
+        
+        // 회전 애니메이션
         timeline.to(ref, {
-          x: moveX, // 항상 0에서 시작하므로 절대 이동 거리 사용
+          x: moveX,
+          rotateY: rotateY,
           width: targetWidth,
           opacity: targetOpacity,
           zIndex: targetZIndex,

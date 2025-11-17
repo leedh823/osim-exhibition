@@ -62,21 +62,11 @@ export default function Landing() {
       const gap = 20;
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
       
-      // 원래 수평 배치 위치 (고정)
-      const getPosition = (position: number) => {
-        // 원래 수평 배치: 왼쪽(-oneStepDistance), 중앙(0), 오른쪽(oneStepDistance)
-        if (position === 0) return { x: -oneStepDistance, y: 0 };
-        if (position === 1) return { x: 0, y: 0 };
-        if (position === 2) return { x: oneStepDistance, y: 0 };
-        return { x: 0, y: 0 };
-      };
-      
-      // 애니메이션 시작 전 모든 transform을 초기 위치로 설정
-      currentOrder.forEach((posterIndex, position) => {
+      // 애니메이션 시작 전 모든 transform을 0으로 초기화 (원래 CSS flexbox 배치 사용)
+      currentOrder.forEach((posterIndex) => {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
-          const pos = getPosition(position);
-          gsap.set(ref, { x: pos.x, clearProps: 'transform' });
+          gsap.set(ref, { x: 0, clearProps: 'transform' });
         }
       });
       
@@ -87,12 +77,11 @@ export default function Landing() {
           
           // DOM 재배치 완료 대기
           setTimeout(() => {
-            // 모든 transform 초기화
-            newOrder.forEach((posterIndex, position) => {
+            // 모든 transform 초기화 (원래 CSS 배치로 복귀)
+            newOrder.forEach((posterIndex) => {
               const ref = posterRefs[posterIndex].current;
               if (ref) {
-                const pos = getPosition(position);
-                gsap.set(ref, { x: pos.x, clearProps: 'transform' });
+                gsap.set(ref, { x: 0, clearProps: 'transform' });
               }
             });
             
@@ -118,11 +107,7 @@ export default function Landing() {
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 원래 수평 배치 위치 계산
-        const currentPos = getPosition(currentPosition);
-        const targetPos = getPosition(newPosition);
-        
-        // 이동 거리 계산
+        // 이동 거리 계산 (원래 CSS 배치 기준 상대 이동)
         let moveX = 0;
         if (positionDiff === 1) {
           moveX = oneStepDistance;
@@ -134,8 +119,8 @@ export default function Landing() {
           moveX = -oneStepDistance * 2;
         }
         
-        // 현재 x 위치 가져오기
-        const currentX = (gsap.getProperty(ref, "x") as number) || currentPos.x;
+        // 현재 x 위치 가져오기 (초기값은 0)
+        const currentX = (gsap.getProperty(ref, "x") as number) || 0;
         
         // 단순 수평 이동 애니메이션 (회전 없음)
         timeline.to(ref, {
@@ -166,20 +151,11 @@ export default function Landing() {
       const gap = 20;
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
       
-      const getInitialPosition = (position: number) => {
-        // 원래 수평 배치 위치 (고정)
-        if (position === 0) return { x: -oneStepDistance, y: 0 };
-        if (position === 1) return { x: 0, y: 0 };
-        if (position === 2) return { x: oneStepDistance, y: 0 };
-        return { x: 0, y: 0 };
-      };
-      
-      // 초기 포스터 위치 설정
-      posterOrder.forEach((posterIndex, position) => {
+      // 초기 포스터 위치는 CSS flexbox로 배치되므로 transform 초기화만
+      posterOrder.forEach((posterIndex) => {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
-          const pos = getInitialPosition(position);
-          gsap.set(ref, { x: pos.x });
+          gsap.set(ref, { x: 0, clearProps: 'transform' });
         }
       });
       // Split titles(after hero) into per-letter spans for stagger animation

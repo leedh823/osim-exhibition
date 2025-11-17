@@ -62,16 +62,19 @@ export default function Landing() {
       const gap = 20;
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
       
-      // 원형 회전을 위한 반지름 계산
-      const rotationRadius = oneStepDistance * 1.5; // 원의 반지름
+      // 축 중심 회전을 위한 원형 경로 계산
+      // 원래 수평 배치 위치를 원형 경로로 변환
+      const rotationRadius = oneStepDistance * 1.2; // 원의 반지름
       
-      // 위치 계산 헬퍼 함수
+      // 위치 계산 헬퍼 함수 (원형 경로를 따라 이동, 포스터 자체는 회전하지 않음)
       const getPosition = (position: number) => {
+        // 원래 수평 배치를 원형 경로로 변환
+        // 왼쪽: -120도, 중앙: 0도, 오른쪽: 120도
         const angle = position === 0 ? -120 : position === 1 ? 0 : 120;
         const rad = (angle * Math.PI) / 180;
         return {
           x: Math.sin(rad) * rotationRadius,
-          y: -Math.cos(rad) * rotationRadius * 0.3 // 약간의 수직 오프셋
+          y: -Math.cos(rad) * rotationRadius * 0.2 // 약간의 수직 오프셋
         };
       };
       
@@ -80,7 +83,7 @@ export default function Landing() {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
           const pos = getPosition(position);
-          gsap.set(ref, { x: pos.x, y: pos.y, rotateY: 0 });
+          gsap.set(ref, { x: pos.x, y: pos.y });
         }
       });
       
@@ -91,7 +94,7 @@ export default function Landing() {
             const ref = posterRefs[posterIndex].current;
             if (ref) {
               const pos = getPosition(position);
-              gsap.set(ref, { x: pos.x, y: pos.y, rotateY: 0 });
+              gsap.set(ref, { x: pos.x, y: pos.y });
             }
           });
           
@@ -110,66 +113,44 @@ export default function Landing() {
         const newPosition = newOrder.indexOf(posterIndex);
         const positionDiff = newPosition - currentPosition;
         
-        // 각 위치의 각도 (왼쪽: -120도, 중앙: 0도, 오른쪽: 120도)
-        const getAngle = (position: number) => {
-          if (position === 0) return -120; // 왼쪽
-          if (position === 1) return 0;    // 중앙
-          if (position === 2) return 120;   // 오른쪽
-          return 0;
-        };
-        
-        const currentAngle = getAngle(currentPosition);
-        const targetAngle = getAngle(newPosition);
-        const angleDiff = targetAngle - currentAngle;
-        
-        // 각도 차이를 -180 ~ 180 범위로 정규화
-        let normalizedAngleDiff = angleDiff;
-        if (normalizedAngleDiff > 180) normalizedAngleDiff -= 360;
-        if (normalizedAngleDiff < -180) normalizedAngleDiff += 360;
-        
         // 목표 속성
         const isNewCenter = newPosition === 1;
         const targetWidth = isNewCenter ? '304px' : '228px';
         const targetOpacity = isNewCenter ? 1 : 0.5;
         const targetZIndex = isNewCenter ? 11 : 10;
         
-        // 원형 회전을 위한 위치 계산
-        const getPosition = (angle: number) => {
-          const rad = (angle * Math.PI) / 180;
-          return {
-            x: Math.sin(rad) * rotationRadius,
-            y: -Math.cos(rad) * rotationRadius * 0.3 // 약간의 수직 오프셋
-          };
-        };
-        
-        const currentPos = getPosition(currentAngle);
-        const targetPos = getPosition(targetAngle);
+        // 원래 수평 배치 위치 계산
+        const currentPos = getPosition(currentPosition);
+        const targetPos = getPosition(newPosition);
         const moveX = targetPos.x - currentPos.x;
-        const moveY = targetPos.y - currentPos.y;
         
-        // 회전 각도: 각도 차이만큼 회전
-        const rotateY = normalizedAngleDiff;
+        // 이동 거리에 따른 회전 효과 (포스터 자체는 회전하지 않음)
+        // 이동 거리 계산
+        let moveDistance = 0;
+        if (positionDiff === 1) {
+          moveDistance = 1;
+        } else if (positionDiff === -1) {
+          moveDistance = 1;
+        } else if (positionDiff === 2) {
+          moveDistance = 2;
+        } else if (positionDiff === -2) {
+          moveDistance = 2;
+        }
         
-        // 회전 애니메이션: 원형 회전
+        // 회전 애니메이션: 포스터 자체 회전 없이 위치만 이동
         timeline.fromTo(ref, 
           {
-            rotateY: 0,
             x: currentPos.x,
             y: currentPos.y
           },
           {
             x: targetPos.x,
             y: targetPos.y,
-            rotateY: rotateY,
             width: targetWidth,
             opacity: targetOpacity,
             zIndex: targetZIndex,
             duration: 1.0,
-            ease: 'power2.inOut',
-            // 회전을 0도로 끝나게 하기 위해 마지막에 복귀
-            onComplete: function() {
-              gsap.set(ref, { rotateY: 0 });
-            }
+            ease: 'power2.inOut'
           }, 
           0
         );
@@ -187,19 +168,20 @@ export default function Landing() {
       gsap.set('.parallax', { x: 0, y: 'calc(30vh + 70px)', rotateX: 0, rotateY: 0 });
       gsap.set(['.portal-core', '.parallax-item'], { x: 0, y: 0, rotateX: 0, rotateY: 0 });
       
-      // 포스터 초기 원형 위치 설정
+      // 포스터 초기 수평 위치 설정 (원래 배치)
       const centerWidth = 304;
       const sideWidth = 228;
       const gap = 20;
       const oneStepDistance = (centerWidth / 2) + gap + (sideWidth / 2);
-      const rotationRadius = oneStepDistance * 1.5;
       
       const getInitialPosition = (position: number) => {
+        // 원형 경로를 따라 배치 (포스터 자체는 회전하지 않음)
         const angle = position === 0 ? -120 : position === 1 ? 0 : 120;
         const rad = (angle * Math.PI) / 180;
+        const rotationRadius = oneStepDistance * 1.2;
         return {
           x: Math.sin(rad) * rotationRadius,
-          y: -Math.cos(rad) * rotationRadius * 0.3
+          y: -Math.cos(rad) * rotationRadius * 0.2
         };
       };
       
@@ -208,7 +190,7 @@ export default function Landing() {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
           const pos = getInitialPosition(position);
-          gsap.set(ref, { x: pos.x, y: pos.y, rotateY: 0 });
+          gsap.set(ref, { x: pos.x, y: pos.y });
         }
       });
       // Split titles(after hero) into per-letter spans for stagger animation

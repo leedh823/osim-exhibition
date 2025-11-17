@@ -76,25 +76,31 @@ export default function Landing() {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
           const pos = getPosition(position);
-          gsap.set(ref, { x: pos.x, y: pos.y });
+          gsap.set(ref, { x: pos.x, clearProps: 'transform' });
         }
       });
       
       const timeline = gsap.timeline({
         onComplete: () => {
-          // 애니메이션이 완전히 끝난 후 최종 위치로 설정
-          newOrder.forEach((posterIndex, position) => {
-            const ref = posterRefs[posterIndex].current;
-            if (ref) {
-              const pos = getPosition(position);
-              gsap.set(ref, { x: pos.x, y: pos.y });
-            }
-          });
+          // 순서 업데이트
+          setPosterOrder(newOrder);
           
-          // 내부 순서만 업데이트 (DOM 재배치 없음 - 순간이동 방지)
-          posterOrderRef.current = newOrder;
-          
-          isAnimatingRef.current = false;
+          // DOM 재배치 완료 대기
+          setTimeout(() => {
+            // 모든 transform 초기화
+            newOrder.forEach((posterIndex, position) => {
+              const ref = posterRefs[posterIndex].current;
+              if (ref) {
+                const pos = getPosition(position);
+                gsap.set(ref, { x: pos.x, clearProps: 'transform' });
+              }
+            });
+            
+            // 내부 순서도 업데이트
+            posterOrderRef.current = newOrder;
+            
+            isAnimatingRef.current = false;
+          }, 100);
         }
       });
       
@@ -115,38 +121,31 @@ export default function Landing() {
         // 원래 수평 배치 위치 계산
         const currentPos = getPosition(currentPosition);
         const targetPos = getPosition(newPosition);
-        const moveX = targetPos.x - currentPos.x;
         
-        // 이동 거리에 따른 회전 효과 (포스터 자체는 회전하지 않음)
         // 이동 거리 계산
-        let moveDistance = 0;
+        let moveX = 0;
         if (positionDiff === 1) {
-          moveDistance = 1;
+          moveX = oneStepDistance;
         } else if (positionDiff === -1) {
-          moveDistance = 1;
+          moveX = -oneStepDistance;
         } else if (positionDiff === 2) {
-          moveDistance = 2;
+          moveX = oneStepDistance * 2;
         } else if (positionDiff === -2) {
-          moveDistance = 2;
+          moveX = -oneStepDistance * 2;
         }
         
-        // 회전 애니메이션: 포스터 자체 회전 없이 위치만 이동
-        timeline.fromTo(ref, 
-          {
-            x: currentPos.x,
-            y: currentPos.y
-          },
-          {
-            x: targetPos.x,
-            y: targetPos.y,
-            width: targetWidth,
-            opacity: targetOpacity,
-            zIndex: targetZIndex,
-            duration: 1.0,
-            ease: 'power2.inOut'
-          }, 
-          0
-        );
+        // 현재 x 위치 가져오기
+        const currentX = (gsap.getProperty(ref, "x") as number) || currentPos.x;
+        
+        // 단순 수평 이동 애니메이션 (회전 없음)
+        timeline.to(ref, {
+          x: currentX + moveX,
+          width: targetWidth,
+          opacity: targetOpacity,
+          zIndex: targetZIndex,
+          duration: 1.0,
+          ease: 'power2.inOut'
+        }, 0);
       });
     } else {
       // ref가 없으면 내부 순서만 업데이트 (DOM 재배치 없음)
@@ -180,7 +179,7 @@ export default function Landing() {
         const ref = posterRefs[posterIndex].current;
         if (ref) {
           const pos = getInitialPosition(position);
-          gsap.set(ref, { x: pos.x, y: pos.y });
+          gsap.set(ref, { x: pos.x });
         }
       });
       // Split titles(after hero) into per-letter spans for stagger animation

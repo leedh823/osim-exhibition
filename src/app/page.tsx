@@ -10,11 +10,80 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Landing() {
   const rootRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [posterOrder, setPosterOrder] = useState<number[]>([1, 2, 3]); // [왼쪽, 가운데, 오른쪽]
+  const posterRefs = useRef<(HTMLDivElement | null)[]>([]);
   
-  // Regenerate 버튼 클릭 핸들러 - 가운데 포스터(인덱스 1, 즉 posterNumber 2)로 이동
+  // 포스터 클릭 핸들러 - 포스터 순서 회전
+  const handlePosterClick = (clickedIndex: number) => {
+    // 가운데 포스터는 클릭 불가
+    if (clickedIndex === 1) return;
+    
+    const newOrder = [...posterOrder];
+    
+    if (clickedIndex === 2) {
+      // 오른쪽 포스터 클릭: 오른쪽 → 가운데, 가운데 → 왼쪽, 왼쪽 → 오른쪽
+      // [1, 2, 3] → [2, 3, 1]
+      const temp = newOrder[2];
+      newOrder[2] = newOrder[1];
+      newOrder[1] = newOrder[0];
+      newOrder[0] = temp;
+    } else if (clickedIndex === 0) {
+      // 왼쪽 포스터 클릭: 왼쪽 → 가운데, 가운데 → 오른쪽, 오른쪽 → 왼쪽
+      // [1, 2, 3] → [3, 1, 2]
+      const temp = newOrder[0];
+      newOrder[0] = newOrder[2];
+      newOrder[2] = newOrder[1];
+      newOrder[1] = temp;
+    }
+    
+    // GSAP 애니메이션으로 부드럽게 이동
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const duration = prefersReduced ? 0.1 : 0.8;
+    
+    // 각 포스터의 현재 위치와 목표 위치 계산
+    const getPosterWidth = (index: number) => index === 1 ? 304 : 228; // 가운데는 304px, 양쪽은 228px
+    const gap = 20;
+    
+    posterRefs.current.forEach((ref, currentIndex) => {
+      if (!ref) return;
+      
+      // 현재 포스터가 새 순서에서 어디로 가야 하는지 찾기
+      const targetIndex = newOrder.indexOf(posterOrder[currentIndex]);
+      
+      // 현재 위치 계산 (현재 순서 기준)
+      let currentX = 0;
+      for (let i = 0; i < currentIndex; i++) {
+        currentX += getPosterWidth(i) + gap;
+      }
+      
+      // 목표 위치 계산 (새 순서 기준)
+      let targetX = 0;
+      for (let i = 0; i < targetIndex; i++) {
+        targetX += getPosterWidth(i) + gap;
+      }
+      
+      const offsetX = targetX - currentX;
+      
+      gsap.to(ref, {
+        x: offsetX,
+        duration: duration,
+        ease: 'power2.inOut'
+      });
+    });
+    
+    // 애니메이션 완료 후 순서 업데이트 및 위치 리셋
+    setTimeout(() => {
+      setPosterOrder(newOrder);
+      posterRefs.current.forEach((r) => {
+        if (r) gsap.set(r, { x: 0 });
+      });
+    }, duration * 1000);
+  };
+  
+  // Regenerate 버튼 클릭 핸들러 - 가운데 포스터로 이동
   const handleRegenerateClick = () => {
     // 가운데 포스터는 항상 인덱스 1에 있음
-    const centerPosterNumber = 2; // [1, 2, 3] 배열에서 인덱스 1 = posterNumber 2
+    const centerPosterNumber = posterOrder[1];
     localStorage.setItem('selectedPoster', String(centerPosterNumber));
     router.push(`/start/${centerPosterNumber}`);
   };
@@ -697,7 +766,7 @@ export default function Landing() {
               perspective: '1000px'
             }}
           >
-            {[1, 2, 3].map((posterNumber, index) => {
+            {posterOrder.map((posterNumber, index) => {
               const posterData = [
                 { src: '/poster/poster1.png', alt: 'Poster 1' },
                 { src: '/poster/poster2.png', alt: 'Poster 2' },
@@ -712,19 +781,21 @@ export default function Landing() {
               
               return (
                 <div
-                  key={`poster-${posterNumber}`}
-                  className="poster-item flex-shrink-0 transition-transform"
+                  key={`poster-${posterNumber}-${index}`}
+                  ref={(el) => { posterRefs.current[index] = el; }}
+                  className="poster-item flex-shrink-0 cursor-pointer transition-opacity hover:opacity-90"
                   style={{
                     width,
                     opacity,
                     zIndex,
-                    pointerEvents: 'none' // 포스터 클릭 비활성화
+                    pointerEvents: 'auto' // 포스터 클릭 활성화
                   }}
+                  onClick={() => handlePosterClick(index)}
                 >
                   <img
                     src={posterData[posterNumber - 1].src}
                     alt={posterData[posterNumber - 1].alt}
-                    className="w-full h-auto rounded-lg shadow-lg"
+                    className="w-full h-auto rounded-lg shadow-lg pointer-events-none"
                   />
                 </div>
               );

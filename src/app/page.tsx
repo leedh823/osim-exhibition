@@ -65,7 +65,19 @@ export default function Landing() {
         targetX += getTargetWidth(i) + gap;
       }
       
-      const offsetX = targetX - currentX;
+      let offsetX = targetX - currentX;
+      
+      // 오른쪽 포스터 클릭 시 오른쪽 → 가운데 거리를 248px로 조정
+      if (clickedIndex === 2 && currentIndex === 2 && targetIndex === 1) {
+        // 오른쪽 포스터가 가운데로 올 때: 324px → 248px
+        offsetX = -248; // 왼쪽으로 248px 이동
+      }
+      
+      // 가운데 포스터가 왼쪽으로 갈 때도 248px로 조정
+      if (clickedIndex === 2 && currentIndex === 1 && targetIndex === 0) {
+        // 가운데 포스터가 왼쪽으로 갈 때: 248px로 고정
+        offsetX = -248;
+      }
       
       // 현재 크기와 목표 크기
       const currentWidth = getPosterWidth(currentIndex);

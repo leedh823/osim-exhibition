@@ -88,7 +88,12 @@ export default function Landing() {
       const currentWidth = getPosterWidth(currentIndex);
       const targetWidth = getTargetWidth(targetIndex);
       const currentOpacity = currentIndex === 1 ? 1 : 0.5;
-      const targetOpacity = targetIndex === 1 ? 1 : 0.5;
+      let targetOpacity = targetIndex === 1 ? 1 : 0.5;
+      
+      // 가운데로 가는 포스터는 opacity를 점점 사라지게 (0.3으로)
+      if (targetIndex === 1 && currentIndex !== 1) {
+        targetOpacity = 0.3; // 가운데로 가는 포스터는 opacity 0.3으로
+      }
       
       // z-index 설정: 가운데로 가는 포스터는 앞에 보이게
       let targetZIndex = targetIndex === 1 ? 12 : 10; // 가운데는 12, 양쪽은 10
@@ -98,9 +103,19 @@ export default function Landing() {
         targetZIndex = 13; // 왼쪽에서 가운데로 가는 포스터는 가장 앞에
       }
       
+      // 오른쪽 클릭 시 오른쪽 포스터가 가운데로 올 때 더 높은 z-index
+      if (clickedIndex === 2 && currentIndex === 2 && targetIndex === 1) {
+        targetZIndex = 13; // 오른쪽에서 가운데로 가는 포스터는 가장 앞에
+      }
+      
       // 오른쪽에서 왼쪽으로 가는 포스터는 뒤에
       if (clickedIndex === 0 && currentIndex === 2 && targetIndex === 0) {
         targetZIndex = 9; // 오른쪽에서 왼쪽으로 가는 포스터는 뒤에
+      }
+      
+      // 왼쪽에서 오른쪽으로 가는 포스터는 뒤에
+      if (clickedIndex === 2 && currentIndex === 0 && targetIndex === 2) {
+        targetZIndex = 9; // 왼쪽에서 오른쪽으로 가는 포스터는 뒤에
       }
       
       // 초기 opacity를 GSAP로 설정 (인라인 스타일과 충돌 방지)

@@ -37,10 +37,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const data = imageData.data;
     const boxes: DetectedObject[] = [];
 
-    // 노랑색 박스 색상 (RGB: 236, 174, 48) - ECAE30
-    const targetR = 236;
-    const targetG = 174;
-    const targetB = 48;
+    // 노랑색 박스 색상 (RGB: 245, 218, 49)
+    const targetR = 245;
+    const targetG = 218;
+    const targetB = 49;
     const colorThreshold = 80; // 색상 허용 오차
     const minBoxSize = 30; // 최소 박스 크기
 

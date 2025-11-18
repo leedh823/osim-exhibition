@@ -40,10 +40,10 @@ const rgbToHsv = (r: number, g: number, b: number): { h: number; s: number; v: n
 
 // 노란색인지 판단하는 함수 (HSV 기반 + RGB 기반 복합 검사)
 const isYellowColor = (r: number, g: number, b: number): boolean => {
-    // RGB 기반 검사: F6DA32 (246, 218, 50)와 유사한 색상 범위
-    const targetR = 246;
-    const targetG = 218;
-    const targetB = 50;
+    // RGB 기반 검사: ECAE30 (236, 174, 48)와 유사한 색상 범위
+    const targetR = 236;
+    const targetG = 174;
+    const targetB = 48;
     
     // RGB 거리 계산 (유클리드 거리)
     const rgbDistance = Math.sqrt(
@@ -53,16 +53,16 @@ const isYellowColor = (r: number, g: number, b: number): boolean => {
     );
     
     // RGB 거리 임계값 (더 넓은 범위)
-    const rgbThreshold = 100;
+    const rgbThreshold = 120;
     
     // HSV 기반 검사
     const hsv = rgbToHsv(r, g, b);
-    // 노란색 Hue 범위: 40~70도 (더 넓은 범위)
-    const yellowHueMin = 35;
-    const yellowHueMax = 75;
+    // 노란색 Hue 범위: 35~75도 (ECAE30은 약 40도 근처)
+    const yellowHueMin = 30;
+    const yellowHueMax = 80;
     // 채도와 명도 조건 (노란색은 높은 채도와 명도를 가짐)
-    const minSaturation = 40;
-    const minValue = 50;
+    const minSaturation = 35;
+    const minValue = 45;
     
     // RGB 거리 기반 검사
     const rgbMatch = rgbDistance < rgbThreshold;
@@ -70,15 +70,16 @@ const isYellowColor = (r: number, g: number, b: number): boolean => {
     // HSV 기반 검사
     const hsvMatch = (
       (hsv.h >= yellowHueMin && hsv.h <= yellowHueMax) ||
-      (hsv.h >= 0 && hsv.h <= 20) || // 빨강-노랑 경계
-      (hsv.h >= 340 && hsv.h <= 360) // 보라-빨강-노랑 경계
+      (hsv.h >= 0 && hsv.h <= 25) || // 빨강-노랑 경계
+      (hsv.h >= 335 && hsv.h <= 360) // 보라-빨강-노랑 경계
     ) && hsv.s >= minSaturation && hsv.v >= minValue;
     
-    // 추가 RGB 범위 검사 (다양한 노란색 계열)
+    // 추가 RGB 범위 검사 (ECAE30과 비슷한 노란색 계열)
     const additionalRanges = [
-      { r: [230, 255], g: [200, 235], b: [30, 80] },   // 밝은 노란색
-      { r: [240, 255], g: [210, 230], b: [40, 70] },   // F6DA32 근처
-      { r: [220, 255], g: [190, 230], b: [20, 90] },   // 넓은 노란색 범위
+      { r: [220, 255], g: [160, 200], b: [25, 75] },   // ECAE30 근처 (어두운 노란색)
+      { r: [230, 255], g: [170, 210], b: [35, 85] },   // 밝은 ECAE30 계열
+      { r: [210, 250], g: [150, 190], b: [20, 70] },  // 넓은 ECAE30 범위
+      { r: [225, 255], g: [165, 205], b: [30, 80] },  // 중간 밝기 노란색
     ];
     
     const rangeMatch = additionalRanges.some(range => 

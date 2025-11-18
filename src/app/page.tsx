@@ -90,8 +90,26 @@ export default function Landing() {
       const currentOpacity = currentIndex === 1 ? 1 : 0.5;
       const targetOpacity = targetIndex === 1 ? 1 : 0.5;
       
+      // z-index 설정: 가운데로 가는 포스터는 앞에 보이게
+      let targetZIndex = targetIndex === 1 ? 12 : 10; // 가운데는 12, 양쪽은 10
+      
+      // 왼쪽 클릭 시 왼쪽 포스터가 가운데로 올 때 더 높은 z-index
+      if (clickedIndex === 0 && currentIndex === 0 && targetIndex === 1) {
+        targetZIndex = 13; // 왼쪽에서 가운데로 가는 포스터는 가장 앞에
+      }
+      
+      // 오른쪽에서 왼쪽으로 가는 포스터는 뒤에
+      if (clickedIndex === 0 && currentIndex === 2 && targetIndex === 0) {
+        targetZIndex = 9; // 오른쪽에서 왼쪽으로 가는 포스터는 뒤에
+      }
+      
       // 초기 opacity를 GSAP로 설정 (인라인 스타일과 충돌 방지)
       gsap.set(ref, { opacity: currentOpacity });
+      
+      // z-index를 즉시 설정 (애니메이션 전에)
+      if (ref) {
+        ref.style.zIndex = String(targetZIndex);
+      }
       
       // 크기, 위치, opacity를 동시에 애니메이션 (같은 duration으로 동시 도착)
       gsap.to(ref, {
@@ -109,12 +127,14 @@ export default function Landing() {
       posterRefs.current.forEach((r, index) => {
         if (r) {
           gsap.set(r, { x: 0 });
-          // 크기와 opacity를 새 순서에 맞게 설정
+          // 크기, opacity, z-index를 새 순서에 맞게 설정
           const isCenter = index === 1;
           gsap.set(r, {
             width: isCenter ? 304 : 228,
             opacity: isCenter ? 1 : 0.5
           });
+          // z-index 리셋
+          r.style.zIndex = isCenter ? '11' : '10';
         }
       });
     }, duration * 1000);

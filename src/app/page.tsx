@@ -71,7 +71,10 @@ export default function Landing() {
       const currentOpacity = currentIndex === 1 ? 1 : 0.5;
       const targetOpacity = targetIndex === 1 ? 1 : 0.5;
       
-      // 크기와 위치를 동시에 애니메이션 (같은 duration으로 동시 도착)
+      // 초기 opacity를 GSAP로 설정 (인라인 스타일과 충돌 방지)
+      gsap.set(ref, { opacity: currentOpacity });
+      
+      // 크기, 위치, opacity를 동시에 애니메이션 (같은 duration으로 동시 도착)
       gsap.to(ref, {
         x: offsetX,
         width: targetWidth,
@@ -794,17 +797,22 @@ export default function Landing() {
               // 중앙 포스터(index 1)는 크게, 양쪽은 작게
               const isCenter = index === 1;
               const width = isCenter ? '304px' : '228px';
-              const opacity = isCenter ? 1 : 0.5;
+              const initialOpacity = isCenter ? 1 : 0.5;
               const zIndex = isCenter ? 11 : 10;
               
               return (
                 <div
                   key={`poster-${posterNumber}-${index}`}
-                  ref={(el) => { posterRefs.current[index] = el; }}
+                  ref={(el) => { 
+                    posterRefs.current[index] = el;
+                    // 초기 opacity를 GSAP로 설정
+                    if (el) {
+                      gsap.set(el, { opacity: initialOpacity });
+                    }
+                  }}
                   className="poster-item flex-shrink-0 cursor-pointer transition-opacity hover:opacity-90"
                   style={{
                     width,
-                    opacity,
                     zIndex,
                     pointerEvents: 'auto' // 포스터 클릭 활성화
                   }}

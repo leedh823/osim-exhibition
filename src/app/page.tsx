@@ -39,10 +39,11 @@ export default function Landing() {
     // GSAP 애니메이션으로 부드럽게 이동
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const duration = prefersReduced ? 0.1 : 0.8;
+    const gap = 20;
     
     // 각 포스터의 현재 위치와 목표 위치 계산
     const getPosterWidth = (index: number) => index === 1 ? 304 : 228; // 가운데는 304px, 양쪽은 228px
-    const gap = 20;
+    const getTargetWidth = (index: number) => index === 1 ? 304 : 228; // 목표 위치의 크기
     
     posterRefs.current.forEach((ref, currentIndex) => {
       if (!ref) return;
@@ -56,16 +57,25 @@ export default function Landing() {
         currentX += getPosterWidth(i) + gap;
       }
       
-      // 목표 위치 계산 (새 순서 기준)
+      // 목표 위치 계산 (새 순서 기준 - 목표 위치의 크기 사용)
       let targetX = 0;
       for (let i = 0; i < targetIndex; i++) {
-        targetX += getPosterWidth(i) + gap;
+        targetX += getTargetWidth(i) + gap;
       }
       
       const offsetX = targetX - currentX;
       
+      // 현재 크기와 목표 크기
+      const currentWidth = getPosterWidth(currentIndex);
+      const targetWidth = getTargetWidth(targetIndex);
+      const currentOpacity = currentIndex === 1 ? 1 : 0.5;
+      const targetOpacity = targetIndex === 1 ? 1 : 0.5;
+      
+      // 크기와 위치를 동시에 애니메이션 (같은 duration으로 동시 도착)
       gsap.to(ref, {
         x: offsetX,
+        width: targetWidth,
+        opacity: targetOpacity,
         duration: duration,
         ease: 'power2.inOut'
       });
@@ -74,8 +84,16 @@ export default function Landing() {
     // 애니메이션 완료 후 순서 업데이트 및 위치 리셋
     setTimeout(() => {
       setPosterOrder(newOrder);
-      posterRefs.current.forEach((r) => {
-        if (r) gsap.set(r, { x: 0 });
+      posterRefs.current.forEach((r, index) => {
+        if (r) {
+          gsap.set(r, { x: 0 });
+          // 크기와 opacity를 새 순서에 맞게 설정
+          const isCenter = index === 1;
+          gsap.set(r, {
+            width: isCenter ? 304 : 228,
+            opacity: isCenter ? 1 : 0.5
+          });
+        }
       });
     }, duration * 1000);
   };

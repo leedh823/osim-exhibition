@@ -11,6 +11,86 @@ interface VideoTrackerProps {
   followPerson?: boolean;
 }
 
+// RGB를 HSV로 변환하는 헬퍼 함수
+const rgbToHsv = (r: number, g: number, b: number): { h: number; s: number; v: number } => {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const diff = max - min;
+    
+    let h = 0;
+    if (diff !== 0) {
+      if (max === r) {
+        h = ((g - b) / diff + (g < b ? 6 : 0)) % 6;
+      } else if (max === g) {
+        h = (b - r) / diff + 2;
+      } else {
+        h = (r - g) / diff + 4;
+      }
+    }
+    h /= 6;
+    
+    const s = max === 0 ? 0 : diff / max;
+    const v = max;
+    
+  return { h: h * 360, s: s * 100, v: v * 100 };
+};
+
+// 노란색인지 판단하는 함수 (HSV 기반 + RGB 기반 복합 검사)
+const isYellowColor = (r: number, g: number, b: number): boolean => {
+    // RGB 기반 검사: F6DA32 (246, 218, 50)와 유사한 색상 범위
+    const targetR = 246;
+    const targetG = 218;
+    const targetB = 50;
+    
+    // RGB 거리 계산 (유클리드 거리)
+    const rgbDistance = Math.sqrt(
+      Math.pow(r - targetR, 2) + 
+      Math.pow(g - targetG, 2) + 
+      Math.pow(b - targetB, 2)
+    );
+    
+    // RGB 거리 임계값 (더 넓은 범위)
+    const rgbThreshold = 100;
+    
+    // HSV 기반 검사
+    const hsv = rgbToHsv(r, g, b);
+    // 노란색 Hue 범위: 40~70도 (더 넓은 범위)
+    const yellowHueMin = 35;
+    const yellowHueMax = 75;
+    // 채도와 명도 조건 (노란색은 높은 채도와 명도를 가짐)
+    const minSaturation = 40;
+    const minValue = 50;
+    
+    // RGB 거리 기반 검사
+    const rgbMatch = rgbDistance < rgbThreshold;
+    
+    // HSV 기반 검사
+    const hsvMatch = (
+      (hsv.h >= yellowHueMin && hsv.h <= yellowHueMax) ||
+      (hsv.h >= 0 && hsv.h <= 20) || // 빨강-노랑 경계
+      (hsv.h >= 340 && hsv.h <= 360) // 보라-빨강-노랑 경계
+    ) && hsv.s >= minSaturation && hsv.v >= minValue;
+    
+    // 추가 RGB 범위 검사 (다양한 노란색 계열)
+    const additionalRanges = [
+      { r: [230, 255], g: [200, 235], b: [30, 80] },   // 밝은 노란색
+      { r: [240, 255], g: [210, 230], b: [40, 70] },   // F6DA32 근처
+      { r: [220, 255], g: [190, 230], b: [20, 90] },   // 넓은 노란색 범위
+    ];
+    
+    const rangeMatch = additionalRanges.some(range => 
+      r >= range.r[0] && r <= range.r[1] &&
+      g >= range.g[0] && g <= range.g[1] &&
+      b >= range.b[0] && b <= range.b[1]
+    );
+    
+  // 세 가지 조건 중 하나라도 만족하면 노란색으로 판단
+  return rgbMatch || hsvMatch || rangeMatch;
+};
+
 const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, className, selectedPerson, followPerson = false }: VideoTrackerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -36,77 +116,72 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const boxes: DetectedObject[] = [];
+    const visited = new Set<string>(); // 이미 처리한 픽셀 추적
 
-    // 노랑색 박스 색상 (RGB: 245, 218, 49)
-    const targetR = 245;
-    const targetG = 218;
-    const targetB = 49;
-    const colorThreshold = 80; // 색상 허용 오차 증가 (50 → 80)
-    const minBoxSize = 30; // 최소 박스 크기 감소 (50 → 30)
+    const minBoxSize = 20; // 최소 박스 크기
 
-    console.log('🔍 2개의 노랑색 박스 감지 시작...', { 
+    console.log('🔍 2개의 노랑색 박스 감지 시작 (정밀 모드)...', { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height 
     });
 
-    // 노랑색 픽셀 찾기 (더 정밀한 스캔)
-    for (let y = 0; y < canvas.height - minBoxSize; y += 2) {
-      for (let x = 0; x < canvas.width - minBoxSize; x += 2) {
+    // 노랑색 픽셀 찾기 (1픽셀 간격으로 정밀 스캔)
+    for (let y = 0; y < canvas.height - minBoxSize; y += 1) {
+      for (let x = 0; x < canvas.width - minBoxSize; x += 1) {
+        const pixelKey = `${x},${y}`;
+        if (visited.has(pixelKey)) continue;
+        
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
         const g = data[pixelIndex + 1];
         const b = data[pixelIndex + 2];
 
-        // 노랑색 감지
-        const rDiff = Math.abs(r - targetR);
-        const gDiff = Math.abs(g - targetG);
-        const bDiff = Math.abs(b - targetB);
-        
-        if (rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold) {
+        // 노랑색 감지 (개선된 함수 사용)
+        if (isYellowColor(r, g, b)) {
           // 디버깅: 노랑색 픽셀 발견 시 로그
-          if (boxes.length < 2) { // 처음 몇 개만 로그
-            console.log('🟡 노랑색 픽셀 발견:', { x, y, r, g, b, rDiff, gDiff, bDiff });
+          if (boxes.length < 2) {
+            const hsv = rgbToHsv(r, g, b);
+            console.log('🟡 노랑색 픽셀 발견:', { x, y, r, g, b, hsv });
           }
           
-          // 노랑색 박스 크기 측정
+          // 노랑색 박스 크기 측정 (더 정밀하게)
           let boxWidth = 0;
           let boxHeight = 0;
           
-          // 가로 크기 측정 (범위 확대)
-          for (let dx = x; dx < Math.min(x + 800, canvas.width); dx++) {
+          // 가로 크기 측정 (왼쪽부터 오른쪽까지)
+          for (let dx = x; dx < Math.min(x + 1000, canvas.width); dx++) {
             const checkIndex = (y * canvas.width + dx) * 4;
             const checkR = data[checkIndex];
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            if (Math.abs(checkR - targetR) < colorThreshold && 
-                Math.abs(checkG - targetG) < colorThreshold && 
-                Math.abs(checkB - targetB) < colorThreshold) {
+            if (isYellowColor(checkR, checkG, checkB)) {
               boxWidth = dx - x + 1;
+              visited.add(`${dx},${y}`);
             } else {
+              // 연속성이 끊기면 중단
               break;
             }
           }
           
-          // 세로 크기 측정 (범위 확대)
-          for (let dy = y; dy < Math.min(y + 800, canvas.height); dy++) {
+          // 세로 크기 측정 (위에서 아래까지)
+          for (let dy = y; dy < Math.min(y + 1000, canvas.height); dy++) {
             const checkIndex = (dy * canvas.width + x) * 4;
             const checkR = data[checkIndex];
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            if (Math.abs(checkR - targetR) < colorThreshold && 
-                Math.abs(checkG - targetG) < colorThreshold && 
-                Math.abs(checkB - targetB) < colorThreshold) {
+            if (isYellowColor(checkR, checkG, checkB)) {
               boxHeight = dy - y + 1;
+              visited.add(`${x},${dy}`);
             } else {
+              // 연속성이 끊기면 중단
               break;
             }
           }
 
           // 박스 크기가 충분하고, 기존 박스와 겹치지 않으면 추가
           if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
-            console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
             const newBox = {
               id: `yellow-box-${boxes.length + 1}`,
               x: x,
@@ -130,8 +205,13 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             if (!isOverlapping) {
               boxes.push(newBox);
               console.log(`✅ 노랑색 박스 ${boxes.length} 감지됨:`, newBox);
-            } else {
-              console.log('⚠️ 박스 겹침으로 인해 제외:', newBox);
+              
+              // 박스 영역의 모든 픽셀을 방문 처리
+              for (let by = y; by < y + boxHeight; by++) {
+                for (let bx = x; bx < x + boxWidth; bx++) {
+                  visited.add(`${bx},${by}`);
+                }
+              }
             }
           }
         }

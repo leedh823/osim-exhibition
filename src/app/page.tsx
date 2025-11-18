@@ -152,11 +152,12 @@ export default function Landing() {
       posterRefs.current.forEach((r, index) => {
         if (r) {
           gsap.set(r, { x: 0 });
-          // 크기, opacity, z-index를 새 순서에 맞게 설정
+          // 크기와 z-index를 새 순서에 맞게 설정
           const isCenter = index === 1;
           gsap.set(r, {
-            width: isCenter ? 304 : 228,
-            opacity: isCenter ? 1 : 0.5
+            width: isCenter ? 304 : 228
+            // opacity는 애니메이션으로 이미 설정된 값 유지 (리셋하지 않음)
+            // 가운데 포스터는 1.0, 양쪽은 0.5로 이미 애니메이션됨
           });
           // z-index 리셋
           r.style.zIndex = isCenter ? '11' : '10';

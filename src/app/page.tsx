@@ -21,13 +21,14 @@ export default function Landing() {
     const newOrder = [...posterOrder];
     
     if (clickedIndex === 2) {
-      // 오른쪽 포스터 클릭: 오른쪽 → 가운데, 가운데 → 왼쪽, 왼쪽 → 오른쪽
-      // [1, 2, 3] → [2, 3, 1]
-      // 왼쪽 클릭 로직을 반대로 적용
-      const temp = newOrder[2]; // 오른쪽 값 저장
-      newOrder[2] = newOrder[1]; // 오른쪽 = 가운데
-      newOrder[1] = newOrder[0]; // 가운데 = 왼쪽
-      newOrder[0] = temp; // 왼쪽 = 오른쪽
+      // 오른쪽 포스터 클릭: 왼쪽 클릭과 반대 방향
+      // 왼쪽 → 오른쪽, 가운데 → 왼쪽, 오른쪽 → 가운데
+      // [1, 2, 3] → [2, 1, 3] (실제로는 [2, 3, 1]이 되어야 함)
+      // 왼쪽 클릭의 반대: 오른쪽 → 가운데, 가운데 → 왼쪽, 왼쪽 → 오른쪽
+      const temp = newOrder[0]; // 왼쪽 값 저장
+      newOrder[0] = newOrder[1]; // 왼쪽 = 가운데
+      newOrder[1] = newOrder[2]; // 가운데 = 오른쪽
+      newOrder[2] = temp; // 오른쪽 = 왼쪽
     } else if (clickedIndex === 0) {
       // 왼쪽 포스터 클릭: 왼쪽 → 가운데, 가운데 → 오른쪽, 오른쪽 → 왼쪽
       // [1, 2, 3] → [3, 1, 2]

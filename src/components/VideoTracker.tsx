@@ -183,8 +183,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       
       // 타임스탬프가 있는 객체 목록 업데이트
       setDetectedObjectsWithTimestamp(prev => {
-        // 새로운 객체와 0.5초 이내의 기존 객체 유지
-        const validObjects = prev.filter(obj => now - obj.detectedAt < 500);
+        // 새로운 객체와 1초 이내의 기존 객체 유지
+        const validObjects = prev.filter(obj => now - obj.detectedAt < 1000);
         // 새로운 객체 추가 (중복 제거)
         const newObjects = objectsWithTimestamp.filter(newObj => 
           !validObjects.some(existing => existing.id === newObj.id)
@@ -220,9 +220,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     const now = Date.now();
     
-    // 0.5초 이내의 객체만 필터링
+    // 1초 이내의 객체만 필터링
     const validObjects = detectedObjectsWithTimestamp
-      .filter(obj => now - obj.detectedAt < 500)
+      .filter(obj => now - obj.detectedAt < 1000)
       .map(({ detectedAt, ...obj }) => obj); // 타임스탬프 제거
     
     // 캔버스 클리어

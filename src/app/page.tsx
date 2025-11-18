@@ -90,9 +90,19 @@ export default function Landing() {
       const currentOpacity = currentIndex === 1 ? 1 : 0.5;
       let targetOpacity = targetIndex === 1 ? 1 : 0.5;
       
-      // 가운데로 가는 포스터는 opacity를 점점 사라지게 (0.3으로)
+      // 가운데로 가는 포스터는 opacity 1.0으로 (완전히 보이게)
       if (targetIndex === 1 && currentIndex !== 1) {
-        targetOpacity = 0.3; // 가운데로 가는 포스터는 opacity 0.3으로
+        targetOpacity = 1.0; // 가운데로 가는 포스터는 opacity 1.0으로
+      }
+      
+      // 왼쪽에서 오른쪽으로 가는 포스터는 opacity 1.0으로
+      if (currentIndex === 0 && targetIndex === 2) {
+        targetOpacity = 1.0;
+      }
+      
+      // 오른쪽에서 왼쪽으로 가는 포스터는 opacity 1.0으로
+      if (currentIndex === 2 && targetIndex === 0) {
+        targetOpacity = 1.0;
       }
       
       // z-index 설정: 가운데로 가는 포스터는 앞에 보이게

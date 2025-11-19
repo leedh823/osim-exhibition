@@ -113,32 +113,35 @@ export default function EnlargedVideo() {
         console.log('👥 기본값: People 영상 시작');
       }
     } else if (poster === '2') {
-      // 포스터 2: selectedType에 따라 left 영상 재생 또는 영상 없음
-      if (type === 'left') {
+      // 포스터 2: selectedType에 따라 people 또는 taxi 영상 재생
+      if (type === 'left' || type === 'people') {
         setVideoIndex(1);
-        setVideoSrc('/poster video 2/left1.mp4');
-        console.log('⬅️ Left 영상 시작: left1.mp4');
+        setVideoSrc('/poster video 2/people 1.mp4');
+        console.log('👥 People 영상 시작: people 1.mp4');
       } else if (type === 'taxi') {
-        // 택시 선택 시 영상 없음
-        setVideoIndex(0);
-        setVideoSrc(''); // 빈 경로로 설정하여 영상 재생 안 함
-        console.log('🚕 Taxi 선택됨 - 영상 없음');
-      } else {
-        // 기본값: left
         setVideoIndex(1);
-        setVideoSrc('/poster video 2/left1.mp4');
-        console.log('⬅️ 기본값: Left 영상 시작');
+        setVideoSrc('/poster video 2/taxi 1.mp4');
+        console.log('🚕 Taxi 영상 시작: taxi 1.mp4');
+      } else {
+        // 기본값: people
+        setVideoIndex(1);
+        setVideoSrc('/poster video 2/people 1.mp4');
+        console.log('👥 기본값: People 영상 시작');
       }
     } else if (poster === '3') {
-      // 포스터 3: selectedType에 따라 boat 영상 재생
-      if (type === 'boat') {
+      // 포스터 3: selectedType에 따라 bike 또는 boat 영상 재생
+      if (type === 'bike') {
         setVideoIndex(1);
-        setVideoSrc('/poster video 3/보트 반갈1 mp4.mp4');
-        console.log('🚤 Boat 영상 시작: 보트 반갈1 mp4.mp4');
+        setVideoSrc('/poster video 3/bike1.mp4');
+        console.log('🚴 Bike 영상 시작: bike1.mp4');
+      } else if (type === 'boat') {
+        setVideoIndex(1);
+        setVideoSrc('/poster video 3/boat1.mp4');
+        console.log('🚤 Boat 영상 시작: boat1.mp4');
       } else {
         // 기본값: boat
         setVideoIndex(1);
-        setVideoSrc('/poster video 3/보트 반갈1 mp4.mp4');
+        setVideoSrc('/poster video 3/boat1.mp4');
         console.log('🚤 기본값: Boat 영상 시작');
       }
     } else {
@@ -211,36 +214,24 @@ export default function EnlargedVideo() {
         return `/poster video 1/people ${index}.mp4`;
       }
     } else if (poster === '2') {
-      // 포스터 2: left 영상 경로 반환 또는 택시일 경우 빈 경로
-      if (type === 'left') {
-        return `/poster video 2/left${index}.mp4`;
+      // 포스터 2: people 또는 taxi 영상 경로 반환
+      if (type === 'left' || type === 'people') {
+        return `/poster video 2/people ${index}.mp4`;
       } else if (type === 'taxi') {
-        // 택시 선택 시 영상 없음
-        return '';
+        return `/poster video 2/taxi ${index}.mp4`;
       } else {
-        // 기본값: left
-        return `/poster video 2/left${index}.mp4`;
+        // 기본값: people
+        return `/poster video 2/people ${index}.mp4`;
       }
     } else if (poster === '3') {
-      // 포스터 3: boat 영상 경로 반환
-      if (type === 'boat') {
-        // 보트 반갈 파일명 매핑
-        const boatFiles = [
-          '보트 반갈1 mp4.mp4',
-          '보트 반갈2  mp4.mp4',
-          '보트반갈3mp4.mp4',
-          '보트반갈4.mp4'
-        ];
-        return `/poster video 3/${boatFiles[index - 1] || boatFiles[0]}`;
+      // 포스터 3: bike 또는 boat 영상 경로 반환
+      if (type === 'bike') {
+        return `/poster video 3/bike${index}.mp4`;
+      } else if (type === 'boat') {
+        return `/poster video 3/boat${index}.mp4`;
       } else {
         // 기본값: boat
-        const boatFiles = [
-          '보트 반갈1 mp4.mp4',
-          '보트 반갈2  mp4.mp4',
-          '보트반갈3mp4.mp4',
-          '보트반갈4.mp4'
-        ];
-        return `/poster video 3/${boatFiles[index - 1] || boatFiles[0]}`;
+        return `/poster video 3/boat${index}.mp4`;
       }
     }
     return `/2.mp4`;
@@ -259,13 +250,32 @@ export default function EnlargedVideo() {
       
       // 채팅 전송 시 다음 비디오로 변경 (택시 선택 시 제외)
       if (selectedPoster === '2' && selectedType === 'taxi') {
-        // 택시 선택 시 영상 변경 없음
-        console.log('🚕 Taxi 선택 - 영상 변경 없음');
+        // 택시 영상도 정상적으로 재생
+        setVideoIndex(prev => {
+          const nextIndex = prev + 1;
+          const maxIndex = 4; // taxi 영상 4개
+          
+          if (nextIndex <= maxIndex) {
+            const nextVideoPath = getVideoPath(selectedPoster, selectedType, nextIndex);
+            console.log('🎬 다음 Taxi 비디오로 변경:', nextVideoPath);
+            setVideoSrc(nextVideoPath);
+            return nextIndex;
+          }
+          return prev;
+        });
       } else {
         setVideoIndex(prev => {
           const nextIndex = prev + 1;
-          // 포스터 1의 경우 people/car 영상은 최대 4개까지
-          const maxIndex = selectedPoster === '1' ? 4 : 6;
+          // 포스터별 최대 인덱스 설정
+          let maxIndex = 4; // 기본값
+          if (selectedPoster === '1') {
+            maxIndex = 4; // people/car 각 4개
+          } else if (selectedPoster === '2') {
+            maxIndex = 4; // people/taxi 각 4개
+          } else if (selectedPoster === '3') {
+            // bike는 3개, boat는 4개
+            maxIndex = selectedType === 'bike' ? 3 : 4;
+          }
           
           if (nextIndex <= maxIndex) {
             const nextVideoPath = getVideoPath(selectedPoster, selectedType, nextIndex);

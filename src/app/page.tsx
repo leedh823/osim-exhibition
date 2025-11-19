@@ -163,11 +163,6 @@ export default function Landing() {
           r.style.zIndex = isCenter ? '11' : '10';
         }
       });
-      
-      // 가운데 포스터의 영상 페이지로 이동
-      const centerPosterNumber = newOrder[1];
-      localStorage.setItem('selectedPoster', String(centerPosterNumber));
-      router.push(`/start/${centerPosterNumber}`);
     }, duration * 1000);
   };
   

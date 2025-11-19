@@ -172,7 +172,6 @@ export default function AIChat() {
           className="w-full h-full object-cover"
           autoPlay 
           loop 
-          muted
           playsInline
           controls={false}
         >

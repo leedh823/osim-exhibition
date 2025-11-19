@@ -310,7 +310,6 @@ export default function EnlargedVideo() {
           className="w-full h-full object-cover"
           autoPlay
           loop
-          muted
           playsInline
           controls={false}
           onError={(e) => {

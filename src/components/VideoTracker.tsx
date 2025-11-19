@@ -367,7 +367,6 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         className="w-full h-full object-cover"
         autoPlay
         loop
-        muted
         playsInline
         controls={false}
         onLoadedData={handleVideoLoaded}

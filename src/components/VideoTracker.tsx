@@ -44,7 +44,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const targetR = isPoster3 ? 255 : 245;
     const targetG = isPoster3 ? 0 : 218;
     const targetB = isPoster3 ? 0 : 49;
-    const colorThreshold = 80; // 색상 허용 오차
+    // 빨간색 감지를 위해 더 넓은 범위 허용
+    const colorThreshold = isPoster3 ? 100 : 80; // 빨간색은 더 넓은 범위
     const minBoxSize = 30; // 최소 박스 크기
 
     const colorName = isPoster3 ? '빨간색' : '노랑색';
@@ -52,10 +53,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
       isPoster3,
-      targetColor: { r: targetR, g: targetG, b: targetB }
+      targetColor: { r: targetR, g: targetG, b: targetB },
+      colorThreshold
     });
 
-    // 노랑색 픽셀 찾기 (더 정밀한 스캔)
+    // 색상 픽셀 찾기 (더 정밀한 스캔)
     for (let y = 0; y < canvas.height - minBoxSize; y += 2) {
       for (let x = 0; x < canvas.width - minBoxSize; x += 2) {
         const pixelIndex = (y * canvas.width + x) * 4;
@@ -64,15 +66,34 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         const b = data[pixelIndex + 2];
 
         // 색상 감지 (노랑색 또는 빨간색)
-        const rDiff = Math.abs(r - targetR);
-        const gDiff = Math.abs(g - targetG);
-        const bDiff = Math.abs(b - targetB);
+        let isColorMatch = false;
         
-        if (rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold) {
+        if (isPoster3) {
+          // 빨간색 감지: R이 높고 (200 이상), G와 B가 낮아야 함 (100 이하)
+          const rHigh = r >= 200;
+          const gLow = g <= 100;
+          const bLow = b <= 100;
+          isColorMatch = rHigh && gLow && bLow;
+        } else {
+          // 노랑색 감지: 기존 로직
+          const rDiff = Math.abs(r - targetR);
+          const gDiff = Math.abs(g - targetG);
+          const bDiff = Math.abs(b - targetB);
+          isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
+        }
+        
+        if (isColorMatch) {
           // 디버깅: 색상 픽셀 발견 시 로그
           if (boxes.length < 2) { // 처음 몇 개만 로그
             const emoji = isPoster3 ? '🔴' : '🟡';
-            console.log(`${emoji} ${colorName} 픽셀 발견:`, { x, y, r, g, b, rDiff, gDiff, bDiff });
+            if (isPoster3) {
+              console.log(`${emoji} ${colorName} 픽셀 발견:`, { x, y, r, g, b });
+            } else {
+              const rDiff = Math.abs(r - targetR);
+              const gDiff = Math.abs(g - targetG);
+              const bDiff = Math.abs(b - targetB);
+              console.log(`${emoji} ${colorName} 픽셀 발견:`, { x, y, r, g, b, rDiff, gDiff, bDiff });
+            }
           }
           
           // 박스 크기 측정
@@ -86,9 +107,19 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            if (Math.abs(checkR - targetR) < colorThreshold && 
-                Math.abs(checkG - targetG) < colorThreshold && 
-                Math.abs(checkB - targetB) < colorThreshold) {
+            let isColorMatch = false;
+            if (isPoster3) {
+              // 빨간색: R이 높고, G와 B가 낮아야 함
+              isColorMatch = checkR >= 200 && checkG <= 100 && checkB <= 100;
+            } else {
+              // 노랑색: 기존 로직
+              const rDiff = Math.abs(checkR - targetR);
+              const gDiff = Math.abs(checkG - targetG);
+              const bDiff = Math.abs(checkB - targetB);
+              isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
+            }
+            
+            if (isColorMatch) {
               boxWidth = dx - x + 1;
             } else {
               break;
@@ -102,9 +133,19 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            if (Math.abs(checkR - targetR) < colorThreshold && 
-                Math.abs(checkG - targetG) < colorThreshold && 
-                Math.abs(checkB - targetB) < colorThreshold) {
+            let isColorMatch = false;
+            if (isPoster3) {
+              // 빨간색: R이 높고, G와 B가 낮아야 함
+              isColorMatch = checkR >= 200 && checkG <= 100 && checkB <= 100;
+            } else {
+              // 노랑색: 기존 로직
+              const rDiff = Math.abs(checkR - targetR);
+              const gDiff = Math.abs(checkG - targetG);
+              const bDiff = Math.abs(checkB - targetB);
+              isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
+            }
+            
+            if (isColorMatch) {
               boxHeight = dy - y + 1;
             } else {
               break;
@@ -240,13 +281,29 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     ctx.save();
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // 감지된 노랑색 박스 그리기 (1초 이내의 객체만)
+    // 포스터 3인지 확인 (빨간색 박스)
+    const isPoster3 = videoSrc.includes('/poster video 3/');
+    
+    // 감지된 박스 그리기 (1초 이내의 객체만)
     if (validObjects.length > 0) {
-      realObjectDetector.drawObjects(ctx, validObjects);
+      validObjects.forEach((obj) => {
+        // 포스터 3: 빨간색, 그 외: 노란색
+        const strokeColor = isPoster3 ? '#ff0000' : '#f5da31';
+        const fillColor = isPoster3 ? 'rgba(255, 0, 0, 0.1)' : 'rgba(245, 218, 49, 0.1)';
+
+        // 테두리 그리기
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
+
+        // 반투명 배경
+        ctx.fillStyle = fillColor;
+        ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+      });
     }
     
     ctx.restore();
-  }, [detectedObjectsWithTimestamp]);
+  }, [detectedObjectsWithTimestamp, videoSrc]);
 
   // 감지 루프 시작/중지 (초당 30회 = 33ms마다)
   useEffect(() => {

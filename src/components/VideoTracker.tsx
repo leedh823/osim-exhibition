@@ -69,11 +69,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         let isColorMatch = false;
         
         if (isPoster3) {
-          // 빨간색 감지: R이 높고 (200 이상), G와 B가 낮아야 함 (100 이하)
-          const rHigh = r >= 200;
-          const gLow = g <= 100;
-          const bLow = b <= 100;
-          isColorMatch = rHigh && gLow && bLow;
+          // 빨간색 감지: R이 G와 B보다 훨씬 높아야 함
+          // R >= 150 이상이고, R이 G보다 50 이상 크고, R이 B보다 50 이상 크고, G와 B가 150 이하
+          const rHigh = r >= 150;
+          const rDominant = (r - g) >= 50 && (r - b) >= 50;
+          const gbLow = g <= 150 && b <= 150;
+          isColorMatch = rHigh && rDominant && gbLow;
         } else {
           // 노랑색 감지: 기존 로직
           const rDiff = Math.abs(r - targetR);
@@ -109,8 +110,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             
             let isColorMatch = false;
             if (isPoster3) {
-              // 빨간색: R이 높고, G와 B가 낮아야 함
-              isColorMatch = checkR >= 200 && checkG <= 100 && checkB <= 100;
+              // 빨간색: R이 G와 B보다 훨씬 높아야 함
+              const rHigh = checkR >= 150;
+              const rDominant = (checkR - checkG) >= 50 && (checkR - checkB) >= 50;
+              const gbLow = checkG <= 150 && checkB <= 150;
+              isColorMatch = rHigh && rDominant && gbLow;
             } else {
               // 노랑색: 기존 로직
               const rDiff = Math.abs(checkR - targetR);
@@ -135,8 +139,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             
             let isColorMatch = false;
             if (isPoster3) {
-              // 빨간색: R이 높고, G와 B가 낮아야 함
-              isColorMatch = checkR >= 200 && checkG <= 100 && checkB <= 100;
+              // 빨간색: R이 G와 B보다 훨씬 높아야 함
+              const rHigh = checkR >= 150;
+              const rDominant = (checkR - checkG) >= 50 && (checkR - checkB) >= 50;
+              const gbLow = checkG <= 150 && checkB <= 150;
+              isColorMatch = rHigh && rDominant && gbLow;
             } else {
               // 노랑색: 기존 로직
               const rDiff = Math.abs(checkR - targetR);

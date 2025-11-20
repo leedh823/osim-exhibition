@@ -68,11 +68,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       const b = data[pixelIndex + 2];
       
       if (isPoster3) {
-        // 빨간색 감지: 조금 더 넓은 조건
-        // R >= 170 이상이고, R이 G보다 60 이상 크고, R이 B보다 60 이상 크고, G와 B가 130 이하
-        const rHigh = r >= 170;
-        const rDominant = (r - g) >= 60 && (r - b) >= 60;
-        const gbLow = g <= 130 && b <= 130;
+        // 빨간색 감지: 더 관대한 조건으로 잘 감지되도록
+        // R >= 150 이상이고, R이 G보다 50 이상 크고, R이 B보다 50 이상 크고, G와 B가 150 이하
+        const rHigh = r >= 150;
+        const rDominant = (r - g) >= 50 && (r - b) >= 50;
+        const gbLow = g <= 150 && b <= 150;
         return rHigh && rDominant && gbLow;
       } else {
         const rDiff = Math.abs(r - targetR);
@@ -94,11 +94,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         let isColorMatch = false;
         
         if (isPoster3) {
-          // 빨간색 감지: 조금 더 넓은 조건
-          // R >= 170 이상이고, R이 G보다 60 이상 크고, R이 B보다 60 이상 크고, G와 B가 130 이하
-          const rHigh = r >= 170;
-          const rDominant = (r - g) >= 60 && (r - b) >= 60;
-          const gbLow = g <= 130 && b <= 130;
+          // 빨간색 감지: 더 관대한 조건으로 잘 감지되도록
+          // R >= 150 이상이고, R이 G보다 50 이상 크고, R이 B보다 50 이상 크고, G와 B가 150 이하
+          const rHigh = r >= 150;
+          const rDominant = (r - g) >= 50 && (r - b) >= 50;
+          const gbLow = g <= 150 && b <= 150;
           isColorMatch = rHigh && rDominant && gbLow;
         } else {
           // 노랑색 감지: 기존 로직
@@ -251,22 +251,14 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       }));
       
       // 타임스탬프가 있는 객체 목록 업데이트
-      const isPoster3 = videoSrc.includes('/poster video 3/');
       setDetectedObjectsWithTimestamp(prev => {
-        if (isPoster3) {
-          // 포스터 3: 1초 제한 없이 모든 객체 유지 (중복 제거만)
-          const newObjects = objectsWithTimestamp.filter(newObj => 
-            !prev.some(existing => existing.id === newObj.id)
-          );
-          return [...prev, ...newObjects];
-        } else {
-          // 포스터 2: 1초 이내의 기존 객체 유지
-          const validObjects = prev.filter(obj => now - obj.detectedAt < 1000);
-          const newObjects = objectsWithTimestamp.filter(newObj => 
-            !validObjects.some(existing => existing.id === newObj.id)
-          );
-          return [...validObjects, ...newObjects];
-        }
+        // 새로운 객체와 1초 이내의 기존 객체 유지
+        const validObjects = prev.filter(obj => now - obj.detectedAt < 1000);
+        // 새로운 객체 추가 (중복 제거)
+        const newObjects = objectsWithTimestamp.filter(newObj => 
+          !validObjects.some(existing => existing.id === newObj.id)
+        );
+        return [...validObjects, ...newObjects];
       });
       
       // 클릭 감지를 위한 객체 목록도 업데이트
@@ -300,9 +292,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     // 포스터 3인지 확인 (빨간색 박스)
     const isPoster3 = videoSrc.includes('/poster video 3/');
     
-    // 포스터 3: 1초 제한 없이 모든 객체 표시, 포스터 2: 1초 이내의 객체만 필터링
+    // 1초 이내의 객체만 필터링
     const validObjects = detectedObjectsWithTimestamp
-      .filter(obj => isPoster3 || now - obj.detectedAt < 1000)
+      .filter(obj => now - obj.detectedAt < 1000)
       .map(({ detectedAt, ...obj }) => obj); // 타임스탬프 제거
     
     // 캔버스 클리어
@@ -425,10 +417,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
 
     const now = Date.now();
-    const isPoster3 = videoSrc.includes('/poster video 3/');
-    // 포스터 3: 1초 제한 없이 모든 객체 사용, 포스터 2: 1초 이내의 객체만 (렌더링과 동일한 로직)
+    // 1초 이내의 객체만 사용 (렌더링과 동일한 로직)
     const validObjects = detectedObjectsWithTimestamp
-      .filter(obj => isPoster3 || now - obj.detectedAt < 1000)
+      .filter(obj => now - obj.detectedAt < 1000)
       .map(({ detectedAt, ...obj }) => obj);
 
     console.log('🖱️ 클릭 위치:', clickPoint);

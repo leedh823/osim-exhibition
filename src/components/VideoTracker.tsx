@@ -82,9 +82,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       }
     };
 
-    // 색상 픽셀 찾기 (더 정밀한 스캔)
-    for (let y = 0; y < canvas.height - minBoxSize; y += 2) {
-      for (let x = 0; x < canvas.width - minBoxSize; x += 2) {
+    // 색상 픽셀 찾기 (스캔 간격 넓힘)
+    for (let y = 0; y < canvas.height - minBoxSize; y += 4) {
+      for (let x = 0; x < canvas.width - minBoxSize; x += 4) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
         const g = data[pixelIndex + 1];
@@ -135,10 +135,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             
             let isColorMatch = false;
             if (isPoster3) {
-              // 빨간색: R이 G와 B보다 훨씬 높아야 함
-              const rHigh = checkR >= 150;
-              const rDominant = (checkR - checkG) >= 50 && (checkR - checkB) >= 50;
-              const gbLow = checkG <= 150 && checkB <= 150;
+              // 빨간색: 초기 감지와 동일한 조건
+              const rHigh = checkR >= 175;
+              const rDominant = (checkR - checkG) >= 65 && (checkR - checkB) >= 65;
+              const gbLow = checkG <= 125 && checkB <= 125;
               isColorMatch = rHigh && rDominant && gbLow;
             } else {
               // 노랑색: 기존 로직
@@ -164,10 +164,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             
             let isColorMatch = false;
             if (isPoster3) {
-              // 빨간색: R이 G와 B보다 훨씬 높아야 함
-              const rHigh = checkR >= 150;
-              const rDominant = (checkR - checkG) >= 50 && (checkR - checkB) >= 50;
-              const gbLow = checkG <= 150 && checkB <= 150;
+              // 빨간색: 초기 감지와 동일한 조건
+              const rHigh = checkR >= 175;
+              const rDominant = (checkR - checkG) >= 65 && (checkR - checkB) >= 65;
+              const gbLow = checkG <= 125 && checkB <= 125;
               isColorMatch = rHigh && rDominant && gbLow;
             } else {
               // 노랑색: 기존 로직
@@ -186,49 +186,22 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
           // 박스 크기가 충분한지 확인
           if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
-            // 네 모서리 검증
-            const corners = [
-              { x, y }, // 왼쪽 위
-              { x: x + boxWidth - 1, y }, // 오른쪽 위
-              { x, y: y + boxHeight - 1 }, // 왼쪽 아래
-              { x: x + boxWidth - 1, y: y + boxHeight - 1 } // 오른쪽 아래
-            ];
-            
-            const allCornersValid = corners.every(corner => checkCornerColor(corner.x, corner.y));
-            
-            // 네 모서리가 모두 해당 색상인 경우에만 박스 추가
-            if (allCornersValid) {
-              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
-              const newBox = {
-                id: `yellow-box-${boxes.length + 1}`,
-                x: x,
-                y: y,
-                width: boxWidth,
-                height: boxHeight,
-                label: 'person',
-                confidence: 0.95,
-                isMoving: true
-              };
+            console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
+            const newBox = {
+              id: `yellow-box-${boxes.length + 1}`,
+              x: x,
+              y: y,
+              width: boxWidth,
+              height: boxHeight,
+              label: 'person',
+              confidence: 0.95,
+              isMoving: true
+            };
 
-              // 기존 박스와 겹치는지 확인 (완화된 조건)
-              const isOverlapping = boxes.some(existingBox => {
-                const overlapX = !(newBox.x > existingBox.x + existingBox.width || 
-                                  newBox.x + newBox.width < existingBox.x);
-                const overlapY = !(newBox.y > existingBox.y + existingBox.height || 
-                                  newBox.y + newBox.height < existingBox.y);
-                return overlapX && overlapY;
-              });
-
-              if (!isOverlapping) {
-                boxes.push(newBox);
-                const emoji = isPoster3 ? '🔴' : '🟡';
-                console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨 (네모 박스):`, newBox);
-              } else {
-                console.log('⚠️ 박스 겹침으로 인해 제외:', newBox);
-              }
-            } else {
-              console.log('⚠️ 네 모서리가 모두 해당 색상이 아니어서 제외:', { boxWidth, boxHeight, x, y });
-            }
+            // 겹침 체크 없이 모든 박스 추가
+            boxes.push(newBox);
+            const emoji = isPoster3 ? '🔴' : '🟡';
+            console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
           }
         }
       }

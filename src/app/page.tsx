@@ -900,15 +900,15 @@ export default function Landing() {
             style={{ top: '47.5%', opacity: 0 }}
           />
           
-          {/* Regenerate 버튼 - 박스 아래 */}
+          {/* START 버튼 - 박스 아래 */}
           <button
             id="regenerate-button"
-            className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-opacity z-30"
+            className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-all duration-300 hover:scale-110 hover:shadow-lg z-30"
             style={{ top: 'calc(47.5% + 31vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
             type="button"
             onClick={handleRegenerateClick}
           >
-            Regenerate
+            START
           </button>
         </div>
       </section>

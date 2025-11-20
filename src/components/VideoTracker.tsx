@@ -83,7 +83,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
 
     // 색상 픽셀 찾기 (스캔 간격 넓힘)
-    for (let y = 0; y < canvas.height - minBoxSize; y += 4) {
+    scanLoop: for (let y = 0; y < canvas.height - minBoxSize; y += 4) {
       for (let x = 0; x < canvas.width - minBoxSize; x += 4) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
@@ -136,9 +136,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             let isColorMatch = false;
             if (isPoster3) {
               // 빨간색: 초기 감지와 동일한 조건
-              const rHigh = checkR >= 175;
-              const rDominant = (checkR - checkG) >= 65 && (checkR - checkB) >= 65;
-              const gbLow = checkG <= 125 && checkB <= 125;
+              const rHigh = checkR >= 150;
+              const rDominant = (checkR - checkG) >= 50 && (checkR - checkB) >= 50;
+              const gbLow = checkG <= 150 && checkB <= 150;
               isColorMatch = rHigh && rDominant && gbLow;
             } else {
               // 노랑색: 기존 로직
@@ -165,9 +165,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             let isColorMatch = false;
             if (isPoster3) {
               // 빨간색: 초기 감지와 동일한 조건
-              const rHigh = checkR >= 175;
-              const rDominant = (checkR - checkG) >= 65 && (checkR - checkB) >= 65;
-              const gbLow = checkG <= 125 && checkB <= 125;
+              const rHigh = checkR >= 150;
+              const rDominant = (checkR - checkG) >= 50 && (checkR - checkB) >= 50;
+              const gbLow = checkG <= 150 && checkB <= 150;
               isColorMatch = rHigh && rDominant && gbLow;
             } else {
               // 노랑색: 기존 로직
@@ -198,10 +198,16 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
               isMoving: true
             };
 
+            // 포스터 3: 2개만 감지, 그 외: 모든 박스 추가
             // 겹침 체크 없이 모든 박스 추가
             boxes.push(newBox);
             const emoji = isPoster3 ? '🔴' : '🟡';
             console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
+            
+            // 포스터 3에서 2개를 감지했으면 루프 종료
+            if (isPoster3 && boxes.length >= 2) {
+              break scanLoop;
+            }
           }
         }
       }
@@ -251,9 +257,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       }));
       
       // 타임스탬프가 있는 객체 목록 업데이트
+      const isPoster3 = videoSrc.includes('/poster video 3/');
+      const timeLimit = isPoster3 ? 40000 : 1000; // 포스터 3: 40초, 그 외: 1초
+      
       setDetectedObjectsWithTimestamp(prev => {
-        // 새로운 객체와 1초 이내의 기존 객체 유지
-        const validObjects = prev.filter(obj => now - obj.detectedAt < 1000);
+        // 포스터 3: 40초 이내의 기존 객체 유지, 그 외: 1초 이내
+        const validObjects = prev.filter(obj => now - obj.detectedAt < timeLimit);
         // 새로운 객체 추가 (중복 제거)
         const newObjects = objectsWithTimestamp.filter(newObj => 
           !validObjects.some(existing => existing.id === newObj.id)
@@ -291,10 +300,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     
     // 포스터 3인지 확인 (빨간색 박스)
     const isPoster3 = videoSrc.includes('/poster video 3/');
+    const timeLimit = isPoster3 ? 40000 : 1000; // 포스터 3: 40초, 그 외: 1초
     
-    // 1초 이내의 객체만 필터링
+    // 포스터 3: 40초 이내의 객체만 필터링, 그 외: 1초 이내
     const validObjects = detectedObjectsWithTimestamp
-      .filter(obj => now - obj.detectedAt < 1000)
+      .filter(obj => now - obj.detectedAt < timeLimit)
       .map(({ detectedAt, ...obj }) => obj); // 타임스탬프 제거
     
     // 캔버스 클리어
@@ -417,9 +427,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     };
 
     const now = Date.now();
-    // 1초 이내의 객체만 사용 (렌더링과 동일한 로직)
+    const isPoster3 = videoSrc.includes('/poster video 3/');
+    const timeLimit = isPoster3 ? 40000 : 1000; // 포스터 3: 40초, 그 외: 1초
+    
+    // 포스터 3: 40초 이내의 객체만 사용, 그 외: 1초 이내 (렌더링과 동일한 로직)
     const validObjects = detectedObjectsWithTimestamp
-      .filter(obj => now - obj.detectedAt < 1000)
+      .filter(obj => now - obj.detectedAt < timeLimit)
       .map(({ detectedAt, ...obj }) => obj);
 
     console.log('🖱️ 클릭 위치:', clickPoint);

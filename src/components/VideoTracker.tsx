@@ -23,7 +23,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   // const [zoomScale, setZoomScale] = useState(1);
   // const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
 
-  // 2개의 노랑색 박스 감지 함수
+  // 2개의 노랑색/빨간색 박스 감지 함수
   const detectYellowBoxes = useCallback((video: HTMLVideoElement): DetectedObject[] => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -37,16 +37,22 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const data = imageData.data;
     const boxes: DetectedObject[] = [];
 
-    // 노랑색 박스 색상 (RGB: 245, 218, 49)
-    const targetR = 245;
-    const targetG = 218;
-    const targetB = 49;
+    // 포스터 3인지 확인 (빨간색 감지)
+    const isPoster3 = videoSrc.includes('/poster video 3/');
+    
+    // 포스터 3: 빨간색 (#ff0000 = RGB: 255, 0, 0), 그 외: 노랑색 (RGB: 245, 218, 49)
+    const targetR = isPoster3 ? 255 : 245;
+    const targetG = isPoster3 ? 0 : 218;
+    const targetB = isPoster3 ? 0 : 49;
     const colorThreshold = 80; // 색상 허용 오차
     const minBoxSize = 30; // 최소 박스 크기
 
-    console.log('🔍 2개의 노랑색 박스 감지 시작...', { 
+    const colorName = isPoster3 ? '빨간색' : '노랑색';
+    console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
       canvasWidth: canvas.width, 
-      canvasHeight: canvas.height 
+      canvasHeight: canvas.height,
+      isPoster3,
+      targetColor: { r: targetR, g: targetG, b: targetB }
     });
 
     // 노랑색 픽셀 찾기 (더 정밀한 스캔)
@@ -57,18 +63,19 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         const g = data[pixelIndex + 1];
         const b = data[pixelIndex + 2];
 
-        // 노랑색 감지
+        // 색상 감지 (노랑색 또는 빨간색)
         const rDiff = Math.abs(r - targetR);
         const gDiff = Math.abs(g - targetG);
         const bDiff = Math.abs(b - targetB);
         
         if (rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold) {
-          // 디버깅: 노랑색 픽셀 발견 시 로그
+          // 디버깅: 색상 픽셀 발견 시 로그
           if (boxes.length < 2) { // 처음 몇 개만 로그
-            console.log('🟡 노랑색 픽셀 발견:', { x, y, r, g, b, rDiff, gDiff, bDiff });
+            const emoji = isPoster3 ? '🔴' : '🟡';
+            console.log(`${emoji} ${colorName} 픽셀 발견:`, { x, y, r, g, b, rDiff, gDiff, bDiff });
           }
           
-          // 노랑색 박스 크기 측정
+          // 박스 크기 측정
           let boxWidth = 0;
           let boxHeight = 0;
           
@@ -129,7 +136,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
             if (!isOverlapping) {
               boxes.push(newBox);
-              console.log(`✅ 노랑색 박스 ${boxes.length} 감지됨:`, newBox);
+              const emoji = isPoster3 ? '🔴' : '🟡';
+              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
             } else {
               console.log('⚠️ 박스 겹침으로 인해 제외:', newBox);
             }
@@ -138,9 +146,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       }
     }
 
-    console.log(`🎯 총 ${boxes.length}개의 노랑색 박스 감지 완료`);
+    console.log(`🎯 총 ${boxes.length}개의 ${colorName} 박스 감지 완료`);
     return boxes;
-  }, []);
+  }, [videoSrc]);
 
   // 노랑색 박스 감지 초기화 (AI 모델 불필요)
   useEffect(() => {

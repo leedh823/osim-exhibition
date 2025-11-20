@@ -186,148 +186,22 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
           // 박스 크기가 충분한지 확인
           if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
-            // 포스터 3: 빨간색 테두리 박스인지 검증
-            if (isPoster3) {
-              const borderThickness = 3; // 테두리 두께
-              let isBorderBox = true;
-              
-              // 테두리 부분이 빨간색인지 확인
-              // 위쪽 테두리
-              for (let bx = x; bx < x + boxWidth && bx < canvas.width; bx++) {
-                for (let by = y; by < y + borderThickness && by < canvas.height; by++) {
-                  const borderIndex = (by * canvas.width + bx) * 4;
-                  const br = data[borderIndex];
-                  const bg = data[borderIndex + 1];
-                  const bb = data[borderIndex + 2];
-                  const rHigh = br >= 140;
-                  const rDominant = (br - bg) >= 45 && (br - bb) >= 45;
-                  const gbLow = bg <= 160 && bb <= 160;
-                  if (!(rHigh && rDominant && gbLow)) {
-                    isBorderBox = false;
-                    break;
-                  }
-                }
-                if (!isBorderBox) break;
-              }
-              
-              // 아래쪽 테두리
-              if (isBorderBox) {
-                for (let bx = x; bx < x + boxWidth && bx < canvas.width; bx++) {
-                  for (let by = y + boxHeight - borderThickness; by < y + boxHeight && by < canvas.height; by++) {
-                    const borderIndex = (by * canvas.width + bx) * 4;
-                    const br = data[borderIndex];
-                    const bg = data[borderIndex + 1];
-                    const bb = data[borderIndex + 2];
-                    const rHigh = br >= 140;
-                    const rDominant = (br - bg) >= 45 && (br - bb) >= 45;
-                    const gbLow = bg <= 160 && bb <= 160;
-                    if (!(rHigh && rDominant && gbLow)) {
-                      isBorderBox = false;
-                      break;
-                    }
-                  }
-                  if (!isBorderBox) break;
-                }
-              }
-              
-              // 왼쪽 테두리
-              if (isBorderBox) {
-                for (let by = y; by < y + boxHeight && by < canvas.height; by++) {
-                  for (let bx = x; bx < x + borderThickness && bx < canvas.width; bx++) {
-                    const borderIndex = (by * canvas.width + bx) * 4;
-                    const br = data[borderIndex];
-                    const bg = data[borderIndex + 1];
-                    const bb = data[borderIndex + 2];
-                    const rHigh = br >= 140;
-                    const rDominant = (br - bg) >= 45 && (br - bb) >= 45;
-                    const gbLow = bg <= 160 && bb <= 160;
-                    if (!(rHigh && rDominant && gbLow)) {
-                      isBorderBox = false;
-                      break;
-                    }
-                  }
-                  if (!isBorderBox) break;
-                }
-              }
-              
-              // 오른쪽 테두리
-              if (isBorderBox) {
-                for (let by = y; by < y + boxHeight && by < canvas.height; by++) {
-                  for (let bx = x + boxWidth - borderThickness; bx < x + boxWidth && bx < canvas.width; bx++) {
-                    const borderIndex = (by * canvas.width + bx) * 4;
-                    const br = data[borderIndex];
-                    const bg = data[borderIndex + 1];
-                    const bb = data[borderIndex + 2];
-                    const rHigh = br >= 140;
-                    const rDominant = (br - bg) >= 45 && (br - bb) >= 45;
-                    const gbLow = bg <= 160 && bb <= 160;
-                    if (!(rHigh && rDominant && gbLow)) {
-                      isBorderBox = false;
-                      break;
-                    }
-                  }
-                  if (!isBorderBox) break;
-                }
-              }
-              
-              // 중앙 부분이 빨간색이 아니어야 함 (테두리만 빨간색)
-              if (isBorderBox && boxWidth > borderThickness * 2 && boxHeight > borderThickness * 2) {
-                const centerX = x + Math.floor(boxWidth / 2);
-                const centerY = y + Math.floor(boxHeight / 2);
-                const centerIndex = (centerY * canvas.width + centerX) * 4;
-                const cr = data[centerIndex];
-                const cg = data[centerIndex + 1];
-                const cb = data[centerIndex + 2];
-                const rHigh = cr >= 140;
-                const rDominant = (cr - cg) >= 45 && (cr - cb) >= 45;
-                const gbLow = cg <= 160 && cb <= 160;
-                // 중앙이 빨간색이면 테두리 박스가 아님
-                if (rHigh && rDominant && gbLow) {
-                  isBorderBox = false;
-                }
-              }
-              
-              if (!isBorderBox) {
-                console.log('⚠️ 빨간색 테두리 박스가 아니어서 제외:', { boxWidth, boxHeight, x, y });
-                // 테두리 박스가 아니면 추가하지 않음
-              } else {
-                // 테두리 박스인 경우에만 추가
-                console.log('📦 박스 크기 측정 완료 (빨간색 테두리):', { boxWidth, boxHeight, x, y });
-                const newBox = {
-                  id: `yellow-box-${boxes.length + 1}`,
-                  x: x,
-                  y: y,
-                  width: boxWidth,
-                  height: boxHeight,
-                  label: 'person',
-                  confidence: 0.95,
-                  isMoving: true
-                };
+            console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
+            const newBox = {
+              id: `yellow-box-${boxes.length + 1}`,
+              x: x,
+              y: y,
+              width: boxWidth,
+              height: boxHeight,
+              label: 'person',
+              confidence: 0.95,
+              isMoving: true
+            };
 
-                // 겹침 체크 없이 모든 박스 추가
-                boxes.push(newBox);
-                const emoji = isPoster3 ? '🔴' : '🟡';
-                console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
-              }
-            } else {
-              // 포스터 2 (노란색)인 경우
-              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
-              const newBox = {
-                id: `yellow-box-${boxes.length + 1}`,
-                x: x,
-                y: y,
-                width: boxWidth,
-                height: boxHeight,
-                label: 'person',
-                confidence: 0.95,
-                isMoving: true
-              };
-
-              // 겹침 체크 없이 모든 박스 추가
-              boxes.push(newBox);
-              const emoji = isPoster3 ? '🔴' : '🟡';
-              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
-            }
+            // 겹침 체크 없이 모든 박스 추가
+            boxes.push(newBox);
+            const emoji = isPoster3 ? '🔴' : '🟡';
+            console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
           }
         }
       }

@@ -68,9 +68,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       const b = data[pixelIndex + 2];
       
       if (isPoster3) {
-        const rHigh = r >= 150;
-        const rDominant = (r - g) >= 50 && (r - b) >= 50;
-        const gbLow = g <= 150 && b <= 150;
+        // 빨간색 감지: 더 엄격한 조건
+        // R >= 200 이상이고, R이 G보다 80 이상 크고, R이 B보다 80 이상 크고, G와 B가 100 이하
+        const rHigh = r >= 200;
+        const rDominant = (r - g) >= 80 && (r - b) >= 80;
+        const gbLow = g <= 100 && b <= 100;
         return rHigh && rDominant && gbLow;
       } else {
         const rDiff = Math.abs(r - targetR);
@@ -92,11 +94,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         let isColorMatch = false;
         
         if (isPoster3) {
-          // 빨간색 감지: R이 G와 B보다 훨씬 높아야 함
-          // R >= 150 이상이고, R이 G보다 50 이상 크고, R이 B보다 50 이상 크고, G와 B가 150 이하
-          const rHigh = r >= 150;
-          const rDominant = (r - g) >= 50 && (r - b) >= 50;
-          const gbLow = g <= 150 && b <= 150;
+          // 빨간색 감지: 더 엄격한 조건
+          // R >= 200 이상이고, R이 G보다 80 이상 크고, R이 B보다 80 이상 크고, G와 B가 100 이하
+          const rHigh = r >= 200;
+          const rDominant = (r - g) >= 80 && (r - b) >= 80;
+          const gbLow = g <= 100 && b <= 100;
           isColorMatch = rHigh && rDominant && gbLow;
         } else {
           // 노랑색 감지: 기존 로직

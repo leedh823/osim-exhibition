@@ -57,6 +57,29 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       colorThreshold
     });
 
+    // 네 모서리 검증 함수
+    const checkCornerColor = (cornerX: number, cornerY: number): boolean => {
+      if (cornerX < 0 || cornerX >= canvas.width || cornerY < 0 || cornerY >= canvas.height) {
+        return false;
+      }
+      const pixelIndex = (cornerY * canvas.width + cornerX) * 4;
+      const r = data[pixelIndex];
+      const g = data[pixelIndex + 1];
+      const b = data[pixelIndex + 2];
+      
+      if (isPoster3) {
+        const rHigh = r >= 150;
+        const rDominant = (r - g) >= 50 && (r - b) >= 50;
+        const gbLow = g <= 150 && b <= 150;
+        return rHigh && rDominant && gbLow;
+      } else {
+        const rDiff = Math.abs(r - targetR);
+        const gDiff = Math.abs(g - targetG);
+        const bDiff = Math.abs(b - targetB);
+        return rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
+      }
+    };
+
     // 색상 픽셀 찾기 (더 정밀한 스캔)
     for (let y = 0; y < canvas.height - minBoxSize; y += 2) {
       for (let x = 0; x < canvas.width - minBoxSize; x += 2) {
@@ -159,35 +182,50 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             }
           }
 
-          // 박스 크기가 충분하고, 기존 박스와 겹치지 않으면 추가
+          // 박스 크기가 충분한지 확인
           if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
-            console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
-            const newBox = {
-              id: `yellow-box-${boxes.length + 1}`,
-              x: x,
-              y: y,
-              width: boxWidth,
-              height: boxHeight,
-              label: 'person',
-              confidence: 0.95,
-              isMoving: true
-            };
+            // 네 모서리 검증
+            const corners = [
+              { x, y }, // 왼쪽 위
+              { x: x + boxWidth - 1, y }, // 오른쪽 위
+              { x, y: y + boxHeight - 1 }, // 왼쪽 아래
+              { x: x + boxWidth - 1, y: y + boxHeight - 1 } // 오른쪽 아래
+            ];
+            
+            const allCornersValid = corners.every(corner => checkCornerColor(corner.x, corner.y));
+            
+            // 네 모서리가 모두 해당 색상인 경우에만 박스 추가
+            if (allCornersValid) {
+              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
+              const newBox = {
+                id: `yellow-box-${boxes.length + 1}`,
+                x: x,
+                y: y,
+                width: boxWidth,
+                height: boxHeight,
+                label: 'person',
+                confidence: 0.95,
+                isMoving: true
+              };
 
-            // 기존 박스와 겹치는지 확인 (완화된 조건)
-            const isOverlapping = boxes.some(existingBox => {
-              const overlapX = !(newBox.x > existingBox.x + existingBox.width || 
-                                newBox.x + newBox.width < existingBox.x);
-              const overlapY = !(newBox.y > existingBox.y + existingBox.height || 
-                                newBox.y + newBox.height < existingBox.y);
-              return overlapX && overlapY;
-            });
+              // 기존 박스와 겹치는지 확인 (완화된 조건)
+              const isOverlapping = boxes.some(existingBox => {
+                const overlapX = !(newBox.x > existingBox.x + existingBox.width || 
+                                  newBox.x + newBox.width < existingBox.x);
+                const overlapY = !(newBox.y > existingBox.y + existingBox.height || 
+                                  newBox.y + newBox.height < existingBox.y);
+                return overlapX && overlapY;
+              });
 
-            if (!isOverlapping) {
-              boxes.push(newBox);
-              const emoji = isPoster3 ? '🔴' : '🟡';
-              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
+              if (!isOverlapping) {
+                boxes.push(newBox);
+                const emoji = isPoster3 ? '🔴' : '🟡';
+                console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨 (네모 박스):`, newBox);
+              } else {
+                console.log('⚠️ 박스 겹침으로 인해 제외:', newBox);
+              }
             } else {
-              console.log('⚠️ 박스 겹침으로 인해 제외:', newBox);
+              console.log('⚠️ 네 모서리가 모두 해당 색상이 아니어서 제외:', { boxWidth, boxHeight, x, y });
             }
           }
         }

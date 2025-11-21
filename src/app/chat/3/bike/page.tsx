@@ -108,25 +108,44 @@ export default function ChatPoster3Bike() {
       const nextTurn = currentTurn + 1;
       setCurrentTurn(nextTurn);
       
-      // 4번째 답변 입력 시 바로 처리
+      // 4번째 답변 입력 시 (nextTurn === 4)
       if (nextTurn === 4) {
-        // "분석이 완료되었습니다" 메시지 표시
-        const analysisMessage = {
+        // 1. "분석이 완료되었습니다" 메시지 즉시 표시
+        setChatMessages(prev => [...prev, {
           role: 'assistant',
           content: '분석이 완료되었습니다'
-        };
-        setChatMessages(prev => [...prev, analysisMessage]);
+        }]);
         
-        // 3초 후 무조건 분석 페이지로 이동 (먼저 설정)
+        // 2. 3초 후 분석 페이지로 이동 (window.location 사용 - 더 확실함)
         setTimeout(() => {
-          router.push('/analysis');
+          window.location.href = '/analysis';
         }, 3000);
         
-        // 백그라운드에서 API 호출 시도 (에러는 콘솔에만 표시)
-        // API 호출이 실패해도 타이머는 유지됨
-        handleAIMessage().catch((error) => {
-          console.error('백그라운드 API 호출 실패:', error);
-        });
+        // 3. API 호출은 완전히 별도로 (await 없이)
+        // 분석 데이터 저장만 시도
+        (async () => {
+          try {
+            const updatedMessages = [...chatMessages, newMessage];
+            const response = await fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                messages: updatedMessages,
+                turnCount: 4,
+                selectedPerson: null,
+                selectedType: selectedType,
+                selectedPoster: selectedPoster
+              }),
+            });
+            const data = await response.json();
+            if (data.analysis) {
+              localStorage.setItem('analysisData', JSON.stringify(data.analysis));
+              console.log('✅ 분석 데이터 저장됨');
+            }
+          } catch (error) {
+            console.error('API 호출 실패:', error);
+          }
+        })();
       }
     }
   };

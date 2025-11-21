@@ -12,25 +12,21 @@ export default function PosterPage2() {
       localStorage.setItem('selectedPerson', JSON.stringify(person));
       localStorage.setItem('selectedPoster', '2'); // 포스터 2 선택 표시
       
-      // 감지된 객체들을 크기(면적)로 정렬 (작은 것부터 큰 것 순서)
-      const sortedObjects = [...allObjects].sort((a, b) => {
-        const areaA = a.width * a.height;
-        const areaB = b.width * b.height;
-        return areaA - areaB; // 작은 것부터 정렬
-      });
+      // 감지된 객체들을 x 좌표로 정렬 (왼쪽부터 오른쪽 순서)
+      const sortedObjects = [...allObjects].sort((a, b) => a.x - b.x);
       
       // 클릭된 객체가 정렬된 배열에서 몇 번째인지 찾기
       const clickedIndex = sortedObjects.findIndex(obj => obj.id === person.id);
       
-      // 박스 크기 기반 매핑: 작은 박스 = people, 큰 박스 = taxi
+      // 위치 기반 매핑: 왼쪽(인덱스 0) = people, 오른쪽(인덱스 1) = taxi
       if (clickedIndex === 0) {
-        // 작은 박스 클릭 = people 영상
+        // 왼쪽 클릭 = people 영상
         localStorage.setItem('selectedType', 'people');
-        console.log('👥 People 영상 선택됨 (작은 박스)');
+        console.log('👥 People 영상 선택됨 (왼쪽)');
       } else if (clickedIndex === 1) {
-        // 큰 박스 클릭 = taxi 영상
+        // 오른쪽 클릭 = taxi 영상
         localStorage.setItem('selectedType', 'taxi');
-        console.log('🚕 Taxi 영상 선택됨 (큰 박스)');
+        console.log('🚕 Taxi 영상 선택됨 (오른쪽)');
       } else {
         // 기본값 (people)
         localStorage.setItem('selectedType', 'people');

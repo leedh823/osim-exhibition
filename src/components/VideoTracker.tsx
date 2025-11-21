@@ -40,21 +40,22 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     // 포스터 3인지 확인 (파랑색 감지)
     const isPoster3 = videoSrc.includes('/poster video 3/');
     
-    // 포스터 3: 파랑색 (#0000ff = RGB: 0, 0, 255), 그 외: 노랑색 (RGB: 245, 218, 49)
-    const targetR = isPoster3 ? 0 : 245;
-    const targetG = isPoster3 ? 0 : 218;
+    // 포스터 3: 파랑색 (#0109ff = RGB: 1, 9, 255), 그 외: 노랑색 (RGB: 245, 218, 49)
+    const targetR = isPoster3 ? 1 : 245;
+    const targetG = isPoster3 ? 9 : 218;
     const targetB = isPoster3 ? 255 : 49;
     // 포스터 2와 동일한 조건
     // 포스터 2와 동일한 조건
-    const colorThreshold = isPoster3 ? 120 : 80; // 포스터 3: 파랑색 감지 범위 넓힘 (보트/자전거 박스 감지 개선)
+    const colorThreshold = isPoster3 ? 150 : 80; // 포스터 3: #0109ff 비슷한 파랑색 감지 범위 넓힘
     const minBoxSize = 30; // 최소 박스 크기 (포스터 2와 동일)
 
     const colorName = isPoster3 ? '파랑색' : '노랑색';
-    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (보트/자전거 박스 감지 개선)...`, { 
+    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (#0109ff 비슷한 색 감지)...`, { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
       isPoster3,
       targetColor: { r: targetR, g: targetG, b: targetB },
+      targetColorHex: isPoster3 ? '#0109ff' : '#f5da31',
       colorThreshold,
       scanInterval: isPoster3 ? 2 : 4
     });

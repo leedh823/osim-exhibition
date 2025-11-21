@@ -17,13 +17,25 @@ export default function ChatPoster2Taxi() {
   const selectedPoster = '2';
   const selectedType = 'taxi';
 
+  // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
+    // 이미 AI 메시지가 마지막이면 중복 실행 방지
     if (chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'assistant') return;
     }
     
     setIsLoading(true);
+    
+    // 디버깅: 전송되는 값 확인
+    console.log('📤 API 요청 데이터:', {
+      turnCount: currentTurn,
+      selectedType,
+      selectedPoster,
+      selectedTypeType: typeof selectedType,
+      selectedPosterType: typeof selectedPoster,
+      chatMessagesLength: chatMessages.length
+    });
     
     try {
       const response = await fetch('/api/chat', {
@@ -42,15 +54,7 @@ export default function ChatPoster2Taxi() {
 
       const data = await response.json();
       
-      // 에러 메시지 필터링
-      const errorMessages = [
-        "죄송합니다. 잠시 후 다시 시도해주세요.",
-        "AI 서비스에 일시적인 문제가 있습니다. 잠시만 기다려주세요.",
-        "네트워크 연결을 확인해주세요.",
-        "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
-      ];
-      
-      // content가 있으면 항상 사용
+      // content가 있으면 항상 사용 (API 키가 없어도 질문은 반환됨)
       if (data.content) {
         const newMessage = {
           role: 'assistant',
@@ -60,28 +64,41 @@ export default function ChatPoster2Taxi() {
         
         // 분석 데이터가 있으면 저장
         if (data.analysis) {
+          console.log('분석 데이터 저장:', data.analysis);
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
-          console.log('✅ 분석 데이터 저장됨');
         }
         
         // 4번째 대답 후 (currentTurn === 4) 분석 시작 메시지가 표시되면 분석 페이지로 이동
         if (currentTurn === 4 && (data.isAnalysis || data.content.includes('분석을 시작하겠습니다'))) {
+          // 분석 데이터가 없어도 분석 페이지로 이동 (API 키가 없을 수 있음)
           setTimeout(() => {
-            window.location.href = '/analysis';
-          }, 3000);
+            router.push('/analysis');
+          }, 3000); // 3초 후 이동
         }
       } else if (data.error) {
-        console.error('API 에러:', data.error);
-        // 에러 메시지는 표시하지 않음
+        // content가 없고 error만 있는 경우 (드물지만 방어적 처리)
+        console.error('API 오류:', data.error);
+        const errorMessage = {
+          role: 'assistant',
+          content: data.error || "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
+        };
+        setChatMessages(prev => [...prev, errorMessage]);
       }
     } catch (error) {
       console.error('AI 메시지 처리 오류:', error);
-      // 에러는 콘솔에만 표시, 사용자에게는 표시하지 않음
+      
+      // API 오류 시 사용자에게 알림
+      const errorMessage = {
+        role: 'assistant',
+        content: "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
+      };
+      setChatMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
   }, [chatMessages, currentTurn, selectedType, selectedPoster, router]);
 
+  // AI 질문 자동 표시 (첫 번째 질문만)
   useEffect(() => {
     if (currentTurn === 0 && chatMessages.length === 0) {
       const timer = setTimeout(() => {
@@ -91,8 +108,10 @@ export default function ChatPoster2Taxi() {
     }
   }, [currentTurn, handleAIMessage, chatMessages.length]);
 
+  // 사용자 답변 후 AI 다음 질문 생성 (1-4턴: 4개 질문)
   useEffect(() => {
     if (currentTurn > 0 && currentTurn < 4 && chatMessages.length > 0) {
+      // 사용자 메시지가 마지막인지 확인
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'user') {
         const timer = setTimeout(() => {
@@ -116,6 +135,7 @@ export default function ChatPoster2Taxi() {
     }
   }, [currentTurn, chatMessages, handleAIMessage]);
 
+  // 채팅 메시지 전송
   const handleSendMessage = async () => {
     if (userInput.trim()) {
       const newMessage = {
@@ -130,6 +150,7 @@ export default function ChatPoster2Taxi() {
     }
   };
 
+  // Enter 키로 메시지 전송
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSendMessage();
@@ -201,4 +222,3 @@ export default function ChatPoster2Taxi() {
     </div>
   );
 }
-

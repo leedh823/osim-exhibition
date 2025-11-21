@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
     } else if (turnCount === 4) {
       // 4턴 (4개 질문 완료): 분석 시작
       // ⚠️ 여기서만 AI를 사용합니다. 질문은 위에서 제공된 질문 목록에서만 선택됩니다.
-      response = "대답해주신 결과에 따라 CCTV 속 인물에 대한 분석을 시작하겠습니다";
+      response = "분석을 시작하겠습니다";
       
       console.log('🔍 분석 단계 시작:', {
         turnCount,

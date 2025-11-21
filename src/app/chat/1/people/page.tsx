@@ -53,10 +53,19 @@ export default function ChatPoster1People() {
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
         }
         
+        // 4번째 답변 후 분석이 완료되면 분석 페이지로 이동
         if (currentTurn === 4 && (data.isAnalysis || data.content.includes('분석을 시작하겠습니다'))) {
-          setTimeout(() => {
-            router.push('/analysis');
-          }, 2000);
+          if (data.analysis) {
+            // 분석 데이터가 있으면 즉시 이동
+            setTimeout(() => {
+              router.push('/analysis');
+            }, 2000);
+          } else {
+            // 분석 데이터가 없으면 3초 후 이동 (분석 생성 중)
+            setTimeout(() => {
+              router.push('/analysis');
+            }, 3000);
+          }
         }
       }
     } catch (error) {
@@ -93,24 +102,17 @@ export default function ChatPoster1People() {
   }, [currentTurn, chatMessages, handleAIMessage]);
 
   useEffect(() => {
-    // 4번째 답변 후 자동으로 "분석을 시작하겠습니다" 메시지 표시 및 분석 페이지로 이동
+    // 4번째 답변 후 자동으로 API를 통해 분석 시작
     if (currentTurn === 4 && chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'user') {
-        // "분석을 시작하겠습니다" 메시지 표시
-        const analysisMessage = {
-          role: 'assistant',
-          content: '대답해주신 결과에 따라 CCTV 속 인물에 대한 분석을 시작하겠습니다'
-        };
-        setChatMessages(prev => [...prev, analysisMessage]);
-        
-        // 2초 후 분석 페이지로 이동
-        setTimeout(() => {
-          router.push('/analysis');
-        }, 2000);
+        const timer = setTimeout(() => {
+          handleAIMessage();
+        }, 1000);
+        return () => clearTimeout(timer);
       }
     }
-  }, [currentTurn, chatMessages, router]);
+  }, [currentTurn, chatMessages, handleAIMessage]);
 
   const handleSendMessage = async () => {
     if (userInput.trim()) {

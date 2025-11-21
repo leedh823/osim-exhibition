@@ -51,14 +51,23 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const maxBoxSize = 2000; // 최대 박스 크기 (매우 넓은 범위)
     const minBoxArea = 100; // 최소 박스 면적 (매우 작은 박스도 감지)
     const maxBoxArea = 1000000; // 최대 박스 면적 (매우 넓은 범위)
+    
+    // 화면을 가로로 절반으로 나눴을 때 아래쪽 절반만 감지
+    const scanStartY = Math.floor(canvas.height / 2);
+    
+    // 정사각형에 가까운 박스만 감지 (aspect ratio 체크)
+    const minAspectRatio = 0.6; // 최소 가로/세로 비율
+    const maxAspectRatio = 1.4; // 최대 가로/세로 비율
 
     const colorName = isPoster3 ? '빨간색' : '노랑색';
-    console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
+    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (아래쪽 절반만, 정사각형)...`, { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
+      scanStartY,
       isPoster3,
       targetColor: { r: targetR, g: targetG, b: targetB },
-      colorThreshold
+      colorThreshold,
+      aspectRatioRange: `${minAspectRatio} ~ ${maxAspectRatio}`
     });
 
     // 네 모서리 검증 함수
@@ -78,9 +87,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       return rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
     };
 
-    // 색상 픽셀 찾기 (스캔 간격 조정 - 포스터 3은 더 촘촘하게)
-    const scanInterval = isPoster3 ? 2 : 4; // 포스터 3: 2픽셀 간격으로 더 촘촘하게 스캔
-    for (let y = 0; y < canvas.height - minBoxSize; y += scanInterval) {
+    // 색상 픽셀 찾기 (성능 개선: 스캔 간격 넓히기, 아래쪽 절반만 스캔)
+    const scanInterval = isPoster3 ? 6 : 8; // 성능 개선: 스캔 간격 넓힘 (2->6, 4->8)
+    // 화면 아래쪽 절반만 스캔 (위쪽 절반 제외)
+    for (let y = scanStartY; y < canvas.height - minBoxSize; y += scanInterval) {
       for (let x = 0; x < canvas.width - minBoxSize; x += scanInterval) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
@@ -157,8 +167,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
                              boxWidth < maxBoxSize && boxHeight < maxBoxSize;
           const isAreaValid = boxArea >= minBoxArea && boxArea <= maxBoxArea;
           
-          // 크기 검증만 수행 (모서리 검증 제거, 면적 검증 제거)
-          if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
+          // 정사각형에 가까운 박스만 감지 (aspect ratio 체크)
+          const aspectRatio = boxWidth / boxHeight;
+          const isAspectRatioValid = aspectRatio >= minAspectRatio && aspectRatio <= maxAspectRatio;
+          
+          // 크기 검증 + 정사각형 비율 검증
+          if (boxWidth > minBoxSize && boxHeight > minBoxSize && isAspectRatioValid) {
             // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
             const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
             
@@ -172,7 +186,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             });
             
             if (!isDuplicate) {
-              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y, area: boxArea });
+              console.log('📦 박스 크기 측정 완료 (정사각형):', { boxWidth, boxHeight, x, y, area: boxArea, aspectRatio });
               const newBox = {
                 id: boxId,
                 x: x,
@@ -187,12 +201,19 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
               // 모든 박스 추가 (검증 최소화)
               boxes.push(newBox);
               const emoji = isPoster3 ? '🔴' : '🟡';
-              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
+              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨 (정사각형):`, newBox);
             } else {
               console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
             }
           } else {
-            console.log('⚠️ 박스 크기 검증 실패:', { boxWidth, boxHeight, minBoxSize });
+            const aspectRatio = boxWidth / boxHeight;
+            console.log('⚠️ 박스 검증 실패:', { 
+              boxWidth, 
+              boxHeight, 
+              minBoxSize, 
+              aspectRatio,
+              isAspectRatioValid: aspectRatio >= minAspectRatio && aspectRatio <= maxAspectRatio
+            });
           }
         }
       }

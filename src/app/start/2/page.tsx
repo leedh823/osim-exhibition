@@ -22,7 +22,7 @@ export default function PosterPage2() {
       // 클릭된 객체가 정렬된 배열에서 몇 번째인지 찾기
       const clickedIndex = sortedObjects.findIndex(obj => obj.id === person.id);
       
-      // 작은 박스(인덱스 0) = people, 큰 박스(인덱스 1) = taxi
+      // 박스 크기 기반 매핑: 작은 박스 = people, 큰 박스 = taxi
       if (clickedIndex === 0) {
         // 작은 박스 클릭 = people 영상
         localStorage.setItem('selectedType', 'people');

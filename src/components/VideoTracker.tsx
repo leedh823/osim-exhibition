@@ -218,13 +218,20 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     console.log(`🎯 총 ${boxes.length}개의 ${colorName} 박스 감지 완료`);
     
-    // 포스터 3: 적절한 크기의 박스 중에서 선택 (너무 큰 박스 제외)
+    // 포스터 3: 적절한 크기와 위치의 박스 중에서 선택
     if (isPoster3 && boxes.length > 0) {
-      // 적절한 크기의 박스만 필터링 (너무 큰 박스는 배경일 가능성)
+      // 적절한 크기와 위치의 박스만 필터링
       const reasonableBoxes = boxes.filter(box => {
         const area = box.width * box.height;
         // 면적이 200000 이하인 박스만 (너무 큰 배경 빨간색 제외)
-        return area <= 200000;
+        const isSizeReasonable = area <= 200000;
+        
+        // 화면 상단 30% 이하의 박스는 제외 (하늘 부분의 빨간색 제외)
+        const boxCenterY = box.y + box.height / 2;
+        const screenHeight = canvas.height;
+        const isNotInSky = boxCenterY > screenHeight * 0.3;
+        
+        return isSizeReasonable && isNotInSky;
       });
       
       if (reasonableBoxes.length > 2) {
@@ -235,10 +242,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
           return areaB - areaA; // 큰 것부터
         });
         const top2Boxes = sortedBoxes.slice(0, 2);
-        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 크기 ${reasonableBoxes.length}개, 가장 큰 2개 선택:`, top2Boxes);
+        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 크기/위치 ${reasonableBoxes.length}개, 가장 큰 2개 선택:`, top2Boxes);
         return top2Boxes;
       } else if (reasonableBoxes.length > 0) {
-        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 크기 ${reasonableBoxes.length}개 선택:`, reasonableBoxes);
+        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 크기/위치 ${reasonableBoxes.length}개 선택:`, reasonableBoxes);
         return reasonableBoxes;
       }
     }
@@ -266,7 +273,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   // }, [followPerson, selectedPerson, detectedObjects]);
 
 
-  // 객체 감지 함수 (초당 30회 실행)
+  // 객체 감지 함수 (초당 40회 실행)
   const detectObjects = useCallback(() => {
     if (!videoRef.current) {
       return;
@@ -274,6 +281,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     const video = videoRef.current;
     const now = Date.now();
+    
+    // 포스터 3: 17초 이후부터만 감지
+    const isPoster3 = videoSrc.includes('/poster video 3/');
+    if (isPoster3 && video.currentTime < 17) {
+      return; // 17초 이전이면 감지하지 않음
+    }
 
     try {
       // 2개의 노랑색 박스 감지

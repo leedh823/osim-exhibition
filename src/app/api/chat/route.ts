@@ -106,28 +106,47 @@ export async function POST(request: NextRequest) {
     if (turnCount < 4) {
       // 0-3턴: 4개 질문 (각 영상마다 1개씩)
       // 질문은 제공된 질문 목록에서만 랜덤 선택 (AI 사용 안 함)
+      // turnCount 0 → videoNumber 1 → people 1 또는 taxi 1
+      // turnCount 1 → videoNumber 2 → people 2 또는 taxi 2
+      // turnCount 2 → videoNumber 3 → people 3 또는 taxi 3
+      // turnCount 3 → videoNumber 4 → people 4 또는 taxi 4
       
       // 포스터 2이고 타입이 people 또는 taxi인 경우 질문 데이터 사용
       if (isPoster2 && (videoType === 'people' || videoType === 'taxi')) {
         const typeQuestions = poster2Questions[videoType as 'people' | 'taxi'];
         
+        console.log('📋 질문 선택 시작:', {
+          videoType,
+          videoNumber,
+          turnCount,
+          hasTypeQuestions: !!typeQuestions,
+          availableNumbers: typeQuestions ? Object.keys(typeQuestions).map(Number) : []
+        });
+        
         if (typeQuestions && typeQuestions[videoNumber]) {
           const questions = typeQuestions[videoNumber];
+          
+          console.log('📋 질문 배열:', {
+            videoType,
+            videoNumber,
+            questionsCount: Array.isArray(questions) ? questions.length : 0,
+            questions: Array.isArray(questions) ? questions : '없음'
+          });
           
           if (Array.isArray(questions) && questions.length > 0) {
             // 질문 배열에서 랜덤 선택 (AI 사용 안 함)
             const randomIndex = Math.floor(Math.random() * questions.length);
             response = questions[randomIndex];
-            console.log('✅ 질문 선택 (랜덤):', { 
+            console.log('✅ 질문 선택 완료 (랜덤):', { 
               videoType, 
               videoNumber, 
               turnCount,
               randomIndex, 
               totalQuestions: questions.length,
-              response 
+              selectedQuestion: response 
             });
           } else {
-            console.error('❌ 질문 배열이 비어있음:', { videoType, videoNumber });
+            console.error('❌ 질문 배열이 비어있음:', { videoType, videoNumber, questions });
             // 기본 질문 사용
             response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
           }
@@ -135,8 +154,10 @@ export async function POST(request: NextRequest) {
           console.error('❌ 질문 데이터 없음:', { 
             videoType, 
             videoNumber,
+            turnCount,
             hasTypeQuestions: !!typeQuestions,
-            hasVideoNumber: typeQuestions ? !!typeQuestions[videoNumber] : false
+            hasVideoNumber: typeQuestions ? !!typeQuestions[videoNumber] : false,
+            availableNumbers: typeQuestions ? Object.keys(typeQuestions).map(Number) : []
           });
           // 기본 질문 사용
           response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
@@ -147,7 +168,8 @@ export async function POST(request: NextRequest) {
           isPoster2, 
           videoType,
           selectedPoster,
-          selectedType
+          selectedType,
+          turnCount
         });
         if (turnCount === 0) {
           response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";

@@ -6,9 +6,15 @@ interface ChatMessage {
   content: string;
 }
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// OpenAI 인스턴스를 지연 초기화 (빌드 시점 에러 방지)
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    return null;
+  }
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 // 포스터 2 질문 데이터
 const poster2Questions = {
@@ -181,6 +187,16 @@ ${conversationHistory}
   "trackedPersonAnalysis": "사용자 답변 기반 인물 분석 (한국어, 200-300자)",
   "viewerAnalysis": "사용자 답변 기반 관람자 분석 (한국어, 200-300자)"
 }`;
+
+      const openai = getOpenAIClient();
+      if (!openai) {
+        return NextResponse.json({
+          content: response,
+          analysis: null,
+          isAnalysis: false,
+          error: 'AI 서비스가 설정되지 않아 분석을 생성할 수 없습니다.'
+        });
+      }
 
       const completion = await openai.chat.completions.create({
         model: "gpt-4",

@@ -115,32 +115,6 @@ export default function ChatPoster2People() {
     }
   }, [currentTurn, chatMessages, handleAIMessage]);
 
-  useEffect(() => {
-    // 4번째 답변 후 자동으로 "분석이 완료되었습니다" 메시지 표시 및 분석 페이지로 이동
-    if (currentTurn === 4 && chatMessages.length > 0) {
-      const lastMessage = chatMessages[chatMessages.length - 1];
-      if (lastMessage.role === 'user') {
-        // "분석이 완료되었습니다" 메시지 표시
-        const analysisMessage = {
-          role: 'assistant',
-          content: '분석이 완료되었습니다'
-        };
-        setChatMessages(prev => [...prev, analysisMessage]);
-        
-        // 백그라운드에서 API 호출 시도 (에러는 콘솔에만 표시)
-        handleAIMessage().catch((error) => {
-          console.error('백그라운드 API 호출 실패:', error);
-          // 에러는 콘솔에만 표시, 사용자에게는 표시하지 않음
-        });
-        
-        // 3초 후 무조건 분석 페이지로 이동
-        setTimeout(() => {
-          router.push('/analysis');
-        }, 3000);
-      }
-    }
-  }, [currentTurn, chatMessages, router, handleAIMessage]);
-
   const handleSendMessage = async () => {
     if (userInput.trim()) {
       const newMessage = {
@@ -152,9 +126,24 @@ export default function ChatPoster2People() {
       const nextTurn = currentTurn + 1;
       setCurrentTurn(nextTurn);
       
-      // 4번째 답변 입력 시 (currentTurn이 3일 때) 자동으로 분석 시작
+      // 4번째 답변 입력 시 바로 처리
       if (nextTurn === 4) {
-        // useEffect에서 처리되도록 함
+        // "분석이 완료되었습니다" 메시지 표시
+        const analysisMessage = {
+          role: 'assistant',
+          content: '분석이 완료되었습니다'
+        };
+        setChatMessages(prev => [...prev, analysisMessage]);
+        
+        // 백그라운드에서 API 호출 시도 (에러는 콘솔에만 표시)
+        handleAIMessage().catch((error) => {
+          console.error('백그라운드 API 호출 실패:', error);
+        });
+        
+        // 3초 후 무조건 분석 페이지로 이동
+        setTimeout(() => {
+          router.push('/analysis');
+        }, 3000);
       }
     }
   };

@@ -47,6 +47,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     // 포스터 2와 동일한 조건
     const colorThreshold = 80; // 포스터 2와 동일
     const minBoxSize = 30; // 최소 박스 크기 (포스터 2와 동일)
+    const maxBoxSize = 600; // 최대 박스 크기 (너무 큰 박스 제외)
+    const minBoxArea = 1000; // 최소 박스 면적 (너무 작은 박스 제외)
+    const maxBoxArea = 200000; // 최대 박스 면적 (너무 큰 박스 제외)
 
     const colorName = isPoster3 ? '빨간색' : '노랑색';
     console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
@@ -146,46 +149,93 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             }
           }
 
-          // 박스 크기 검증 (포스터 2와 동일)
-          if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
-            // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
-            const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
+          // 박스 크기 검증 (크기 범위 제한)
+          const boxArea = boxWidth * boxHeight;
+          const isSizeValid = boxWidth > minBoxSize && boxHeight > minBoxSize && 
+                             boxWidth < maxBoxSize && boxHeight < maxBoxSize;
+          const isAreaValid = boxArea >= minBoxArea && boxArea <= maxBoxArea;
+          
+          if (isSizeValid && isAreaValid) {
+            // 1. 네 모서리 검증
+            const corners = [
+              { x, y }, // 왼쪽 위
+              { x: x + boxWidth - 1, y }, // 오른쪽 위
+              { x, y: y + boxHeight - 1 }, // 왼쪽 아래
+              { x: x + boxWidth - 1, y: y + boxHeight - 1 } // 오른쪽 아래
+            ];
             
-            // 이미 같은 위치의 박스가 있는지 확인 (중복 방지)
-            const isDuplicate = boxes.some(existing => {
-              const distance = Math.sqrt(
-                Math.pow(existing.x - x, 2) + Math.pow(existing.y - y, 2)
-              );
-              // 50픽셀 이내면 같은 박스로 간주
-              return distance < 50;
-            });
+            const allCornersValid = corners.every(corner => checkCornerColor(corner.x, corner.y));
             
-            if (!isDuplicate) {
-              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
-              const newBox = {
-                id: boxId,
-                x: x,
-                y: y,
-                width: boxWidth,
-                height: boxHeight,
-                label: 'person',
-                confidence: 0.95,
-                isMoving: true
-              };
+            // 네 모서리가 모두 해당 색상인 경우에만 박스 추가
+            if (allCornersValid) {
+              // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
+              const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
+              
+              // 이미 같은 위치의 박스가 있는지 확인 (중복 방지)
+              const isDuplicate = boxes.some(existing => {
+                const distance = Math.sqrt(
+                  Math.pow(existing.x - x, 2) + Math.pow(existing.y - y, 2)
+                );
+                // 50픽셀 이내면 같은 박스로 간주
+                return distance < 50;
+              });
+              
+              if (!isDuplicate) {
+                console.log('📦 박스 크기 측정 완료 (네모 박스):', { boxWidth, boxHeight, x, y, area: boxArea });
+                const newBox = {
+                  id: boxId,
+                  x: x,
+                  y: y,
+                  width: boxWidth,
+                  height: boxHeight,
+                  label: 'person',
+                  confidence: 0.95,
+                  isMoving: true
+                };
 
-              // 겹침 체크 없이 모든 박스 추가
-              boxes.push(newBox);
-              const emoji = isPoster3 ? '🔴' : '🟡';
-              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
+                // 겹침 체크 없이 모든 박스 추가
+                boxes.push(newBox);
+                const emoji = isPoster3 ? '🔴' : '🟡';
+                console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨 (네모 박스):`, newBox);
+              } else {
+                console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
+              }
             } else {
-              console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
+              console.log('⚠️ 네 모서리가 모두 해당 색상이 아니어서 제외:', { boxWidth, boxHeight, x, y });
             }
+          } else {
+            console.log('⚠️ 박스 크기/면적 검증 실패:', { boxWidth, boxHeight, area: boxArea, isSizeValid, isAreaValid });
           }
         }
       }
     }
 
     console.log(`🎯 총 ${boxes.length}개의 ${colorName} 박스 감지 완료`);
+    
+    // 포스터 3: 면적 기반 선택 (적절한 크기의 박스 중에서 선택)
+    if (isPoster3 && boxes.length > 0) {
+      // 적절한 면적의 박스만 필터링
+      const reasonableBoxes = boxes.filter(box => {
+        const area = box.width * box.height;
+        return area >= minBoxArea && area <= maxBoxArea;
+      });
+      
+      if (reasonableBoxes.length > 2) {
+        // 면적으로 정렬하고 가장 큰 2개만 선택
+        const sortedBoxes = [...reasonableBoxes].sort((a, b) => {
+          const areaA = a.width * a.height;
+          const areaB = b.width * b.height;
+          return areaB - areaA; // 큰 것부터
+        });
+        const top2Boxes = sortedBoxes.slice(0, 2);
+        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 면적 ${reasonableBoxes.length}개, 가장 큰 2개 선택:`, top2Boxes);
+        return top2Boxes;
+      } else if (reasonableBoxes.length > 0) {
+        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 면적 ${reasonableBoxes.length}개 선택:`, reasonableBoxes);
+        return reasonableBoxes;
+      }
+    }
+    
     return boxes;
   }, [videoSrc]);
 

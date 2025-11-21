@@ -86,6 +86,9 @@ export default function ChatPoster1Car() {
   }, [currentTurn, handleAIMessage, chatMessages.length]);
 
   useEffect(() => {
+    // 4턴 이상이면 실행하지 않음
+    if (currentTurn >= 4) return;
+    
     if (currentTurn > 0 && currentTurn < 4 && chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'user') {
@@ -123,16 +126,18 @@ export default function ChatPoster1Car() {
     if (newTurn === 4) {
       console.log('✅✅✅ 4번째 답변 확인! 분석 시작!');
       
-      // 즉시 "분석이 완료되었습니다" 메시지 추가
+      // 즉시 "분석을 시작하겠습니다" 메시지 추가 (함수형 업데이트로 확실하게)
       setChatMessages(prev => {
-        console.log('📝 메시지 추가 중...');
-        return [...prev, {
+        console.log('📝 메시지 추가 중...', prev.length);
+        const updated = [...prev, {
           role: 'assistant',
-          content: '분석이 완료되었습니다'
+          content: '분석을 시작하겠습니다'
         }];
+        console.log('📝 메시지 추가 완료:', updated.length);
+        return updated;
       });
       
-      // 3초 후 이동
+      // 3초 후 이동 (즉시 실행)
       console.log('⏰ 타이머 시작: 3초 후 이동');
       setTimeout(() => {
         console.log('🚀🚀🚀 이동 시작!');

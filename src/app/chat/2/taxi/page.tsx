@@ -106,23 +106,32 @@ export default function ChatPoster2Taxi() {
       setChatMessages(prev => [...prev, newMessage]);
       setUserInput('');
       const nextTurn = currentTurn + 1;
+      
+      console.log('🔍 답변 전송:', { currentTurn, nextTurn, userInput: userInput.substring(0, 20) });
+      
       setCurrentTurn(nextTurn);
       
       // 4번째 답변 입력 시 (nextTurn === 4)
       if (nextTurn === 4) {
-        // 1. "분석이 완료되었습니다" 메시지 즉시 표시
-        setChatMessages(prev => [...prev, {
-          role: 'assistant',
-          content: '분석이 완료되었습니다'
-        }]);
+        console.log('✅ 4번째 답변 감지! 분석 시작');
         
-        // 2. 3초 후 분석 페이지로 이동 (window.location 사용 - 더 확실함)
+        // 1. "분석이 완료되었습니다" 메시지 즉시 표시
+        setChatMessages(prev => {
+          console.log('📝 분석 완료 메시지 추가');
+          return [...prev, {
+            role: 'assistant',
+            content: '분석이 완료되었습니다'
+          }];
+        });
+        
+        // 2. 3초 후 분석 페이지로 이동
+        console.log('⏰ 3초 타이머 설정');
         setTimeout(() => {
+          console.log('🚀 분석 페이지로 이동');
           window.location.href = '/analysis';
         }, 3000);
         
         // 3. API 호출은 완전히 별도로 (await 없이)
-        // 분석 데이터 저장만 시도
         (async () => {
           try {
             const updatedMessages = [...chatMessages, newMessage];

@@ -44,12 +44,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const targetR = isPoster3 ? 1 : 245;
     const targetG = isPoster3 ? 9 : 218;
     const targetB = isPoster3 ? 255 : 49;
-    // 포스터 2와 포스터 3 동일한 조건 (색상만 다름)
-    const colorThreshold = 150; // 포스터 2와 포스터 3 동일: 넓은 색상 감지 범위
+    // 포스터 2와 포스터 3 조건 (색상만 다름)
+    const colorThreshold = isPoster3 ? 150 : 80; // 포스터 3: 넓은 색상 감지 범위, 포스터 2: 원래대로
     const minBoxSize = 30; // 최소 박스 크기
 
     const colorName = isPoster3 ? '파랑색' : '노랑색';
-    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (포스터 2와 포스터 3 동일 조건)...`, { 
+    console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
       isPoster3,
@@ -76,8 +76,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       return rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
     };
 
-    // 색상 픽셀 찾기 (포스터 2와 포스터 3 동일: 더 촘촘하게 스캔)
-    const scanInterval = 2; // 포스터 2와 포스터 3 동일: 보트/자전거 박스 감지 개선을 위해 더 촘촘하게
+    // 색상 픽셀 찾기 (스캔 간격: 포스터 2와 포스터 3 모두 2픽셀)
+    const scanInterval = 2; // 포스터 2와 포스터 3 모두 2픽셀: 보트/자전거 박스 감지 개선을 위해 더 촘촘하게
     for (let y = 0; y < canvas.height - minBoxSize; y += scanInterval) {
       for (let x = 0; x < canvas.width - minBoxSize; x += scanInterval) {
         const pixelIndex = (y * canvas.width + x) * 4;
@@ -109,8 +109,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
           let boxWidth = 0;
           let boxHeight = 0;
           
-          // 가로 크기 측정 (범위 확대, 포스터 2와 포스터 3 동일)
-          const maxWidth = 1000; // 포스터 2와 포스터 3 동일: 보트/자전거 박스 감지 개선
+          // 가로 크기 측정 (범위 확대, 포스터 3은 더 넓게)
+          const maxWidth = isPoster3 ? 1000 : 800; // 포스터 3: 보트/자전거 박스 감지 개선, 포스터 2: 원래대로
           for (let dx = x; dx < Math.min(x + maxWidth, canvas.width); dx++) {
             const checkIndex = (y * canvas.width + dx) * 4;
             const checkR = data[checkIndex];
@@ -130,8 +130,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             }
           }
           
-          // 세로 크기 측정 (범위 확대, 포스터 2와 포스터 3 동일)
-          const maxHeight = 1000; // 포스터 2와 포스터 3 동일: 보트/자전거 박스 감지 개선
+          // 세로 크기 측정 (범위 확대, 포스터 3은 더 넓게)
+          const maxHeight = isPoster3 ? 1000 : 800; // 포스터 3: 보트/자전거 박스 감지 개선, 포스터 2: 원래대로
           for (let dy = y; dy < Math.min(y + maxHeight, canvas.height); dy++) {
             const checkIndex = (dy * canvas.width + x) * 4;
             const checkR = data[checkIndex];

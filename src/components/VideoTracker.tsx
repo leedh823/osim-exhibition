@@ -193,22 +193,38 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
           const isAspectRatioValid = aspectRatio < maxAspectRatio && aspectRatio > 1 / maxAspectRatio;
           
           if (isSizeValid && isAspectRatioValid) {
-            console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y, aspectRatio });
-            const newBox = {
-              id: `yellow-box-${boxes.length + 1}`,
-              x: x,
-              y: y,
-              width: boxWidth,
-              height: boxHeight,
-              label: 'person',
-              confidence: 0.95,
-              isMoving: true
-            };
+            // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
+            const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
+            
+            // 이미 같은 위치의 박스가 있는지 확인 (중복 방지)
+            const isDuplicate = boxes.some(existing => {
+              const distance = Math.sqrt(
+                Math.pow(existing.x - x, 2) + Math.pow(existing.y - y, 2)
+              );
+              // 50픽셀 이내면 같은 박스로 간주
+              return distance < 50;
+            });
+            
+            if (!isDuplicate) {
+              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y, aspectRatio });
+              const newBox = {
+                id: boxId,
+                x: x,
+                y: y,
+                width: boxWidth,
+                height: boxHeight,
+                label: 'person',
+                confidence: 0.95,
+                isMoving: true
+              };
 
-            // 겹침 체크 없이 모든 박스 추가
-            boxes.push(newBox);
-            const emoji = isPoster3 ? '🔴' : '🟡';
-            console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
+              // 겹침 체크 없이 모든 박스 추가
+              boxes.push(newBox);
+              const emoji = isPoster3 ? '🔴' : '🟡';
+              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
+            } else {
+              console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
+            }
           } else {
             console.log('⚠️ 박스 크기/비율 검증 실패:', { boxWidth, boxHeight, aspectRatio, isSizeValid, isAspectRatioValid });
           }
@@ -302,10 +318,22 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       setDetectedObjectsWithTimestamp(prev => {
         // 새로운 객체와 1초 이내의 기존 객체 유지
         const validObjects = prev.filter(obj => now - obj.detectedAt < 1000);
-        // 새로운 객체 추가 (중복 제거)
-        const newObjects = objectsWithTimestamp.filter(newObj => 
-          !validObjects.some(existing => existing.id === newObj.id)
-        );
+        // 새로운 객체 추가 (ID와 위치 기반 중복 제거)
+        const newObjects = objectsWithTimestamp.filter(newObj => {
+          // ID로 중복 체크
+          const idExists = validObjects.some(existing => existing.id === newObj.id);
+          if (idExists) return false;
+          
+          // 위치로 중복 체크 (50픽셀 이내면 같은 박스로 간주)
+          const positionExists = validObjects.some(existing => {
+            const distance = Math.sqrt(
+              Math.pow(existing.x - newObj.x, 2) + Math.pow(existing.y - newObj.y, 2)
+            );
+            return distance < 50;
+          });
+          
+          return !positionExists;
+        });
         return [...validObjects, ...newObjects];
       });
       

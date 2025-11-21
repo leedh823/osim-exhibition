@@ -57,12 +57,14 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const maxAspectRatio = 1.4; // 최대 가로/세로 비율
 
     const colorName = isPoster3 ? '파랑색' : '노랑색';
-    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (전체 화면, 호수 영역 특별 처리, 정사각형)...`, { 
+    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (하늘 제외, 호수 영역 특별 처리, 정사각형)...`, { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
       isPoster3,
       targetColor: { r: targetR, g: targetG, b: targetB },
       colorThreshold,
+      skyExcluded: `0 ~ ${Math.floor(canvas.height * 0.25)} (하늘 영역 제외)`,
+      scanStartY: Math.floor(canvas.height * 0.25),
       lakeArea: `${Math.floor(canvas.height * 0.3)} ~ ${Math.floor(canvas.height * 0.85)}`,
       lakeScanInterval: isPoster3 ? 6 : 8,
       lakeColorThreshold: isPoster3 ? 180 : 100,
@@ -88,13 +90,14 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     // 색상 픽셀 찾기 (성능 개선: 스캔 간격 넓히기, 전체 화면 스캔)
     const scanInterval = isPoster3 ? 12 : 16; // 성능 개선: 스캔 간격 더 넓힘 (6->12, 8->16)
+    const skyEndY = Math.floor(canvas.height * 0.25); // 하늘 영역 제외 (화면 높이의 25% 이전은 스캔 안 함)
     const lakeStartY = Math.floor(canvas.height * 0.3); // 호수 영역 시작 (화면 높이의 30%)
     const lakeEndY = Math.floor(canvas.height * 0.85); // 호수 영역 끝 (화면 높이의 85%)
     const lakeScanInterval = isPoster3 ? 6 : 8; // 호수 영역은 더 촘촘하게 스캔
     const lakeColorThreshold = isPoster3 ? 180 : 100; // 호수 영역은 색상 감지 범위 더 넓히기
     
-    // 전체 화면 스캔 (영역 제한 없음)
-    for (let y = 0; y < canvas.height - minBoxSize; y += scanInterval) {
+    // 하늘 영역 제외하고 스캔 (25% 이후부터 스캔)
+    for (let y = skyEndY; y < canvas.height - minBoxSize; y += scanInterval) {
       // 호수 영역인지 확인
       const isLakeArea = y >= lakeStartY && y < lakeEndY;
       // 호수 영역이면 더 촘촘하게 스캔, 아니면 기본 간격

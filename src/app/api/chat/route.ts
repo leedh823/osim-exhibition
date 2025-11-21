@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     let response = '';
 
     // 포스터 2인 경우 질문 데이터에서 선택
-    const isPoster2 = selectedPoster === '2';
+    const isPoster2 = selectedPoster === '2' || selectedPoster === 2;
     const videoType = selectedType; // 'people' or 'taxi'
     const videoNumber = Math.min(turnCount + 1, 4); // 1-4 (각 질문마다 영상 번호)
 
@@ -98,35 +98,48 @@ export async function POST(request: NextRequest) {
       isPoster2, 
       videoType, 
       videoNumber, 
-      turnCount 
+      turnCount,
+      hasPoster2Questions: !!poster2Questions,
+      hasVideoType: videoType && (videoType === 'people' || videoType === 'taxi')
     });
 
     if (turnCount < 4) {
       // 0-3턴: 4개 질문 (각 영상마다 1개씩)
-      if (isPoster2 && videoType && poster2Questions[videoType as keyof typeof poster2Questions]) {
+      if (isPoster2 && (videoType === 'people' || videoType === 'taxi')) {
         const typeQuestions = poster2Questions[videoType as keyof typeof poster2Questions];
-        const questions = typeQuestions[videoNumber as keyof typeof typeQuestions];
-        
-        console.log('📋 질문 데이터 확인:', { 
-          videoType, 
-          videoNumber, 
-          questions: Array.isArray(questions) ? questions : '없음',
-          questionsLength: Array.isArray(questions) ? questions.length : 0
-        });
-        
-        if (Array.isArray(questions) && questions.length > 0) {
-          // 질문 배열에서 랜덤 선택
-          const randomIndex = Math.floor(Math.random() * questions.length);
-          response = questions[randomIndex];
-          console.log('✅ 선택된 질문:', response);
+        if (typeQuestions) {
+          const questions = typeQuestions[videoNumber as keyof typeof typeQuestions];
+          
+          console.log('📋 질문 데이터 확인:', { 
+            videoType, 
+            videoNumber, 
+            typeQuestions: !!typeQuestions,
+            questions: Array.isArray(questions) ? questions : '없음',
+            questionsLength: Array.isArray(questions) ? questions.length : 0
+          });
+          
+          if (Array.isArray(questions) && questions.length > 0) {
+            // 질문 배열에서 랜덤 선택
+            const randomIndex = Math.floor(Math.random() * questions.length);
+            response = questions[randomIndex];
+            console.log('✅ 선택된 질문:', response);
+          } else {
+            // 질문이 없으면 기본 질문
+            console.log('⚠️ 질문이 없어서 기본 질문 사용');
+            response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
+          }
         } else {
-          // 질문이 없으면 기본 질문
-          console.log('⚠️ 질문이 없어서 기본 질문 사용');
+          console.log('⚠️ 타입 질문 데이터가 없음:', videoType);
           response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
         }
       } else {
         // 포스터 2가 아니거나 타입이 없으면 기본 질문
-        console.log('⚠️ 포스터 2가 아니거나 타입이 없어서 기본 질문 사용:', { isPoster2, videoType });
+        console.log('⚠️ 포스터 2가 아니거나 타입이 없어서 기본 질문 사용:', { 
+          isPoster2, 
+          videoType,
+          selectedPoster,
+          selectedType
+        });
         if (turnCount === 0) {
           response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
         } else {

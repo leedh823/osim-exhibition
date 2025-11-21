@@ -44,11 +44,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const targetR = isPoster3 ? 255 : 245;
     const targetG = isPoster3 ? 0 : 218;
     const targetB = isPoster3 ? 0 : 49;
-    // 빨간색 감지를 위해 더 넓은 범위 허용
-    const colorThreshold = isPoster3 ? 100 : 80; // 빨간색은 더 넓은 범위
-    const minBoxSize = 20; // 최소 박스 크기 (작은 박스도 감지)
-    const maxBoxSize = 500; // 최대 박스 크기 (너무 큰 박스 제외 - 배경 빨간색 제거)
-    const maxAspectRatio = 8; // 최대 가로/세로 비율 (비율 검증 완화)
+    // 포스터 2와 동일한 조건
+    const colorThreshold = 80; // 포스터 2와 동일
+    const minBoxSize = 30; // 최소 박스 크기 (포스터 2와 동일)
 
     const colorName = isPoster3 ? '빨간색' : '노랑색';
     console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
@@ -69,19 +67,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       const g = data[pixelIndex + 1];
       const b = data[pixelIndex + 2];
       
-      if (isPoster3) {
-        // 빨간색 감지: 중간 조건 (실제 박스는 감지, 배경은 제외)
-        // R >= 140 이상이고, R이 G보다 50 이상 크고, R이 B보다 50 이상 크고, G와 B가 150 이하
-        const rHigh = r >= 140;
-        const rDominant = (r - g) >= 50 && (r - b) >= 50;
-        const gbLow = g <= 150 && b <= 150;
-        return rHigh && rDominant && gbLow;
-      } else {
-        const rDiff = Math.abs(r - targetR);
-        const gDiff = Math.abs(g - targetG);
-        const bDiff = Math.abs(b - targetB);
-        return rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
-      }
+      // 포스터 2와 동일한 방식: RGB 차이 기반 감지
+      const rDiff = Math.abs(r - targetR);
+      const gDiff = Math.abs(g - targetG);
+      const bDiff = Math.abs(b - targetB);
+      return rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
     };
 
     // 색상 픽셀 찾기 (스캔 간격 넓힘)
@@ -92,23 +82,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         const g = data[pixelIndex + 1];
         const b = data[pixelIndex + 2];
 
-        // 색상 감지 (노랑색 또는 빨간색)
-        let isColorMatch = false;
-        
-        if (isPoster3) {
-          // 빨간색 감지: 중간 조건 (실제 박스는 감지, 배경은 제외)
-          // R >= 140 이상이고, R이 G보다 50 이상 크고, R이 B보다 50 이상 크고, G와 B가 150 이하
-          const rHigh = r >= 140;
-          const rDominant = (r - g) >= 50 && (r - b) >= 50;
-          const gbLow = g <= 150 && b <= 150;
-          isColorMatch = rHigh && rDominant && gbLow;
-        } else {
-          // 노랑색 감지: 기존 로직
-          const rDiff = Math.abs(r - targetR);
-          const gDiff = Math.abs(g - targetG);
-          const bDiff = Math.abs(b - targetB);
-          isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
-        }
+        // 색상 감지 (노랑색 또는 빨간색) - 포스터 2와 동일한 방식
+        const rDiff = Math.abs(r - targetR);
+        const gDiff = Math.abs(g - targetG);
+        const bDiff = Math.abs(b - targetB);
+        const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
         
         if (isColorMatch) {
           // 디버깅: 색상 픽셀 발견 시 로그
@@ -135,20 +113,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            let isColorMatch = false;
-            if (isPoster3) {
-              // 빨간색: 완화된 조건 (초기 감지와 동일)
-              const rHigh = checkR >= 140;
-              const rDominant = (checkR - checkG) >= 45 && (checkR - checkB) >= 45;
-              const gbLow = checkG <= 160 && checkB <= 160;
-              isColorMatch = rHigh && rDominant && gbLow;
-            } else {
-              // 노랑색: 기존 로직
-              const rDiff = Math.abs(checkR - targetR);
-              const gDiff = Math.abs(checkG - targetG);
-              const bDiff = Math.abs(checkB - targetB);
-              isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
-            }
+            // 포스터 2와 동일한 방식: RGB 차이 기반 감지
+            const rDiff = Math.abs(checkR - targetR);
+            const gDiff = Math.abs(checkG - targetG);
+            const bDiff = Math.abs(checkB - targetB);
+            const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
             
             if (isColorMatch) {
               boxWidth = dx - x + 1;
@@ -164,20 +133,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            let isColorMatch = false;
-            if (isPoster3) {
-              // 빨간색: 완화된 조건 (초기 감지와 동일)
-              const rHigh = checkR >= 140;
-              const rDominant = (checkR - checkG) >= 45 && (checkR - checkB) >= 45;
-              const gbLow = checkG <= 160 && checkB <= 160;
-              isColorMatch = rHigh && rDominant && gbLow;
-            } else {
-              // 노랑색: 기존 로직
-              const rDiff = Math.abs(checkR - targetR);
-              const gDiff = Math.abs(checkG - targetG);
-              const bDiff = Math.abs(checkB - targetB);
-              isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
-            }
+            // 포스터 2와 동일한 방식: RGB 차이 기반 감지
+            const rDiff = Math.abs(checkR - targetR);
+            const gDiff = Math.abs(checkG - targetG);
+            const bDiff = Math.abs(checkB - targetB);
+            const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
             
             if (isColorMatch) {
               boxHeight = dy - y + 1;
@@ -186,13 +146,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             }
           }
 
-          // 박스 크기와 비율 검증
-          const aspectRatio = boxWidth / boxHeight;
-          const isSizeValid = boxWidth > minBoxSize && boxHeight > minBoxSize && 
-                             boxWidth < maxBoxSize && boxHeight < maxBoxSize;
-          const isAspectRatioValid = aspectRatio < maxAspectRatio && aspectRatio > 1 / maxAspectRatio;
-          
-          if (isSizeValid && isAspectRatioValid) {
+          // 박스 크기 검증 (포스터 2와 동일)
+          if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
             // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
             const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
             
@@ -206,7 +161,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             });
             
             if (!isDuplicate) {
-              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y, aspectRatio });
+              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
               const newBox = {
                 id: boxId,
                 x: x,
@@ -225,47 +180,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             } else {
               console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
             }
-          } else {
-            console.log('⚠️ 박스 크기/비율 검증 실패:', { boxWidth, boxHeight, aspectRatio, isSizeValid, isAspectRatioValid });
           }
         }
       }
     }
 
     console.log(`🎯 총 ${boxes.length}개의 ${colorName} 박스 감지 완료`);
-    
-    // 포스터 3: 적절한 크기와 위치의 박스 중에서 선택
-    if (isPoster3 && boxes.length > 0) {
-      // 적절한 크기와 위치의 박스만 필터링
-      const reasonableBoxes = boxes.filter(box => {
-        const area = box.width * box.height;
-        // 면적이 200000 이하인 박스만 (너무 큰 배경 빨간색 제외)
-        const isSizeReasonable = area <= 200000;
-        
-        // 화면 상단 30% 이하의 박스는 제외 (하늘 부분의 빨간색 제외)
-        const boxCenterY = box.y + box.height / 2;
-        const screenHeight = canvas.height;
-        const isNotInSky = boxCenterY > screenHeight * 0.3;
-        
-        return isSizeReasonable && isNotInSky;
-      });
-      
-      if (reasonableBoxes.length > 2) {
-        // 크기로 정렬하고 가장 큰 2개만 선택
-        const sortedBoxes = [...reasonableBoxes].sort((a, b) => {
-          const areaA = a.width * a.height;
-          const areaB = b.width * b.height;
-          return areaB - areaA; // 큰 것부터
-        });
-        const top2Boxes = sortedBoxes.slice(0, 2);
-        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 크기/위치 ${reasonableBoxes.length}개, 가장 큰 2개 선택:`, top2Boxes);
-        return top2Boxes;
-      } else if (reasonableBoxes.length > 0) {
-        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 크기/위치 ${reasonableBoxes.length}개 선택:`, reasonableBoxes);
-        return reasonableBoxes;
-      }
-    }
-    
     return boxes;
   }, [videoSrc]);
 
@@ -297,12 +217,6 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     const video = videoRef.current;
     const now = Date.now();
-    
-    // 포스터 3: 17초 이후부터만 감지
-    const isPoster3 = videoSrc.includes('/poster video 3/');
-    if (isPoster3 && video.currentTime < 17) {
-      return; // 17초 이전이면 감지하지 않음
-    }
 
     try {
       // 2개의 노랑색 박스 감지

@@ -81,6 +81,10 @@ export async function POST(request: NextRequest) {
   try {
     const { messages, turnCount, selectedType, selectedPoster } = await request.json();
 
+    // API 키 확인 (디버깅용)
+    const hasApiKey = !!process.env.OPENAI_API_KEY;
+    console.log('🔑 OpenAI API 키 상태:', hasApiKey ? '설정됨' : '설정되지 않음');
+
     let systemPrompt = '';
     let response = '';
 
@@ -96,6 +100,17 @@ export async function POST(request: NextRequest) {
     const isPeople = typeStr === 'people';
     const isTaxi = typeStr === 'taxi';
     
+    console.log('🔍 질문 선택 시작:', {
+      turnCount,
+      questionIndex,
+      selectedPoster,
+      selectedType,
+      typeStr,
+      isPoster2,
+      isPeople,
+      isTaxi
+    });
+    
     // 질문 선택
     if (turnCount < 4) {
       // 0-3턴: 질문 선택
@@ -104,21 +119,57 @@ export async function POST(request: NextRequest) {
         const questionType = isPeople ? 'people' : 'taxi';
         const questionSet = poster2Questions[questionType];
         
+        console.log('📋 질문 세트 확인:', {
+          questionType,
+          hasQuestionSet: !!questionSet,
+          questionIndex,
+          hasQuestionIndex: questionSet ? !!questionSet[questionIndex as 1 | 2 | 3 | 4] : false
+        });
+        
         if (questionSet && questionSet[questionIndex as 1 | 2 | 3 | 4]) {
           const questions = questionSet[questionIndex as 1 | 2 | 3 | 4];
+          
+          console.log('📋 질문 배열:', {
+            questionType,
+            questionIndex,
+            questionsCount: Array.isArray(questions) ? questions.length : 0,
+            questions: Array.isArray(questions) ? questions : '없음'
+          });
           
           if (Array.isArray(questions) && questions.length > 0) {
             // 랜덤으로 질문 선택
             const randomIndex = Math.floor(Math.random() * questions.length);
             response = questions[randomIndex];
+            console.log('✅ 질문 선택 완료:', {
+              questionType,
+              questionIndex,
+              randomIndex,
+              totalQuestions: questions.length,
+              selectedQuestion: response
+            });
           } else {
+            console.error('❌ 질문 배열이 비어있음:', { questionType, questionIndex, questions });
             response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
           }
         } else {
+          console.error('❌ 질문 데이터 없음:', {
+            questionType,
+            questionIndex,
+            hasQuestionSet: !!questionSet,
+            availableIndices: questionSet ? Object.keys(questionSet).map(Number) : []
+          });
           response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
         }
       } else {
         // 포스터 2가 아니거나 타입이 없는 경우 기본 질문
+        console.warn('⚠️ 조건 불만족 - 기본 질문 사용:', {
+          isPoster2,
+          isPeople,
+          isTaxi,
+          selectedPoster,
+          selectedType,
+          turnCount
+        });
         if (turnCount === 0) {
           response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
         } else {
@@ -130,9 +181,15 @@ export async function POST(request: NextRequest) {
       // ⚠️ 여기서만 AI를 사용합니다. 질문은 위에서 제공된 질문 목록에서만 선택됩니다.
       response = "대답해주신 결과에 따라 CCTV 속 인물에 대한 분석을 시작하겠습니다";
       
+      console.log('🔍 분석 단계 시작:', {
+        turnCount,
+        hasApiKey: !!process.env.OPENAI_API_KEY,
+        messagesCount: messages.length
+      });
+      
       // API 키 확인 (분석 부분만 필요 - 질문 생성에는 AI 사용 안 함)
       if (!process.env.OPENAI_API_KEY) {
-        console.error('OpenAI API 키가 설정되지 않았습니다. 분석을 건너뜁니다.');
+        console.error('❌ OpenAI API 키가 설정되지 않았습니다. 분석을 건너뜁니다.');
         // API 키가 없어도 분석 시작 메시지는 반환
         return NextResponse.json({
           content: response,
@@ -141,6 +198,8 @@ export async function POST(request: NextRequest) {
           error: 'AI 서비스가 설정되지 않아 분석을 생성할 수 없습니다.'
         });
       }
+      
+      console.log('✅ OpenAI API 키 확인됨, 분석 생성 시작');
       
       // AI를 사용하여 분석 결과 생성 (질문 생성이 아님)
       const conversationHistory = messages.map((msg: ChatMessage) => `${msg.role}: ${msg.content}`).join('\n');
@@ -173,6 +232,7 @@ ${conversationHistory}
 
       const openai = getOpenAIClient();
       if (!openai) {
+        console.error('❌ OpenAI 클라이언트 생성 실패 - API 키 없음');
         return NextResponse.json({
           content: response,
           analysis: null,
@@ -181,44 +241,65 @@ ${conversationHistory}
         });
       }
 
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: "분석 결과를 생성해주세요." }
-        ],
-        max_tokens: 1200,
-        temperature: 0.8,
-      });
-
-      const analysisText = completion.choices[0]?.message?.content || '';
-      
+      console.log('🤖 OpenAI API 호출 시작');
       try {
-        // JSON 파싱 시도
-        const analysisData = JSON.parse(analysisText);
-        
-        return NextResponse.json({
-          content: response,
-          analysis: analysisData,
-          isAnalysis: true
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: "분석 결과를 생성해주세요." }
+          ],
+          max_tokens: 1200,
+          temperature: 0.8,
         });
-      } catch {
-        // JSON 파싱 실패 시 기본 분석 데이터 사용
-        const analysisData = {
-          trackedPersonAnalysis: "사용자가 관찰한 인물은 편의점 앞에서 휴식을 취하고 있는 것으로 보입니다. 사용자의 답변을 통해 인물의 행동과 상황을 분석한 결과, 이 사람은 현재 피로감이나 고독감을 느끼고 있을 가능성이 높습니다. 사용자가 언급한 구체적인 행동과 자세를 바탕으로 인물의 심리 상태를 해석한 결과입니다.",
-          viewerAnalysis: "사용자는 인물의 상황에 대해 세심한 관찰력을 보여주고 있습니다. 사용자의 답변을 통해 드러난 관점과 감정을 분석한 결과, 이 관람자는 타인에 대한 공감 능력이 뛰어나고 세심한 관찰력을 가지고 있는 것으로 보입니다. 사용자가 보여준 인물에 대한 이해도와 해석 능력을 바탕으로 한 분석입니다."
-        };
+
+        console.log('✅ OpenAI API 호출 성공');
+        const analysisText = completion.choices[0]?.message?.content || '';
+        console.log('📄 분석 결과 받음:', analysisText ? `${analysisText.substring(0, 50)}...` : '없음');
         
-        return NextResponse.json({
-          content: response,
-          analysis: analysisData,
-          isAnalysis: true
+        try {
+          // JSON 파싱 시도
+          const analysisData = JSON.parse(analysisText);
+          console.log('✅ 분석 데이터 JSON 파싱 성공');
+          
+          return NextResponse.json({
+            content: response,
+            analysis: analysisData,
+            isAnalysis: true
+          });
+        } catch (parseError) {
+          console.error('❌ JSON 파싱 실패:', parseError);
+          // JSON 파싱 실패 시 기본 분석 데이터 사용
+          const analysisData = {
+            trackedPersonAnalysis: "사용자가 관찰한 인물은 편의점 앞에서 휴식을 취하고 있는 것으로 보입니다. 사용자의 답변을 통해 인물의 행동과 상황을 분석한 결과, 이 사람은 현재 피로감이나 고독감을 느끼고 있을 가능성이 높습니다. 사용자가 언급한 구체적인 행동과 자세를 바탕으로 인물의 심리 상태를 해석한 결과입니다.",
+            viewerAnalysis: "사용자는 인물의 상황에 대해 세심한 관찰력을 보여주고 있습니다. 사용자의 답변을 통해 드러난 관점과 감정을 분석한 결과, 이 관람자는 타인에 대한 공감 능력이 뛰어나고 세심한 관찰력을 가지고 있는 것으로 보입니다. 사용자가 보여준 인물에 대한 이해도와 해석 능력을 바탕으로 한 분석입니다."
+          };
+          
+          console.log('⚠️ 기본 분석 데이터 사용');
+          return NextResponse.json({
+            content: response,
+            analysis: analysisData,
+            isAnalysis: true
+          });
+        }
+      } catch (apiError) {
+        console.error('❌ OpenAI API 호출 실패:', apiError);
+        console.error('API 오류 상세:', {
+          message: apiError instanceof Error ? apiError.message : String(apiError),
+          name: apiError instanceof Error ? apiError.name : undefined
         });
+        throw apiError; // 상위 catch 블록으로 전달
       }
     } else {
       // 7턴 이상: 더 이상 처리하지 않음
       response = "분석이 완료되었습니다.";
     }
+
+    console.log('📤 최종 응답:', {
+      content: response,
+      turnCount,
+      hasContent: !!response
+    });
 
     return NextResponse.json({
       content: response,
@@ -227,7 +308,11 @@ ${conversationHistory}
     });
 
   } catch (error) {
-    console.error('OpenAI API 오류:', error);
+    console.error('❌ API 라우트 오류:', error);
+    console.error('오류 상세:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
     
     // API 오류 시 fallback 응답
     const fallbackResponses = [

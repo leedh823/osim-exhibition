@@ -31,6 +31,14 @@ export default function EnlargedVideo() {
     
     setIsLoading(true);
     
+    console.log('📤 API 요청 데이터 (Enlarged):', {
+      turnCount: currentTurn,
+      selectedType,
+      selectedPoster,
+      selectedTypeType: typeof selectedType,
+      selectedPosterType: typeof selectedPoster
+    });
+    
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -40,26 +48,30 @@ export default function EnlargedVideo() {
         body: JSON.stringify({
           messages: chatMessages,
           turnCount: currentTurn,
-          selectedPerson: null // 트래킹 비활성화
+          selectedPerson: null, // 트래킹 비활성화
+          selectedType: selectedType,
+          selectedPoster: selectedPoster
         }),
       });
 
       const data = await response.json();
       
-      if (data.error) {
-        console.error('API 오류:', data.error);
-        // API 오류 시 사용자에게 알림
-        const errorMessage = {
-          role: 'assistant',
-          content: "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
-        };
-        setChatMessages(prev => [...prev, errorMessage]);
-      } else {
+      console.log('📥 API 응답 데이터 (Enlarged):', {
+        content: data.content,
+        hasContent: !!data.content,
+        isAnalysis: data.isAnalysis,
+        turnCount: currentTurn,
+        selectedType,
+        selectedPoster
+      });
+      
+      if (data.content) {
         const newMessage = {
           role: 'assistant',
           content: data.content
         };
         setChatMessages(prev => [...prev, newMessage]);
+        console.log('✅ 질문 추가됨:', data.content);
         
         // 분석 데이터가 있으면 저장
         if (data.analysis) {
@@ -69,6 +81,20 @@ export default function EnlargedVideo() {
             router.push('/analysis');
           }, 3000);
         }
+        
+        // 4번째 대답 후 (currentTurn === 4) 분석 시작 메시지가 표시되면 분석 페이지로 이동
+        if (currentTurn === 4 && (data.isAnalysis || data.content.includes('분석을 시작하겠습니다'))) {
+          setTimeout(() => {
+            router.push('/analysis');
+          }, 2000);
+        }
+      } else if (data.error) {
+        console.error('API 오류:', data.error);
+        const errorMessage = {
+          role: 'assistant',
+          content: data.error || "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
+        };
+        setChatMessages(prev => [...prev, errorMessage]);
       }
     } catch (error) {
       console.error('AI 메시지 처리 오류:', error);
@@ -82,7 +108,7 @@ export default function EnlargedVideo() {
     } finally {
       setIsLoading(false);
     }
-  }, [chatMessages, currentTurn, router]);
+  }, [chatMessages, currentTurn, selectedType, selectedPoster, router]);
 
   // 선택된 인물 정보 및 포스터 정보 로드
   useEffect(() => {

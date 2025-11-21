@@ -105,32 +105,20 @@ export async function POST(request: NextRequest) {
 
     if (turnCount < 4) {
       // 0-3턴: 4개 질문 (각 영상마다 1개씩)
-      // 포스터 2이고 타입이 people 또는 taxi인 경우에만 질문 데이터 사용
+      // 질문은 제공된 질문 목록에서만 랜덤 선택 (AI 사용 안 함)
+      
+      // 포스터 2이고 타입이 people 또는 taxi인 경우 질문 데이터 사용
       if (isPoster2 && (videoType === 'people' || videoType === 'taxi')) {
         const typeQuestions = poster2Questions[videoType as 'people' | 'taxi'];
-        
-        console.log('📋 타입 질문 확인:', { 
-          videoType,
-          typeQuestions: !!typeQuestions,
-          typeQuestionsKeys: typeQuestions ? Object.keys(typeQuestions) : '없음'
-        });
         
         if (typeQuestions && typeQuestions[videoNumber]) {
           const questions = typeQuestions[videoNumber];
           
-          console.log('📋 질문 배열 확인:', { 
-            videoType, 
-            videoNumber, 
-            questions: Array.isArray(questions) ? questions : '없음',
-            questionsLength: Array.isArray(questions) ? questions.length : 0,
-            questionsPreview: Array.isArray(questions) ? questions.slice(0, 2) : '없음'
-          });
-          
           if (Array.isArray(questions) && questions.length > 0) {
-            // 질문 배열에서 랜덤 선택
+            // 질문 배열에서 랜덤 선택 (AI 사용 안 함)
             const randomIndex = Math.floor(Math.random() * questions.length);
             response = questions[randomIndex];
-            console.log('✅ 선택된 질문:', { 
+            console.log('✅ 질문 선택 (랜덤):', { 
               videoType, 
               videoNumber, 
               turnCount,
@@ -139,28 +127,27 @@ export async function POST(request: NextRequest) {
               response 
             });
           } else {
-            // 질문이 없으면 기본 질문
-            console.error('❌ 질문 배열이 비어있음:', { videoType, videoNumber, questions });
+            console.error('❌ 질문 배열이 비어있음:', { videoType, videoNumber });
+            // 기본 질문 사용
             response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
           }
         } else {
-          console.error('❌ 타입 질문 데이터가 없음:', { 
+          console.error('❌ 질문 데이터 없음:', { 
             videoType, 
             videoNumber,
-            availableTypes: Object.keys(poster2Questions),
-            availableNumbers: typeQuestions ? Object.keys(typeQuestions) : '없음'
+            hasTypeQuestions: !!typeQuestions,
+            hasVideoNumber: typeQuestions ? !!typeQuestions[videoNumber] : false
           });
+          // 기본 질문 사용
           response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
         }
       } else {
         // 포스터 2가 아니거나 타입이 없으면 기본 질문
-        console.error('❌ 포스터 2 조건 불만족:', { 
+        console.log('⚠️ 포스터 2가 아니거나 타입 없음, 기본 질문 사용:', { 
           isPoster2, 
           videoType,
           selectedPoster,
-          selectedType,
-          isValidType: videoType === 'people' || videoType === 'taxi',
-          turnCount
+          selectedType
         });
         if (turnCount === 0) {
           response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
@@ -169,10 +156,11 @@ export async function POST(request: NextRequest) {
         }
       }
     } else if (turnCount === 4) {
-      // 5턴 (4개 질문 완료): 분석 시작 알림
+      // 4턴 (4개 질문 완료): 분석 시작
+      // ⚠️ 여기서만 AI를 사용합니다. 질문은 위에서 제공된 질문 목록에서만 선택됩니다.
       response = "대답해주신 결과에 따라 CCTV 속 인물에 대한 분석을 시작하겠습니다";
       
-      // API 키 확인 (분석 부분만 필요)
+      // API 키 확인 (분석 부분만 필요 - 질문 생성에는 AI 사용 안 함)
       if (!process.env.OPENAI_API_KEY) {
         console.error('OpenAI API 키가 설정되지 않았습니다. 분석을 건너뜁니다.');
         // API 키가 없어도 분석 시작 메시지는 반환
@@ -184,7 +172,7 @@ export async function POST(request: NextRequest) {
         });
       }
       
-      // 분석 시작 메시지와 함께 분석 결과도 함께 반환
+      // AI를 사용하여 분석 결과 생성 (질문 생성이 아님)
       const conversationHistory = messages.map((msg: ChatMessage) => `${msg.role}: ${msg.content}`).join('\n');
       
       systemPrompt = `당신은 CCTV 영상 속 인물 분석 전문가입니다. 사용자와의 대화를 바탕으로 인물 분석에 집중한 분석을 생성해주세요:

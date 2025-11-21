@@ -314,18 +314,13 @@ ${conversationHistory}
       stack: error instanceof Error ? error.stack : undefined
     });
     
-    // API 오류 시 fallback 응답
-    const fallbackResponses = [
-      "죄송합니다. 잠시 후 다시 시도해주세요.",
-      "AI 서비스에 일시적인 문제가 있습니다. 잠시만 기다려주세요.",
-      "네트워크 연결을 확인해주세요."
-    ];
-    
+    // 에러 발생 시 빈 응답 반환 (에러 메시지를 사용자에게 표시하지 않음)
+    // 에러는 콘솔에만 표시됨
     return NextResponse.json({
-      content: fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)],
+      content: null,
       analysis: null,
       isAnalysis: false,
-      error: 'API 오류가 발생했습니다.'
+      error: null
     });
   }
 }

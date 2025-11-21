@@ -42,35 +42,35 @@ export default function ChatPoster2Taxi() {
 
       const data = await response.json();
       
-      if (data.content) {
+      // 에러 메시지 필터링
+      const errorMessages = [
+        "죄송합니다. 잠시 후 다시 시도해주세요.",
+        "AI 서비스에 일시적인 문제가 있습니다. 잠시만 기다려주세요.",
+        "네트워크 연결을 확인해주세요.",
+        "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
+      ];
+      
+      // 에러가 있거나 에러 메시지인 경우 콘솔에만 표시하고 사용자에게는 표시하지 않음
+      if (data.error) {
+        console.error('API 에러:', data.error);
+        // 에러 메시지를 사용자에게 표시하지 않음
+      } else if (data.content && !errorMessages.includes(data.content) && currentTurn < 4) {
+        // 4턴 미만일 때만 메시지 표시 (4턴은 백그라운드 처리)
         const newMessage = {
           role: 'assistant',
           content: data.content
         };
         setChatMessages(prev => [...prev, newMessage]);
-        
-        if (data.analysis) {
-          localStorage.setItem('analysisData', JSON.stringify(data.analysis));
-        }
-        
-        // 4번째 답변 후 분석이 완료되면 분석 페이지로 이동
-        if (currentTurn === 4 && (data.isAnalysis || data.content.includes('분석을 시작하겠습니다'))) {
-          if (data.analysis) {
-            // 분석 데이터가 있으면 즉시 이동
-            setTimeout(() => {
-              router.push('/analysis');
-            }, 2000);
-          } else {
-            // 분석 데이터가 없으면 3초 후 이동 (분석 생성 중)
-            setTimeout(() => {
-              router.push('/analysis');
-            }, 3000);
-          }
-        }
+      }
+      
+      // 분석 데이터가 있으면 저장 (4턴에서 백그라운드로 처리)
+      if (data.analysis) {
+        localStorage.setItem('analysisData', JSON.stringify(data.analysis));
+        console.log('✅ 분석 데이터 저장됨');
       }
     } catch (error) {
       console.error('AI 메시지 처리 오류:', error);
-      // 에러 메시지를 표시하지 않음 - 조용히 실패 처리
+      // 에러는 콘솔에만 표시, 사용자에게는 표시하지 않음
     } finally {
       setIsLoading(false);
     }
@@ -109,9 +109,10 @@ export default function ChatPoster2Taxi() {
         };
         setChatMessages(prev => [...prev, analysisMessage]);
         
-        // 백그라운드에서 API 호출 시도 (에러 무시)
-        handleAIMessage().catch(() => {
-          // 에러 발생해도 조용히 처리
+        // 백그라운드에서 API 호출 시도 (에러는 콘솔에만 표시)
+        handleAIMessage().catch((error) => {
+          console.error('백그라운드 API 호출 실패:', error);
+          // 에러는 콘솔에만 표시, 사용자에게는 표시하지 않음
         });
         
         // 3초 후 무조건 분석 페이지로 이동

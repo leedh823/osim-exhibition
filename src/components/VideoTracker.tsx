@@ -45,7 +45,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const targetG = isPoster3 ? 9 : 218;
     const targetB = isPoster3 ? 255 : 49;
     // 포스터 2와 포스터 3 조건 (색상만 다름)
-    const colorThreshold = isPoster3 ? 150 : 80; // 포스터 3: 넓은 색상 감지 범위, 포스터 2: 원래대로
+    const colorThreshold = isPoster3 ? 150 : 70; // 포스터 3: 넓은 색상 감지 범위, 포스터 2: 감지 범위 축소 (과도한 감지 방지)
     const minBoxSize = 30; // 최소 박스 크기
 
     const colorName = isPoster3 ? '파랑색' : '노랑색';
@@ -161,8 +161,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
               const distance = Math.sqrt(
                 Math.pow(existing.x - x, 2) + Math.pow(existing.y - y, 2)
               );
-              // 50픽셀 이내면 같은 박스로 간주
-              return distance < 50;
+              // 포스터 2는 100픽셀, 포스터 3은 50픽셀 이내면 같은 박스로 간주 (과도한 감지 방지)
+              const duplicateDistance = isPoster3 ? 50 : 100;
+              return distance < duplicateDistance;
             });
             
             if (!isDuplicate) {
@@ -192,8 +193,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     console.log(`🎯 총 ${boxes.length}개의 ${colorName} 박스 감지 완료`);
     
-    // 포스터 3: 면적 기반 선택 (적절한 크기의 박스 중에서 선택)
-    if (isPoster3 && boxes.length > 0) {
+    // 포스터 2와 포스터 3: 면적 기반 선택 (가장 큰 2개만 선택)
+    if (boxes.length > 0) {
       // 모든 박스를 면적으로 정렬
       const sortedBoxes = [...boxes].sort((a, b) => {
         const areaA = a.width * a.height;
@@ -201,13 +202,13 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         return areaB - areaA; // 큰 것부터
       });
       
-      // 가장 큰 2개만 선택 (면적 필터링 없이)
+      // 가장 큰 2개만 선택 (과도한 감지 방지)
       if (sortedBoxes.length >= 2) {
         const top2Boxes = sortedBoxes.slice(0, 2);
-        console.log(`🎯 포스터 3: ${boxes.length}개 중 가장 큰 2개 선택:`, top2Boxes);
+        console.log(`🎯 ${isPoster3 ? '포스터 3' : '포스터 2'}: ${boxes.length}개 중 가장 큰 2개 선택:`, top2Boxes);
         return top2Boxes;
       } else {
-        console.log(`🎯 포스터 3: ${boxes.length}개 박스 감지:`, sortedBoxes);
+        console.log(`🎯 ${isPoster3 ? '포스터 3' : '포스터 2'}: ${boxes.length}개 박스 감지:`, sortedBoxes);
         return sortedBoxes;
       }
     }

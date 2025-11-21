@@ -47,9 +47,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     // 포스터 2와 동일한 조건
     const colorThreshold = 80; // 포스터 2와 동일
     const minBoxSize = 30; // 최소 박스 크기 (포스터 2와 동일)
-    const maxBoxSize = 600; // 최대 박스 크기 (너무 큰 박스 제외)
-    const minBoxArea = 1000; // 최소 박스 면적 (너무 작은 박스 제외)
-    const maxBoxArea = 200000; // 최대 박스 면적 (너무 큰 박스 제외)
+    const maxBoxSize = 800; // 최대 박스 크기 (범위 확대)
+    const minBoxArea = 500; // 최소 박스 면적 (범위 확대)
+    const maxBoxArea = 300000; // 최대 박스 면적 (범위 확대)
 
     const colorName = isPoster3 ? '빨간색' : '노랑색';
     console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
@@ -156,7 +156,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
           const isAreaValid = boxArea >= minBoxArea && boxArea <= maxBoxArea;
           
           if (isSizeValid && isAreaValid) {
-            // 1. 네 모서리 검증
+            // 1. 네 모서리 검증 (완화: 최소 3개 모서리만 확인)
             const corners = [
               { x, y }, // 왼쪽 위
               { x: x + boxWidth - 1, y }, // 오른쪽 위
@@ -164,10 +164,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
               { x: x + boxWidth - 1, y: y + boxHeight - 1 } // 오른쪽 아래
             ];
             
-            const allCornersValid = corners.every(corner => checkCornerColor(corner.x, corner.y));
+            const validCorners = corners.filter(corner => checkCornerColor(corner.x, corner.y));
+            const cornersValidCount = validCorners.length;
             
-            // 네 모서리가 모두 해당 색상인 경우에만 박스 추가
-            if (allCornersValid) {
+            // 최소 3개 이상의 모서리가 해당 색상이면 박스로 인정 (완화)
+            if (cornersValidCount >= 3) {
               // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
               const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
               
@@ -201,7 +202,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
                 console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
               }
             } else {
-              console.log('⚠️ 네 모서리가 모두 해당 색상이 아니어서 제외:', { boxWidth, boxHeight, x, y });
+              console.log(`⚠️ 모서리 검증 실패 (${cornersValidCount}/4):`, { boxWidth, boxHeight, x, y });
             }
           } else {
             console.log('⚠️ 박스 크기/면적 검증 실패:', { boxWidth, boxHeight, area: boxArea, isSizeValid, isAreaValid });
@@ -214,25 +215,21 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     
     // 포스터 3: 면적 기반 선택 (적절한 크기의 박스 중에서 선택)
     if (isPoster3 && boxes.length > 0) {
-      // 적절한 면적의 박스만 필터링
-      const reasonableBoxes = boxes.filter(box => {
-        const area = box.width * box.height;
-        return area >= minBoxArea && area <= maxBoxArea;
+      // 모든 박스를 면적으로 정렬
+      const sortedBoxes = [...boxes].sort((a, b) => {
+        const areaA = a.width * a.height;
+        const areaB = b.width * b.height;
+        return areaB - areaA; // 큰 것부터
       });
       
-      if (reasonableBoxes.length > 2) {
-        // 면적으로 정렬하고 가장 큰 2개만 선택
-        const sortedBoxes = [...reasonableBoxes].sort((a, b) => {
-          const areaA = a.width * a.height;
-          const areaB = b.width * b.height;
-          return areaB - areaA; // 큰 것부터
-        });
+      // 가장 큰 2개만 선택 (면적 필터링 없이)
+      if (sortedBoxes.length >= 2) {
         const top2Boxes = sortedBoxes.slice(0, 2);
-        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 면적 ${reasonableBoxes.length}개, 가장 큰 2개 선택:`, top2Boxes);
+        console.log(`🎯 포스터 3: ${boxes.length}개 중 가장 큰 2개 선택:`, top2Boxes);
         return top2Boxes;
-      } else if (reasonableBoxes.length > 0) {
-        console.log(`🎯 포스터 3: ${boxes.length}개 중 적절한 면적 ${reasonableBoxes.length}개 선택:`, reasonableBoxes);
-        return reasonableBoxes;
+      } else {
+        console.log(`🎯 포스터 3: ${boxes.length}개 박스 감지:`, sortedBoxes);
+        return sortedBoxes;
       }
     }
     

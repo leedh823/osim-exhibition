@@ -54,16 +54,20 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     
     // 화면을 가로로 절반으로 나눴을 때 아래쪽 절반만 감지
     const scanStartY = Math.floor(canvas.height / 2);
+    // 해변 영역 제외: 화면의 가장 아래쪽 10%는 스캔하지 않음
+    const scanEndY = Math.floor(canvas.height * 0.9);
     
     // 정사각형에 가까운 박스만 감지 (aspect ratio 체크)
     const minAspectRatio = 0.6; // 최소 가로/세로 비율
     const maxAspectRatio = 1.4; // 최대 가로/세로 비율
 
     const colorName = isPoster3 ? '빨간색' : '노랑색';
-    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (아래쪽 절반만, 정사각형)...`, { 
+    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (중간 영역만, 해변 제외, 정사각형)...`, { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
       scanStartY,
+      scanEndY,
+      scanRange: `${scanStartY} ~ ${scanEndY} (${Math.floor((scanEndY - scanStartY) / canvas.height * 100)}%)`,
       isPoster3,
       targetColor: { r: targetR, g: targetG, b: targetB },
       colorThreshold,
@@ -87,10 +91,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       return rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
     };
 
-    // 색상 픽셀 찾기 (성능 개선: 스캔 간격 넓히기, 아래쪽 절반만 스캔)
+    // 색상 픽셀 찾기 (성능 개선: 스캔 간격 넓히기, 중간 영역만 스캔, 해변 제외)
     const scanInterval = isPoster3 ? 6 : 8; // 성능 개선: 스캔 간격 넓힘 (2->6, 4->8)
-    // 화면 아래쪽 절반만 스캔 (위쪽 절반 제외)
-    for (let y = scanStartY; y < canvas.height - minBoxSize; y += scanInterval) {
+    // 화면 중간 영역만 스캔 (위쪽 절반 제외, 해변 영역 제외)
+    for (let y = scanStartY; y < scanEndY - minBoxSize; y += scanInterval) {
       for (let x = 0; x < canvas.width - minBoxSize; x += scanInterval) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];

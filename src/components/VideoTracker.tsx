@@ -45,11 +45,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const targetG = isPoster3 ? 0 : 218;
     const targetB = isPoster3 ? 0 : 49;
     // 포스터 2와 동일한 조건
-    const colorThreshold = 80; // 포스터 2와 동일
-    const minBoxSize = 30; // 최소 박스 크기 (포스터 2와 동일)
-    const maxBoxSize = 800; // 최대 박스 크기 (범위 확대)
-    const minBoxArea = 500; // 최소 박스 면적 (범위 확대)
-    const maxBoxArea = 300000; // 최대 박스 면적 (범위 확대)
+    // 감지 조건 대폭 완화
+    const colorThreshold = isPoster3 ? 150 : 80; // 포스터 3: 빨간색 감지 범위 넓힘
+    const minBoxSize = 20; // 최소 박스 크기 (더 작은 박스도 감지)
+    const maxBoxSize = 2000; // 최대 박스 크기 (매우 넓은 범위)
+    const minBoxArea = 100; // 최소 박스 면적 (매우 작은 박스도 감지)
+    const maxBoxArea = 1000000; // 최대 박스 면적 (매우 넓은 범위)
 
     const colorName = isPoster3 ? '빨간색' : '노랑색';
     console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
@@ -77,9 +78,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       return rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
     };
 
-    // 색상 픽셀 찾기 (스캔 간격 넓힘)
-    for (let y = 0; y < canvas.height - minBoxSize; y += 4) {
-      for (let x = 0; x < canvas.width - minBoxSize; x += 4) {
+    // 색상 픽셀 찾기 (스캔 간격 조정 - 포스터 3은 더 촘촘하게)
+    const scanInterval = isPoster3 ? 2 : 4; // 포스터 3: 2픽셀 간격으로 더 촘촘하게 스캔
+    for (let y = 0; y < canvas.height - minBoxSize; y += scanInterval) {
+      for (let x = 0; x < canvas.width - minBoxSize; x += scanInterval) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
         const g = data[pixelIndex + 1];
@@ -155,57 +157,42 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
                              boxWidth < maxBoxSize && boxHeight < maxBoxSize;
           const isAreaValid = boxArea >= minBoxArea && boxArea <= maxBoxArea;
           
-          if (isSizeValid && isAreaValid) {
-            // 1. 네 모서리 검증 (완화: 최소 3개 모서리만 확인)
-            const corners = [
-              { x, y }, // 왼쪽 위
-              { x: x + boxWidth - 1, y }, // 오른쪽 위
-              { x, y: y + boxHeight - 1 }, // 왼쪽 아래
-              { x: x + boxWidth - 1, y: y + boxHeight - 1 } // 오른쪽 아래
-            ];
+          // 크기 검증만 수행 (모서리 검증 제거, 면적 검증 제거)
+          if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
+            // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
+            const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
             
-            const validCorners = corners.filter(corner => checkCornerColor(corner.x, corner.y));
-            const cornersValidCount = validCorners.length;
+            // 이미 같은 위치의 박스가 있는지 확인 (중복 방지 - 거리 증가)
+            const isDuplicate = boxes.some(existing => {
+              const distance = Math.sqrt(
+                Math.pow(existing.x - x, 2) + Math.pow(existing.y - y, 2)
+              );
+              // 100픽셀 이내면 같은 박스로 간주 (거리 증가)
+              return distance < 100;
+            });
             
-            // 최소 3개 이상의 모서리가 해당 색상이면 박스로 인정 (완화)
-            if (cornersValidCount >= 3) {
-              // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
-              const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
-              
-              // 이미 같은 위치의 박스가 있는지 확인 (중복 방지)
-              const isDuplicate = boxes.some(existing => {
-                const distance = Math.sqrt(
-                  Math.pow(existing.x - x, 2) + Math.pow(existing.y - y, 2)
-                );
-                // 50픽셀 이내면 같은 박스로 간주
-                return distance < 50;
-              });
-              
-              if (!isDuplicate) {
-                console.log('📦 박스 크기 측정 완료 (네모 박스):', { boxWidth, boxHeight, x, y, area: boxArea });
-                const newBox = {
-                  id: boxId,
-                  x: x,
-                  y: y,
-                  width: boxWidth,
-                  height: boxHeight,
-                  label: 'person',
-                  confidence: 0.95,
-                  isMoving: true
-                };
+            if (!isDuplicate) {
+              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y, area: boxArea });
+              const newBox = {
+                id: boxId,
+                x: x,
+                y: y,
+                width: boxWidth,
+                height: boxHeight,
+                label: 'person',
+                confidence: 0.95,
+                isMoving: true
+              };
 
-                // 겹침 체크 없이 모든 박스 추가
-                boxes.push(newBox);
-                const emoji = isPoster3 ? '🔴' : '🟡';
-                console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨 (네모 박스):`, newBox);
-              } else {
-                console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
-              }
+              // 모든 박스 추가 (검증 최소화)
+              boxes.push(newBox);
+              const emoji = isPoster3 ? '🔴' : '🟡';
+              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
             } else {
-              console.log(`⚠️ 모서리 검증 실패 (${cornersValidCount}/4):`, { boxWidth, boxHeight, x, y });
+              console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
             }
           } else {
-            console.log('⚠️ 박스 크기/면적 검증 실패:', { boxWidth, boxHeight, area: boxArea, isSizeValid, isAreaValid });
+            console.log('⚠️ 박스 크기 검증 실패:', { boxWidth, boxHeight, minBoxSize });
           }
         }
       }

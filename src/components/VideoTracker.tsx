@@ -457,28 +457,48 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       .map(({ detectedAt, ...obj }) => obj);
 
     console.log('🖱️ 클릭 위치:', clickPoint);
-    console.log('📦 감지된 박스들:', validObjects);
+    console.log('📦 감지된 박스들 (타임스탬프 포함):', detectedObjectsWithTimestamp);
+    console.log('📦 유효한 박스들 (1초 이내):', validObjects);
     console.log('📊 박스 개수:', validObjects.length);
 
     if (validObjects.length > 0) {
       // 클릭된 박스 찾기 (여러 개 중에서 가장 위에 있는 것)
-      const clickedBox = validObjects.find(obj => 
-        clickPoint.x >= obj.x && 
-        clickPoint.x <= obj.x + obj.width &&
-        clickPoint.y >= obj.y && 
-        clickPoint.y <= obj.y + obj.height
-      );
+      const clickedBox = validObjects.find(obj => {
+        const isInside = 
+          clickPoint.x >= obj.x && 
+          clickPoint.x <= obj.x + obj.width &&
+          clickPoint.y >= obj.y && 
+          clickPoint.y <= obj.y + obj.height;
+        if (isInside) {
+          console.log('🎯 박스 영역 내부 클릭 확인:', { 
+            clickPoint, 
+            box: { x: obj.x, y: obj.y, width: obj.width, height: obj.height },
+            isInside 
+          });
+        }
+        return isInside;
+      });
 
       if (clickedBox) {
         console.log('✅ 클릭된 박스:', clickedBox);
         console.log('🚀 다음 페이지로 이동합니다!');
+        console.log('📞 onPersonClick 호출:', { clickedBox, allObjects: validObjects });
         // 클릭된 객체와 함께 모든 감지된 객체들도 전달
         onPersonClick(clickedBox, validObjects);
       } else {
         console.log('❌ 박스 영역 외부 클릭 - 무시');
+        console.log('🔍 박스 위치 확인:', validObjects.map(obj => ({
+          x: obj.x, y: obj.y, width: obj.width, height: obj.height
+        })));
       }
     } else {
       console.log('❌ 감지된 박스가 없어서 클릭할 수 없음');
+      console.log('⏰ 현재 시간:', now);
+      console.log('📋 타임스탬프가 있는 박스들:', detectedObjectsWithTimestamp.map(obj => ({
+        id: obj.id,
+        detectedAt: obj.detectedAt,
+        age: now - obj.detectedAt
+      })));
     }
     // 트래킹 영역이 아닌 곳을 클릭하면 아무것도 하지 않음
   }, [detectedObjectsWithTimestamp, onPersonClick]);

@@ -9,14 +9,18 @@ export default function PosterPage2() {
 
   const handlePersonClick = (person: DetectedObject, allObjects: DetectedObject[]) => {
     try {
+      console.log('🎯 handlePersonClick 호출됨:', { person, allObjects, allObjectsLength: allObjects.length });
+      
       localStorage.setItem('selectedPerson', JSON.stringify(person));
       localStorage.setItem('selectedPoster', '2'); // 포스터 2 선택 표시
       
       // 감지된 객체들을 x 좌표로 정렬 (왼쪽부터 오른쪽 순서)
       const sortedObjects = [...allObjects].sort((a, b) => a.x - b.x);
+      console.log('📊 정렬된 객체들:', sortedObjects);
       
       // 클릭된 객체가 정렬된 배열에서 몇 번째인지 찾기
       const clickedIndex = sortedObjects.findIndex(obj => obj.id === person.id);
+      console.log('🔍 클릭된 인덱스:', clickedIndex);
       
       // 위치 기반 매핑: 왼쪽(인덱스 0) = people, 오른쪽(인덱스 1) = taxi
       if (clickedIndex === 0) {
@@ -33,12 +37,14 @@ export default function PosterPage2() {
         console.log('👥 기본값: People 영상');
       }
       
+      console.log('🚀 페이지 이동 시작...');
       router.push('/enlarged');
       setTimeout(() => {
+        console.log('⏰ setTimeout 실행 - window.location.href로 이동');
         window.location.href = '/enlarged';
       }, 1000);
     } catch (error) {
-      console.error('페이지 이동 중 오류:', error);
+      console.error('❌ 페이지 이동 중 오류:', error);
     }
   };
 

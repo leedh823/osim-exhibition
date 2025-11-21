@@ -18,15 +18,15 @@ export default function PosterPage3() {
       // 클릭된 객체가 정렬된 배열에서 몇 번째인지 찾기
       const clickedIndex = sortedObjects.findIndex(obj => obj.id === person.id);
       
-      // 왼쪽(인덱스 0) = boat, 오른쪽(인덱스 1) = bike
+      // 왼쪽(인덱스 0) = bike, 오른쪽(인덱스 1) = boat
       if (clickedIndex === 0) {
-        // 왼쪽 클릭 = boat 영상
-        localStorage.setItem('selectedType', 'boat');
-        console.log('🚤 Boat 영상 선택됨');
-      } else if (clickedIndex === 1) {
-        // 오른쪽 클릭 = bike 영상
+        // 왼쪽 클릭 = bike 영상
         localStorage.setItem('selectedType', 'bike');
-        console.log('🚴 Bike 영상 선택됨');
+        console.log('🚴 Bike 영상 선택됨 (왼쪽)');
+      } else if (clickedIndex === 1) {
+        // 오른쪽 클릭 = boat 영상
+        localStorage.setItem('selectedType', 'boat');
+        console.log('🚤 Boat 영상 선택됨 (오른쪽)');
       } else {
         // 기본값 (boat)
         localStorage.setItem('selectedType', 'boat');

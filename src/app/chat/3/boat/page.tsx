@@ -98,64 +98,67 @@ export default function ChatPoster3Boat() {
   }, [currentTurn, chatMessages, handleAIMessage]);
 
   const handleSendMessage = async () => {
-    if (userInput.trim()) {
-      const newMessage = {
-        role: 'user',
-        content: userInput
-      };
-      setChatMessages(prev => [...prev, newMessage]);
-      setUserInput('');
-      const nextTurn = currentTurn + 1;
+    if (!userInput.trim()) return;
+    
+    const newMessage = {
+      role: 'user',
+      content: userInput
+    };
+    
+    // 메시지 추가
+    setChatMessages(prev => [...prev, newMessage]);
+    setUserInput('');
+    
+    // currentTurn 증가
+    const newTurn = currentTurn + 1;
+    setCurrentTurn(newTurn);
+    
+    console.log('🔍 답변 전송:', { 
+      이전턴: currentTurn, 
+      다음턴: newTurn,
+      답변내용: newMessage.content.substring(0, 30)
+    });
+    
+    // 4번째 답변인지 확인 (newTurn === 4)
+    if (newTurn === 4) {
+      console.log('✅✅✅ 4번째 답변 확인! 분석 시작!');
       
-      console.log('🔍 답변 전송:', { currentTurn, nextTurn, userInput: userInput.substring(0, 20) });
+      // 즉시 "분석이 완료되었습니다" 메시지 추가
+      setChatMessages(prev => {
+        console.log('📝 메시지 추가 중...');
+        return [...prev, {
+          role: 'assistant',
+          content: '분석이 완료되었습니다'
+        }];
+      });
       
-      setCurrentTurn(nextTurn);
+      // 3초 후 이동
+      console.log('⏰ 타이머 시작: 3초 후 이동');
+      setTimeout(() => {
+        console.log('🚀🚀🚀 이동 시작!');
+        window.location.href = '/analysis';
+      }, 3000);
       
-      // 4번째 답변 입력 시 (nextTurn === 4)
-      if (nextTurn === 4) {
-        console.log('✅ 4번째 답변 감지! 분석 시작');
-        
-        // 1. "분석이 완료되었습니다" 메시지 즉시 표시
-        setChatMessages(prev => {
-          console.log('📝 분석 완료 메시지 추가');
-          return [...prev, {
-            role: 'assistant',
-            content: '분석이 완료되었습니다'
-          }];
-        });
-        
-        // 2. 3초 후 분석 페이지로 이동
-        console.log('⏰ 3초 타이머 설정');
-        setTimeout(() => {
-          console.log('🚀 분석 페이지로 이동');
-          window.location.href = '/analysis';
-        }, 3000);
-        
-        // 3. API 호출은 완전히 별도로 (await 없이)
-        (async () => {
-          try {
-            const updatedMessages = [...chatMessages, newMessage];
-            const response = await fetch('/api/chat', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                messages: updatedMessages,
-                turnCount: 4,
-                selectedPerson: null,
-                selectedType: selectedType,
-                selectedPoster: selectedPoster
-              }),
-            });
-            const data = await response.json();
-            if (data.analysis) {
-              localStorage.setItem('analysisData', JSON.stringify(data.analysis));
-              console.log('✅ 분석 데이터 저장됨');
-            }
-          } catch (error) {
-            console.error('API 호출 실패:', error);
-          }
-        })();
-      }
+      // API는 별도로
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...chatMessages, newMessage],
+          turnCount: 4,
+          selectedPerson: null,
+          selectedType: selectedType,
+          selectedPoster: selectedPoster
+        }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.analysis) {
+          localStorage.setItem('analysisData', JSON.stringify(data.analysis));
+          console.log('✅ 분석 데이터 저장');
+        }
+      })
+      .catch(err => console.error('API 실패:', err));
     }
   };
 

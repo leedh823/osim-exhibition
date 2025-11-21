@@ -70,11 +70,7 @@ export default function ChatPoster2Taxi() {
       }
     } catch (error) {
       console.error('AI 메시지 처리 오류:', error);
-      const errorMessage = {
-        role: 'assistant',
-        content: "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
-      };
-      setChatMessages(prev => [...prev, errorMessage]);
+      // 에러 메시지를 표시하지 않음 - 조용히 실패 처리
     } finally {
       setIsLoading(false);
     }
@@ -102,17 +98,29 @@ export default function ChatPoster2Taxi() {
   }, [currentTurn, chatMessages, handleAIMessage]);
 
   useEffect(() => {
-    // 4번째 답변 후 자동으로 API를 통해 분석 시작
+    // 4번째 답변 후 자동으로 "분석을 진행합니다" 메시지 표시 및 분석 페이지로 이동
     if (currentTurn === 4 && chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'user') {
-        const timer = setTimeout(() => {
-          handleAIMessage();
-        }, 1000);
-        return () => clearTimeout(timer);
+        // "분석을 진행합니다" 메시지 표시
+        const analysisMessage = {
+          role: 'assistant',
+          content: '분석을 진행합니다'
+        };
+        setChatMessages(prev => [...prev, analysisMessage]);
+        
+        // 백그라운드에서 API 호출 시도 (에러 무시)
+        handleAIMessage().catch(() => {
+          // 에러 발생해도 조용히 처리
+        });
+        
+        // 3초 후 무조건 분석 페이지로 이동
+        setTimeout(() => {
+          router.push('/analysis');
+        }, 3000);
       }
     }
-  }, [currentTurn, chatMessages, handleAIMessage]);
+  }, [currentTurn, chatMessages, router, handleAIMessage]);
 
   const handleSendMessage = async () => {
     if (userInput.trim()) {

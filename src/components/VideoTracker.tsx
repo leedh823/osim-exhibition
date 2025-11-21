@@ -23,7 +23,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
   // const [zoomScale, setZoomScale] = useState(1);
   // const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
 
-  // 2개의 노랑색/빨간색 박스 감지 함수
+  // 2개의 노랑색/파랑색 박스 감지 함수
   const detectYellowBoxes = useCallback((video: HTMLVideoElement): DetectedObject[] => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -37,16 +37,16 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const data = imageData.data;
     const boxes: DetectedObject[] = [];
 
-    // 포스터 3인지 확인 (빨간색 감지)
+    // 포스터 3인지 확인 (파랑색 감지)
     const isPoster3 = videoSrc.includes('/poster video 3/');
     
-    // 포스터 3: 빨간색 (#ff0000 = RGB: 255, 0, 0), 그 외: 노랑색 (RGB: 245, 218, 49)
-    const targetR = isPoster3 ? 255 : 245;
+    // 포스터 3: 파랑색 (#0000ff = RGB: 0, 0, 255), 그 외: 노랑색 (RGB: 245, 218, 49)
+    const targetR = isPoster3 ? 0 : 245;
     const targetG = isPoster3 ? 0 : 218;
-    const targetB = isPoster3 ? 0 : 49;
+    const targetB = isPoster3 ? 255 : 49;
     // 포스터 2와 동일한 조건
     // 감지 조건 대폭 완화
-    const colorThreshold = isPoster3 ? 150 : 80; // 포스터 3: 빨간색 감지 범위 넓힘
+    const colorThreshold = isPoster3 ? 150 : 80; // 포스터 3: 파랑색 감지 범위 넓힘
     const minBoxSize = 20; // 최소 박스 크기 (더 작은 박스도 감지)
     const maxBoxSize = 2000; // 최대 박스 크기 (매우 넓은 범위)
     const minBoxArea = 100; // 최소 박스 면적 (매우 작은 박스도 감지)
@@ -61,7 +61,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const minAspectRatio = 0.6; // 최소 가로/세로 비율
     const maxAspectRatio = 1.4; // 최대 가로/세로 비율
 
-    const colorName = isPoster3 ? '빨간색' : '노랑색';
+    const colorName = isPoster3 ? '파랑색' : '노랑색';
     console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (중간 영역만, 해변 제외, 정사각형)...`, { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
@@ -101,7 +101,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         const g = data[pixelIndex + 1];
         const b = data[pixelIndex + 2];
 
-        // 색상 감지 (노랑색 또는 빨간색) - 포스터 2와 동일한 방식
+        // 색상 감지 (노랑색 또는 파랑색) - 포스터 2와 동일한 방식
         const rDiff = Math.abs(r - targetR);
         const gDiff = Math.abs(g - targetG);
         const bDiff = Math.abs(b - targetB);
@@ -110,7 +110,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         if (isColorMatch) {
           // 디버깅: 색상 픽셀 발견 시 로그
           if (boxes.length < 2) { // 처음 몇 개만 로그
-            const emoji = isPoster3 ? '🔴' : '🟡';
+            const emoji = isPoster3 ? '🔵' : '🟡';
             if (isPoster3) {
               console.log(`${emoji} ${colorName} 픽셀 발견:`, { x, y, r, g, b });
             } else {
@@ -204,7 +204,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
               // 모든 박스 추가 (검증 최소화)
               boxes.push(newBox);
-              const emoji = isPoster3 ? '🔴' : '🟡';
+              const emoji = isPoster3 ? '🔵' : '🟡';
               console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨 (정사각형):`, newBox);
             } else {
               console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
@@ -344,7 +344,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     const now = Date.now();
     
-    // 포스터 3인지 확인 (빨간색 박스)
+    // 포스터 3인지 확인 (파랑색 박스)
     const isPoster3 = videoSrc.includes('/poster video 3/');
     
     // 1초 이내의 객체만 필터링
@@ -362,9 +362,9 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     // 감지된 박스 그리기 (1초 이내의 객체만)
     if (validObjects.length > 0) {
       validObjects.forEach((obj) => {
-        // 포스터 3: 빨간색, 그 외: 노란색
-        const strokeColor = isPoster3 ? '#ff0000' : '#f5da31';
-        const fillColor = isPoster3 ? 'rgba(255, 0, 0, 0.1)' : 'rgba(245, 218, 49, 0.1)';
+        // 포스터 3: 파랑색, 그 외: 노란색
+        const strokeColor = isPoster3 ? '#0000ff' : '#f5da31';
+        const fillColor = isPoster3 ? 'rgba(0, 0, 255, 0.1)' : 'rgba(245, 218, 49, 0.1)';
 
         // 테두리 그리기
         ctx.strokeStyle = strokeColor;

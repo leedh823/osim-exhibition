@@ -217,6 +217,12 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     const video = videoRef.current;
     const now = Date.now();
+    
+    // 포스터 3: 17초 이후부터만 감지
+    const isPoster3 = videoSrc.includes('/poster video 3/');
+    if (isPoster3 && video.currentTime < 17) {
+      return; // 17초 이전이면 감지하지 않음
+    }
 
     try {
       // 2개의 노랑색 박스 감지

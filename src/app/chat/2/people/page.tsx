@@ -25,6 +25,16 @@ export default function ChatPoster2People() {
     
     setIsLoading(true);
     
+    // 디버깅: 전송되는 값 확인
+    console.log('📤 API 요청 데이터 (Poster 2 People):', {
+      turnCount: currentTurn,
+      selectedType,
+      selectedPoster,
+      selectedTypeType: typeof selectedType,
+      selectedPosterType: typeof selectedPoster,
+      chatMessagesLength: chatMessages.length
+    });
+    
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',

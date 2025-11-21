@@ -50,23 +50,29 @@ export default function ChatPoster3Boat() {
         "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
       ];
       
-      // 에러가 있거나 에러 메시지인 경우 콘솔에만 표시하고 사용자에게는 표시하지 않음
-      if (data.error) {
-        console.error('API 에러:', data.error);
-        // 에러 메시지를 사용자에게 표시하지 않음
-      } else if (data.content && !errorMessages.includes(data.content) && currentTurn < 4) {
-        // 4턴 미만일 때만 메시지 표시 (4턴은 백그라운드 처리)
+      // content가 있으면 항상 사용
+      if (data.content) {
         const newMessage = {
           role: 'assistant',
           content: data.content
         };
         setChatMessages(prev => [...prev, newMessage]);
-      }
-      
-      // 분석 데이터가 있으면 저장 (4턴에서 백그라운드로 처리)
-      if (data.analysis) {
-        localStorage.setItem('analysisData', JSON.stringify(data.analysis));
-        console.log('✅ 분석 데이터 저장됨');
+        
+        // 분석 데이터가 있으면 저장
+        if (data.analysis) {
+          localStorage.setItem('analysisData', JSON.stringify(data.analysis));
+          console.log('✅ 분석 데이터 저장됨');
+        }
+        
+        // 4번째 대답 후 (currentTurn === 4) 분석 시작 메시지가 표시되면 분석 페이지로 이동
+        if (currentTurn === 4 && (data.isAnalysis || data.content.includes('분석을 시작하겠습니다'))) {
+          setTimeout(() => {
+            window.location.href = '/analysis';
+          }, 3000);
+        }
+      } else if (data.error) {
+        console.error('API 에러:', data.error);
+        // 에러 메시지는 표시하지 않음
       }
     } catch (error) {
       console.error('AI 메시지 처리 오류:', error);
@@ -86,9 +92,6 @@ export default function ChatPoster3Boat() {
   }, [currentTurn, handleAIMessage, chatMessages.length]);
 
   useEffect(() => {
-    // 4턴 이상이면 실행하지 않음
-    if (currentTurn >= 4) return;
-    
     if (currentTurn > 0 && currentTurn < 4 && chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'user') {
@@ -100,70 +103,30 @@ export default function ChatPoster3Boat() {
     }
   }, [currentTurn, chatMessages, handleAIMessage]);
 
+  // 4개 질문 완료 시 (currentTurn === 4) 분석 시작
+  useEffect(() => {
+    if (currentTurn === 4 && chatMessages.length > 0) {
+      const lastMessage = chatMessages[chatMessages.length - 1];
+      if (lastMessage.role === 'user') {
+        const timer = setTimeout(() => {
+          handleAIMessage();
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [currentTurn, chatMessages, handleAIMessage]);
+
   const handleSendMessage = async () => {
-    if (!userInput.trim()) return;
-    
-    const newMessage = {
-      role: 'user',
-      content: userInput
-    };
-    
-    // 메시지 추가
-    setChatMessages(prev => [...prev, newMessage]);
-    setUserInput('');
-    
-    // currentTurn 증가
-    const newTurn = currentTurn + 1;
-    setCurrentTurn(newTurn);
-    
-    console.log('🔍 답변 전송:', { 
-      이전턴: currentTurn, 
-      다음턴: newTurn,
-      답변내용: newMessage.content.substring(0, 30)
-    });
-    
-    // 4번째 답변인지 확인 (newTurn === 4)
-    if (newTurn === 4) {
-      console.log('✅✅✅ 4번째 답변 확인! 분석 시작!');
+    if (userInput.trim()) {
+      const newMessage = {
+        role: 'user',
+        content: userInput
+      };
+      setChatMessages(prev => [...prev, newMessage]);
+      setUserInput('');
+      setCurrentTurn(prev => prev + 1);
       
-      // 즉시 "분석을 시작하겠습니다" 메시지 추가 (함수형 업데이트로 확실하게)
-      setChatMessages(prev => {
-        console.log('📝 메시지 추가 중...', prev.length);
-        const updated = [...prev, {
-          role: 'assistant',
-          content: '분석을 시작하겠습니다'
-        }];
-        console.log('📝 메시지 추가 완료:', updated.length);
-        return updated;
-      });
-      
-      // 3초 후 이동 (즉시 실행)
-      console.log('⏰ 타이머 시작: 3초 후 이동');
-      setTimeout(() => {
-        console.log('🚀🚀🚀 이동 시작!');
-        window.location.href = '/analysis';
-      }, 3000);
-      
-      // API는 별도로
-      fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...chatMessages, newMessage],
-          turnCount: 4,
-          selectedPerson: null,
-          selectedType: selectedType,
-          selectedPoster: selectedPoster
-        }),
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.analysis) {
-          localStorage.setItem('analysisData', JSON.stringify(data.analysis));
-          console.log('✅ 분석 데이터 저장');
-        }
-      })
-      .catch(err => console.error('API 실패:', err));
+      // AI 응답을 위한 추가 로직은 useEffect에서 처리됨
     }
   };
 

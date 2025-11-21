@@ -24,6 +24,8 @@ export default function AIChat() {
     isMoving: boolean;
     speed?: number;
   } | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedPoster, setSelectedPoster] = useState<string | null>(null);
 
   // AI 메시지 처리
   const handleAIMessage = useCallback(async () => {
@@ -44,7 +46,9 @@ export default function AIChat() {
         body: JSON.stringify({
           messages: chatMessages,
           turnCount: currentTurn,
-          selectedPerson: selectedPerson
+          selectedPerson: selectedPerson,
+          selectedType: selectedType,
+          selectedPoster: selectedPoster
         }),
       });
 
@@ -93,13 +97,22 @@ export default function AIChat() {
     } finally {
       setIsLoading(false);
     }
-  }, [chatMessages, currentTurn, selectedPerson, router]);
+  }, [chatMessages, currentTurn, selectedPerson, selectedType, selectedPoster, router]);
 
-  // 선택된 인물 정보 로드
+  // 선택된 인물 정보 및 타입 로드
   useEffect(() => {
     const storedPerson = localStorage.getItem('selectedPerson');
+    const storedType = localStorage.getItem('selectedType');
+    const storedPoster = localStorage.getItem('selectedPoster');
+    
     if (storedPerson) {
       setSelectedPerson(JSON.parse(storedPerson));
+    }
+    if (storedType) {
+      setSelectedType(storedType);
+    }
+    if (storedPoster) {
+      setSelectedPoster(storedPoster);
     }
   }, []);
 
@@ -113,9 +126,9 @@ export default function AIChat() {
     }
   }, [currentTurn, handleAIMessage, chatMessages.length]);
 
-  // 사용자 답변 후 AI 다음 질문 생성 (1-5턴)
+  // 사용자 답변 후 AI 다음 질문 생성 (1-4턴: 4개 질문)
   useEffect(() => {
-    if (currentTurn > 0 && currentTurn < 5 && chatMessages.length > 0) {
+    if (currentTurn > 0 && currentTurn < 4 && chatMessages.length > 0) {
       // 사용자 메시지가 마지막인지 확인
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'user') {
@@ -127,9 +140,9 @@ export default function AIChat() {
     }
   }, [currentTurn, chatMessages, handleAIMessage]);
 
-  // 5턴 완료 시 6번째에서 분석 시작
+  // 4개 질문 완료 시 (5턴) 분석 시작
   useEffect(() => {
-    if (currentTurn === 5 && chatMessages.length > 0) {
+    if (currentTurn === 4 && chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'user') {
         const timer = setTimeout(() => {
@@ -206,18 +219,18 @@ export default function AIChat() {
                    onKeyPress={handleKeyPress}
                    className="flex-1 p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:border-blue-400 focus:outline-none backdrop-blur-sm placeholder-white/60"
                    placeholder="답변을 입력하세요..."
-                   disabled={currentTurn >= 6 || isLoading}
+                   disabled={currentTurn >= 5 || isLoading}
                  />
                  <button 
                    onClick={handleSendMessage}
-                   disabled={!userInput.trim() || currentTurn >= 6 || isLoading}
+                   disabled={!userInput.trim() || currentTurn >= 5 || isLoading}
                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
                  >
                    {isLoading ? 'AI 응답 중...' : '전송'}
                  </button>
           </div>
           
-          {currentTurn >= 6 && (
+          {currentTurn >= 5 && (
             <div className="text-center text-green-400 font-mono text-sm mt-2 animate-pulse">
               분석 결과를 생성하고 있습니다...
             </div>

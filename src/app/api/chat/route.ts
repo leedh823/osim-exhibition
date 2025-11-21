@@ -10,9 +10,70 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// 포스터 2 질문 데이터
+const poster2Questions = {
+  people: {
+    1: [
+      "그는 왜 여기서 멈췄을까요?",
+      "그는 상점 유리창을 조용히 들여다봅니다. 무엇이 그의 시선을 붙잡았나요?",
+      "시계를 보는 순간, 그는 무엇을 떠올렸을까요?",
+      "그의 이어폰 속에는 어떤 소리가 흐르고 있을까요?",
+      "잠시 서서 상품을 바라보는 동안, 그의 마음속에는 어떤 고민이 오갔을까요?"
+    ],
+    2: [
+      "그는 시간을 확인한 뒤 신호등으로 향합니다. 그 순간, 그의 머릿속에 어떤 생각이 스쳤을까요?",
+      "비 오는 거리에서 신호를 기다리는 그의 뒷모습. 그는 누구를 만나러 가는 사람처럼 보이나요?",
+      "붉은 신호 앞에서 잠시 멈춘 그는 무엇을 떠올리고 있었을까요?",
+      "붉은 신호 앞에서 조용히 멈춰 서 있는 모습. 이 기다림 속에는 초조함과 여유 중 무엇이 더 크게 느껴지나요? 그리고 왜 그렇게 느꼈나요?",
+      "그는 초록불을 기다립니다. 그가 건너가려는 곳은 어떤 장소라고 느껴지나요?",
+      "그가 향하려는 장소에는 누가 있을까요?"
+    ],
+    3: [
+      "화면이 전환된 뒤, 그는 쇼핑백을 들고 나옵니다. 그는 어디에 들렀던 것처럼 보이나요?",
+      "신호를 건넌 뒤 바로 이곳에 온 것처럼 보입니다. 그가 이곳에 온 이유는 무엇일까요?",
+      "무언가를 사 온 것 같습니다. 이 쇼핑은 누구를 위한 것 같나요—자기 자신일까요, 누군가일까요?",
+      "그는 쇼핑백 하나를 들고 있는 모습입니다. 그의 다음 목적지는 어디일 거 같나요?"
+    ],
+    4: [
+      "그는 쇼핑백을 들고 걷다가 한 여성을 만납니다. 두 사람이 어떤 사이처럼 보이나요?",
+      "쇼핑백을 건네는 그의 표정과 손짓. 그는 어떤 말을 건네고 있을 것 같나요?",
+      "그는 쇼핑백을 여성에게 건넵니다. 이 쇼핑백에는 어떤 선물이 들어있을 것 같나요?"
+    ]
+  },
+  taxi: {
+    1: [
+      "이 택시는 어디로 향하고 있다고 느껴지나요?",
+      "이 택시 안에는 어떤 승객이 타고 있을 것 같나요?",
+      "이 택시 안에 승객이 타 있을까요? 아님 승객을 타우러 가는 길일까요?",
+      "비에 젖은 도로 위를 달리는 속도감에서 어떤 분위기가 읽히나요 — 긴박함, 평온함?",
+      "비로 젖은 도로 위를 달리는 이 택시는, 조금 전 어떤 상황을 지나왔을까요?",
+      "방금 신호를 통과한 택시는 곧 어떤 장면과 마주칠 것 같나요?",
+      "비로 젖은 도로 위를 달리는 이 택시를 당신이 타고 있다면, 당신이 듣고 있을 음악의 분위기는 어떤가요?"
+    ],
+    2: [
+      "이 택시가 왜 깜빡이를 켜고 있을까요? 누군가를 태우기 위해 멈추려는 걸까요, 아니면 다른 길로 새어 나가려는 걸까요?, 개인적인 일이 있는 걸까요?",
+      "이 장면 이후의 '다음 한 컷'을 상상한다면 어떤 모습일까요?"
+    ],
+    3: [
+      "이 택시는 지금 왜 이 방향으로 빠르게 움직이고 있다고 느껴지나요?",
+      "운전자는 지금 무엇을 가장 신경 쓰고 있을까요?",
+      "이 장면 이후의 '다음 한 컷'을 상상한다면 어떤 모습일까요?"
+    ],
+    4: [
+      "그의 표정에서 가장 먼저 읽힌 감정은 무엇인가요 — 경계, 피로, 집중, 혹은 불안?",
+      "이 눈빛은 승객을 향한 것일까요, 자신의 상태를 점검하는 것일까요?",
+      "백미러 너머에는 어떤 승객이 앉아 있는 것 같나요? 그 승객은 어떤 승객일까요?",
+      "승객이 이 택시에 타게 된 이유는 무엇일까요?",
+      "다음 순간 그는 어떤 행동을 할 것 같나요 — 말을 건다, 침묵한다, 목적지를 다시 확인한다?",
+      "이 택시가 향하는 목적지는 어떤 장소라고 상상되나요?",
+      "이 상황을 보며 느낀 첫 감정은 무엇인가요?"
+    ]
+  }
+};
+
 export async function POST(request: NextRequest) {
   try {
-    const { messages, turnCount } = await request.json();
+    const { messages, turnCount, selectedType, selectedPoster } = await request.json();
 
     // API 키 확인
     if (!process.env.OPENAI_API_KEY) {
@@ -26,54 +87,34 @@ export async function POST(request: NextRequest) {
     let systemPrompt = '';
     let response = '';
 
-    if (turnCount < 5) {
-      // 1-5턴: 대화 단계
-      if (turnCount === 0) {
-        // 첫 번째 질문 (고정) - 인물 분석 중심
-        response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
-      } else if (turnCount === 4) {
-        // 5번째 질문 (고정) - 적당한 분석 질문
-        response = "이 사람이 어떤 사람인 것 같나요? 그리고 이 사람에 대해 어떤 느낌이나 인상을 받으셨나요?";
+    // 포스터 2인 경우 질문 데이터에서 선택
+    const isPoster2 = selectedPoster === '2';
+    const videoType = selectedType; // 'people' or 'taxi'
+    const videoNumber = Math.min(turnCount + 1, 4); // 1-4 (각 질문마다 영상 번호)
+
+    if (turnCount < 4) {
+      // 0-3턴: 4개 질문 (각 영상마다 1개씩)
+      if (isPoster2 && videoType && poster2Questions[videoType as keyof typeof poster2Questions]) {
+        const questions = poster2Questions[videoType as keyof typeof poster2Questions][videoNumber as keyof typeof poster2Questions['people']];
+        if (questions && questions.length > 0) {
+          // 질문 배열에서 랜덤 선택
+          const randomIndex = Math.floor(Math.random() * questions.length);
+          response = questions[randomIndex];
+        } else {
+          // 질문이 없으면 기본 질문
+          response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
+        }
       } else {
-        // 2-5턴: 사용자 답변에 따른 영상 관련 후속 질문 (얼굴 관련 제외, 중복 방지)
-        const previousQuestions = messages
-          .filter((msg: ChatMessage) => msg.role === 'assistant')
-          .map((msg: ChatMessage) => msg.content);
-        
-        systemPrompt = `당신은 CCTV 영상 속 인물을 분석하는 AI입니다. 사용자의 이전 답변을 바탕으로 적당한 길이의 질문을 해주세요. 
-        
-        사용자의 답변: ${messages[messages.length - 1]?.content || ''}
-        
-        이전에 한 질문들: ${previousQuestions.join(', ')}
-        
-        현재 턴: ${turnCount + 1}번째 질문
-        
-        다음 조건을 만족하는 질문을 생성해주세요:
-        1. 영상 속 인물의 행동, 움직임, 자세, 상황과 관련된 질문만
-        2. 얼굴, 표정, 외모, 개인적 특성과 관련된 질문은 절대 하지 마세요
-        3. 의복, 직업, 나이대 등 추측성 질문은 하지 마세요
-        4. 이전에 한 질문과 중복되지 않는 새로운 질문
-        5. 2개 문장 정도의 적당한 길이로 구성 (너무 길지 않게)
-        6. "그리고"로 질문을 연결하여 2개 문장으로 구성
-        7. 사용자가 상세히 답할 수 있도록 유도하되 부담스럽지 않게
-        8. 사람마다 다른 분석 결과를 얻을 수 있도록 다양한 관점의 질문
-        9. 쉬운 단어와 간단한 문장으로 질문해주세요
-        10. 적당한 길이의 자연스러운 질문으로 구성해주세요:`;
-        
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: "다음 질문을 해주세요." }
-          ],
-          max_tokens: 200,
-          temperature: 0.7,
-        });
-        
-        response = completion.choices[0]?.message?.content || "이 영상 속 상황에 대해 더 자세히 말씀해주세요.";
+        // 포스터 2가 아니거나 타입이 없으면 기본 질문
+        if (turnCount === 0) {
+          response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
+        } else {
+          response = "이 영상 속 상황에 대해 더 자세히 말씀해주세요.";
+        }
       }
-    } else if (turnCount === 5) {
-      // 6턴: 분석 시작 알림
+    } else if (turnCount === 4) {
+      // 5턴 (4개 질문 완료): 분석 시작 알림
+      // 5턴 (4개 질문 완료): 분석 시작 알림
       response = "대답해주신 결과에 따라 CCTV 속 인물에 대한 분석을 시작하겠습니다";
       
       // 분석 시작 메시지와 함께 분석 결과도 함께 반환

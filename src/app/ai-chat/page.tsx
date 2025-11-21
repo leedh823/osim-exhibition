@@ -37,6 +37,16 @@ export default function AIChat() {
     
     setIsLoading(true);
     
+    // 디버깅: 전송되는 값 확인
+    console.log('📤 API 요청 데이터:', {
+      turnCount: currentTurn,
+      selectedType,
+      selectedPoster,
+      selectedTypeType: typeof selectedType,
+      selectedPosterType: typeof selectedPoster,
+      chatMessagesLength: chatMessages.length
+    });
+    
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -104,14 +114,24 @@ export default function AIChat() {
     const storedType = localStorage.getItem('selectedType');
     const storedPoster = localStorage.getItem('selectedPoster');
     
+    console.log('📥 localStorage에서 로드:', {
+      storedPerson: !!storedPerson,
+      storedType,
+      storedPoster,
+      storedTypeType: typeof storedType,
+      storedPosterType: typeof storedPoster
+    });
+    
     if (storedPerson) {
       setSelectedPerson(JSON.parse(storedPerson));
     }
     if (storedType) {
       setSelectedType(storedType);
+      console.log('✅ selectedType 설정:', storedType);
     }
     if (storedPoster) {
       setSelectedPoster(storedPoster);
+      console.log('✅ selectedPoster 설정:', storedPoster);
     }
   }, []);
 

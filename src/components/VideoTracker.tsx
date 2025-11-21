@@ -57,12 +57,15 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const maxAspectRatio = 1.4; // 최대 가로/세로 비율
 
     const colorName = isPoster3 ? '파랑색' : '노랑색';
-    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (전체 화면, 정사각형)...`, { 
+    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (전체 화면, 호수 영역 특별 처리, 정사각형)...`, { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
       isPoster3,
       targetColor: { r: targetR, g: targetG, b: targetB },
       colorThreshold,
+      lakeArea: `${Math.floor(canvas.height * 0.3)} ~ ${Math.floor(canvas.height * 0.85)}`,
+      lakeScanInterval: isPoster3 ? 6 : 8,
+      lakeColorThreshold: isPoster3 ? 180 : 100,
       aspectRatioRange: `${minAspectRatio} ~ ${maxAspectRatio}`
     });
 
@@ -85,19 +88,30 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     // 색상 픽셀 찾기 (성능 개선: 스캔 간격 넓히기, 전체 화면 스캔)
     const scanInterval = isPoster3 ? 12 : 16; // 성능 개선: 스캔 간격 더 넓힘 (6->12, 8->16)
+    const lakeStartY = Math.floor(canvas.height * 0.3); // 호수 영역 시작 (화면 높이의 30%)
+    const lakeEndY = Math.floor(canvas.height * 0.85); // 호수 영역 끝 (화면 높이의 85%)
+    const lakeScanInterval = isPoster3 ? 6 : 8; // 호수 영역은 더 촘촘하게 스캔
+    const lakeColorThreshold = isPoster3 ? 180 : 100; // 호수 영역은 색상 감지 범위 더 넓히기
+    
     // 전체 화면 스캔 (영역 제한 없음)
     for (let y = 0; y < canvas.height - minBoxSize; y += scanInterval) {
-      for (let x = 0; x < canvas.width - minBoxSize; x += scanInterval) {
+      // 호수 영역인지 확인
+      const isLakeArea = y >= lakeStartY && y < lakeEndY;
+      // 호수 영역이면 더 촘촘하게 스캔, 아니면 기본 간격
+      const currentScanInterval = isLakeArea ? lakeScanInterval : scanInterval;
+      const currentColorThreshold = isLakeArea ? lakeColorThreshold : colorThreshold;
+      
+      for (let x = 0; x < canvas.width - minBoxSize; x += currentScanInterval) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
         const g = data[pixelIndex + 1];
         const b = data[pixelIndex + 2];
 
-        // 색상 감지 (노랑색 또는 파랑색) - 포스터 2와 동일한 방식
+        // 색상 감지 (호수 영역은 더 넓은 범위)
         const rDiff = Math.abs(r - targetR);
         const gDiff = Math.abs(g - targetG);
         const bDiff = Math.abs(b - targetB);
-        const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
+        const isColorMatch = rDiff < currentColorThreshold && gDiff < currentColorThreshold && bDiff < currentColorThreshold;
         
         if (isColorMatch) {
           // 디버깅: 색상 픽셀 발견 시 로그
@@ -124,11 +138,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            // 포스터 2와 동일한 방식: RGB 차이 기반 감지
+            // 포스터 2와 동일한 방식: RGB 차이 기반 감지 (호수 영역은 더 넓은 범위)
             const rDiff = Math.abs(checkR - targetR);
             const gDiff = Math.abs(checkG - targetG);
             const bDiff = Math.abs(checkB - targetB);
-            const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
+            const isColorMatch = rDiff < currentColorThreshold && gDiff < currentColorThreshold && bDiff < currentColorThreshold;
             
             if (isColorMatch) {
               boxWidth = dx - x + 1;
@@ -144,11 +158,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            // 포스터 2와 동일한 방식: RGB 차이 기반 감지
+            // 포스터 2와 동일한 방식: RGB 차이 기반 감지 (호수 영역은 더 넓은 범위)
             const rDiff = Math.abs(checkR - targetR);
             const gDiff = Math.abs(checkG - targetG);
             const bDiff = Math.abs(checkB - targetB);
-            const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
+            const isColorMatch = rDiff < currentColorThreshold && gDiff < currentColorThreshold && bDiff < currentColorThreshold;
             
             if (isColorMatch) {
               boxHeight = dy - y + 1;

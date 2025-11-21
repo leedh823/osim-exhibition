@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
 
     // 포스터 2인 경우 질문 데이터에서 선택 (API 키 체크 전에 실행)
     const isPoster2 = selectedPoster === '2' || selectedPoster === 2 || String(selectedPoster) === '2';
-    const videoType = String(selectedType || '').toLowerCase(); // 'people' or 'taxi'
-    const videoNumber = Math.min(turnCount + 1, 4) as 1 | 2 | 3 | 4; // 1-4 (각 질문마다 영상 번호)
+    const videoType = String(selectedType || '').toLowerCase().trim(); // 'people' or 'taxi'
+    const videoNumber = Math.min(Math.max(turnCount + 1, 1), 4) as 1 | 2 | 3 | 4; // 1-4 (각 질문마다 영상 번호)
 
     console.log('🔍 질문 선택 로직 (상세):', { 
       selectedPoster, 
@@ -105,6 +105,7 @@ export async function POST(request: NextRequest) {
 
     if (turnCount < 4) {
       // 0-3턴: 4개 질문 (각 영상마다 1개씩)
+      // 포스터 2이고 타입이 people 또는 taxi인 경우에만 질문 데이터 사용
       if (isPoster2 && (videoType === 'people' || videoType === 'taxi')) {
         const typeQuestions = poster2Questions[videoType as 'people' | 'taxi'];
         
@@ -114,7 +115,7 @@ export async function POST(request: NextRequest) {
           typeQuestionsKeys: typeQuestions ? Object.keys(typeQuestions) : '없음'
         });
         
-        if (typeQuestions) {
+        if (typeQuestions && typeQuestions[videoNumber]) {
           const questions = typeQuestions[videoNumber];
           
           console.log('📋 질문 배열 확인:', { 
@@ -132,6 +133,7 @@ export async function POST(request: NextRequest) {
             console.log('✅ 선택된 질문:', { 
               videoType, 
               videoNumber, 
+              turnCount,
               randomIndex, 
               totalQuestions: questions.length,
               response 
@@ -142,7 +144,12 @@ export async function POST(request: NextRequest) {
             response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
           }
         } else {
-          console.error('❌ 타입 질문 데이터가 없음:', { videoType, availableTypes: Object.keys(poster2Questions) });
+          console.error('❌ 타입 질문 데이터가 없음:', { 
+            videoType, 
+            videoNumber,
+            availableTypes: Object.keys(poster2Questions),
+            availableNumbers: typeQuestions ? Object.keys(typeQuestions) : '없음'
+          });
           response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
         }
       } else {
@@ -152,7 +159,8 @@ export async function POST(request: NextRequest) {
           videoType,
           selectedPoster,
           selectedType,
-          isValidType: videoType === 'people' || videoType === 'taxi'
+          isValidType: videoType === 'people' || videoType === 'taxi',
+          turnCount
         });
         if (turnCount === 0) {
           response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";

@@ -18,23 +18,34 @@ export default function PosterPage2() {
       const sortedObjects = [...allObjects].sort((a, b) => a.x - b.x);
       console.log('📊 정렬된 객체들:', sortedObjects);
       
-      // 클릭된 객체가 정렬된 배열에서 몇 번째인지 찾기
-      const clickedIndex = sortedObjects.findIndex(obj => obj.id === person.id);
-      console.log('🔍 클릭된 인덱스:', clickedIndex);
+      // 화면 너비 계산 (모든 박스의 최대 x + width 사용, 또는 window.innerWidth 사용)
+      // 비디오 좌표계를 사용하므로, 가장 오른쪽 박스의 끝을 기준으로 계산
+      const maxX = allObjects.length > 0 
+        ? Math.max(...allObjects.map(obj => obj.x + obj.width))
+        : window.innerWidth; // 박스가 없으면 화면 너비 사용
+      const screenWidth = maxX;
+      const thresholdX = screenWidth * 0.4; // 왼쪽 40% 기준선
       
-      // 위치 기반 매핑: 왼쪽(인덱스 0) = people, 오른쪽(인덱스 1) = taxi
-      if (clickedIndex === 0) {
-        // 왼쪽 클릭 = people 영상
+      // 클릭된 박스의 중심 x 좌표로 판단
+      const personCenterX = person.x + person.width / 2;
+      
+      console.log('📐 화면 너비 기준:', { 
+        screenWidth, 
+        thresholdX, 
+        personX: person.x, 
+        personCenterX,
+        personWidth: person.width
+      });
+      
+      // 위치 기반 매핑: 왼쪽 40% = people, 오른쪽 60% = taxi
+      if (personCenterX < thresholdX) {
+        // 왼쪽 40% 영역 = people 영상
         localStorage.setItem('selectedType', 'people');
-        console.log('👥 People 영상 선택됨 (왼쪽)');
-      } else if (clickedIndex === 1) {
-        // 오른쪽 클릭 = taxi 영상
-        localStorage.setItem('selectedType', 'taxi');
-        console.log('🚕 Taxi 영상 선택됨 (오른쪽)');
+        console.log('👥 People 영상 선택됨 (왼쪽 40%)');
       } else {
-        // 기본값 (people)
-        localStorage.setItem('selectedType', 'people');
-        console.log('👥 기본값: People 영상');
+        // 오른쪽 60% 영역 = taxi 영상
+        localStorage.setItem('selectedType', 'taxi');
+        console.log('🚕 Taxi 영상 선택됨 (오른쪽 60%)');
       }
       
       console.log('🚀 페이지 이동 시작...');

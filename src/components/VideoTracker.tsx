@@ -47,6 +47,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     // 빨간색 감지를 위해 더 넓은 범위 허용
     const colorThreshold = isPoster3 ? 100 : 80; // 빨간색은 더 넓은 범위
     const minBoxSize = 30; // 최소 박스 크기
+    const maxBoxSize = 1000; // 최대 박스 크기 (너무 큰 박스 제외)
+    const maxAspectRatio = 5; // 최대 가로/세로 비율 (너무 길거나 넓은 박스 제외)
 
     const colorName = isPoster3 ? '빨간색' : '노랑색';
     console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
@@ -68,11 +70,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       const b = data[pixelIndex + 2];
       
       if (isPoster3) {
-        // 빨간색 감지: 완화된 조건
-        // R >= 140 이상이고, R이 G보다 45 이상 크고, R이 B보다 45 이상 크고, G와 B가 160 이하
-        const rHigh = r >= 140;
-        const rDominant = (r - g) >= 45 && (r - b) >= 45;
-        const gbLow = g <= 160 && b <= 160;
+        // 빨간색 감지: 더 엄격한 조건 (무작위 감지 방지)
+        // R >= 150 이상이고, R이 G보다 60 이상 크고, R이 B보다 60 이상 크고, G와 B가 120 이하
+        const rHigh = r >= 150;
+        const rDominant = (r - g) >= 60 && (r - b) >= 60;
+        const gbLow = g <= 120 && b <= 120;
         return rHigh && rDominant && gbLow;
       } else {
         const rDiff = Math.abs(r - targetR);
@@ -94,11 +96,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         let isColorMatch = false;
         
         if (isPoster3) {
-          // 빨간색 감지: 완화된 조건
-          // R >= 140 이상이고, R이 G보다 45 이상 크고, R이 B보다 45 이상 크고, G와 B가 160 이하
-          const rHigh = r >= 140;
-          const rDominant = (r - g) >= 45 && (r - b) >= 45;
-          const gbLow = g <= 160 && b <= 160;
+          // 빨간색 감지: 더 엄격한 조건 (무작위 감지 방지)
+          // R >= 150 이상이고, R이 G보다 60 이상 크고, R이 B보다 60 이상 크고, G와 B가 120 이하
+          const rHigh = r >= 150;
+          const rDominant = (r - g) >= 60 && (r - b) >= 60;
+          const gbLow = g <= 120 && b <= 120;
           isColorMatch = rHigh && rDominant && gbLow;
         } else {
           // 노랑색 감지: 기존 로직
@@ -184,9 +186,14 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             }
           }
 
-          // 박스 크기가 충분한지 확인
-          if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
-            console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
+          // 박스 크기와 비율 검증
+          const aspectRatio = boxWidth / boxHeight;
+          const isSizeValid = boxWidth > minBoxSize && boxHeight > minBoxSize && 
+                             boxWidth < maxBoxSize && boxHeight < maxBoxSize;
+          const isAspectRatioValid = aspectRatio < maxAspectRatio && aspectRatio > 1 / maxAspectRatio;
+          
+          if (isSizeValid && isAspectRatioValid) {
+            console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y, aspectRatio });
             const newBox = {
               id: `yellow-box-${boxes.length + 1}`,
               x: x,
@@ -202,12 +209,28 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             boxes.push(newBox);
             const emoji = isPoster3 ? '🔴' : '🟡';
             console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
+          } else {
+            console.log('⚠️ 박스 크기/비율 검증 실패:', { boxWidth, boxHeight, aspectRatio, isSizeValid, isAspectRatioValid });
           }
         }
       }
     }
 
     console.log(`🎯 총 ${boxes.length}개의 ${colorName} 박스 감지 완료`);
+    
+    // 포스터 3: 가장 큰 2개 박스만 선택 (무작위 감지 방지)
+    if (isPoster3 && boxes.length > 2) {
+      // 박스 크기(면적)로 정렬하고 가장 큰 2개만 선택
+      const sortedBoxes = [...boxes].sort((a, b) => {
+        const areaA = a.width * a.height;
+        const areaB = b.width * b.height;
+        return areaB - areaA; // 큰 것부터
+      });
+      const top2Boxes = sortedBoxes.slice(0, 2);
+      console.log(`🎯 포스터 3: ${boxes.length}개 중 가장 큰 2개 선택:`, top2Boxes);
+      return top2Boxes;
+    }
+    
     return boxes;
   }, [videoSrc]);
 

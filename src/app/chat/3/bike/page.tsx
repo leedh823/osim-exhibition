@@ -117,15 +117,16 @@ export default function ChatPoster3Bike() {
         };
         setChatMessages(prev => [...prev, analysisMessage]);
         
-        // 백그라운드에서 API 호출 시도 (에러는 콘솔에만 표시)
-        handleAIMessage().catch((error) => {
-          console.error('백그라운드 API 호출 실패:', error);
-        });
-        
-        // 3초 후 무조건 분석 페이지로 이동
+        // 3초 후 무조건 분석 페이지로 이동 (먼저 설정)
         setTimeout(() => {
           router.push('/analysis');
         }, 3000);
+        
+        // 백그라운드에서 API 호출 시도 (에러는 콘솔에만 표시)
+        // API 호출이 실패해도 타이머는 유지됨
+        handleAIMessage().catch((error) => {
+          console.error('백그라운드 API 호출 실패:', error);
+        });
       }
     }
   };

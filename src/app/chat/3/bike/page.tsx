@@ -98,14 +98,14 @@ export default function ChatPoster3Bike() {
   }, [currentTurn, chatMessages, handleAIMessage]);
 
   useEffect(() => {
-    // 4번째 답변 후 자동으로 "분석을 진행합니다" 메시지 표시 및 분석 페이지로 이동
+    // 4번째 답변 후 자동으로 "분석이 완료되었습니다" 메시지 표시 및 분석 페이지로 이동
     if (currentTurn === 4 && chatMessages.length > 0) {
       const lastMessage = chatMessages[chatMessages.length - 1];
       if (lastMessage.role === 'user') {
-        // "분석을 진행합니다" 메시지 표시
+        // "분석이 완료되었습니다" 메시지 표시
         const analysisMessage = {
           role: 'assistant',
-          content: '분석을 진행합니다'
+          content: '분석이 완료되었습니다'
         };
         setChatMessages(prev => [...prev, analysisMessage]);
         

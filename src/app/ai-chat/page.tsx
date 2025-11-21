@@ -123,15 +123,25 @@ export default function AIChat() {
     });
     
     if (storedPerson) {
-      setSelectedPerson(JSON.parse(storedPerson));
+      try {
+        setSelectedPerson(JSON.parse(storedPerson));
+      } catch (e) {
+        console.error('selectedPerson 파싱 오류:', e);
+      }
     }
     if (storedType) {
-      setSelectedType(storedType);
-      console.log('✅ selectedType 설정:', storedType);
+      const typeValue = storedType.trim();
+      setSelectedType(typeValue);
+      console.log('✅ selectedType 설정:', typeValue);
+    } else {
+      console.warn('⚠️ selectedType이 localStorage에 없음');
     }
     if (storedPoster) {
-      setSelectedPoster(storedPoster);
-      console.log('✅ selectedPoster 설정:', storedPoster);
+      const posterValue = storedPoster.trim();
+      setSelectedPoster(posterValue);
+      console.log('✅ selectedPoster 설정:', posterValue);
+    } else {
+      console.warn('⚠️ selectedPoster가 localStorage에 없음');
     }
   }, []);
 

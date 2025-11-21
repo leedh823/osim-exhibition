@@ -52,12 +52,20 @@ export default function ChatPoster2People() {
 
       const data = await response.json();
       
+      console.log('📥 API 응답 데이터:', {
+        content: data.content,
+        hasContent: !!data.content,
+        isAnalysis: data.isAnalysis,
+        turnCount: currentTurn
+      });
+      
       if (data.content) {
         const newMessage = {
           role: 'assistant',
           content: data.content
         };
         setChatMessages(prev => [...prev, newMessage]);
+        console.log('✅ 질문 추가됨:', data.content);
         
         if (data.analysis) {
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));

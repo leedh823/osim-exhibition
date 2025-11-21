@@ -84,105 +84,41 @@ export async function POST(request: NextRequest) {
     let systemPrompt = '';
     let response = '';
 
-    // 포스터 2인 경우 질문 데이터에서 선택 (API 키 체크 전에 실행)
-    // 조건을 더 유연하게 체크
-    const posterStr = String(selectedPoster || '').trim();
-    const isPoster2 = posterStr === '2' || selectedPoster === 2 || selectedPoster === '2';
-    const videoTypeRaw = String(selectedType || '').trim().toLowerCase();
-    const videoType = (videoTypeRaw === 'people' || videoTypeRaw === 'taxi') ? videoTypeRaw : null;
-    const videoNumber = Math.min(Math.max(turnCount + 1, 1), 4) as 1 | 2 | 3 | 4; // 1-4 (각 질문마다 영상 번호)
-
-    console.log('🔍 질문 선택 로직 (상세):', { 
-      selectedPoster, 
-      selectedType,
-      posterStr,
-      isPoster2, 
-      videoType,
-      videoTypeRaw,
-      videoNumber, 
-      turnCount,
-      hasPoster2Questions: !!poster2Questions,
-      poster2QuestionsKeys: Object.keys(poster2Questions)
-    });
-
+    // 질문 선택 로직 (새롭게 구현)
+    // turnCount: 0, 1, 2, 3 → 각각 people/taxi 1, 2, 3, 4 질문
+    const questionIndex = turnCount + 1; // 1, 2, 3, 4
+    
+    // 포스터 2 체크 (문자열 '2' 또는 숫자 2 모두 허용)
+    const isPoster2 = String(selectedPoster) === '2' || selectedPoster === 2;
+    
+    // 타입 체크 (people 또는 taxi)
+    const typeStr = String(selectedType || '').toLowerCase().trim();
+    const isPeople = typeStr === 'people';
+    const isTaxi = typeStr === 'taxi';
+    
+    // 질문 선택
     if (turnCount < 4) {
-      // 0-3턴: 4개 질문 (각 영상마다 1개씩)
-      // 질문은 제공된 질문 목록에서만 랜덤 선택 (AI 사용 안 함)
-      // turnCount 0 → videoNumber 1 → people 1 또는 taxi 1
-      // turnCount 1 → videoNumber 2 → people 2 또는 taxi 2
-      // turnCount 2 → videoNumber 3 → people 3 또는 taxi 3
-      // turnCount 3 → videoNumber 4 → people 4 또는 taxi 4
-      
-      // 포스터 2이고 타입이 people 또는 taxi인 경우 질문 데이터 사용
-      console.log('🔍 조건 체크:', {
-        isPoster2,
-        videoType,
-        isPeopleOrTaxi: videoType === 'people' || videoType === 'taxi',
-        conditionMet: isPoster2 && videoType && (videoType === 'people' || videoType === 'taxi')
-      });
-      
-      if (isPoster2 && videoType && (videoType === 'people' || videoType === 'taxi')) {
-        const typeQuestions = poster2Questions[videoType as 'people' | 'taxi'];
+      // 0-3턴: 질문 선택
+      if (isPoster2 && (isPeople || isTaxi)) {
+        // 포스터 2이고 people 또는 taxi인 경우
+        const questionType = isPeople ? 'people' : 'taxi';
+        const questionSet = poster2Questions[questionType];
         
-        console.log('📋 타입 질문 확인:', {
-          videoType,
-          hasTypeQuestions: !!typeQuestions,
-          availableNumbers: typeQuestions ? Object.keys(typeQuestions).map(Number) : []
-        });
-        
-        if (typeQuestions && typeQuestions[videoNumber]) {
-          const questions = typeQuestions[videoNumber];
-          
-          console.log('📋 질문 배열 확인:', {
-            videoType,
-            videoNumber,
-            questionsCount: Array.isArray(questions) ? questions.length : 0,
-            questions: Array.isArray(questions) ? questions : '없음'
-          });
+        if (questionSet && questionSet[questionIndex as 1 | 2 | 3 | 4]) {
+          const questions = questionSet[questionIndex as 1 | 2 | 3 | 4];
           
           if (Array.isArray(questions) && questions.length > 0) {
-            // 질문 배열에서 랜덤 선택 (AI 사용 안 함)
+            // 랜덤으로 질문 선택
             const randomIndex = Math.floor(Math.random() * questions.length);
             response = questions[randomIndex];
-            console.log('✅ 질문 선택 완료:', { 
-              videoType, 
-              videoNumber, 
-              turnCount,
-              randomIndex, 
-              totalQuestions: questions.length,
-              selectedQuestion: response 
-            });
           } else {
-            console.error('❌ 질문 배열이 비어있음:', { videoType, videoNumber, questions });
             response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
           }
         } else {
-          console.error('❌ 질문 데이터 없음:', { 
-            videoType, 
-            videoNumber,
-            turnCount,
-            hasTypeQuestions: !!typeQuestions,
-            hasVideoNumber: typeQuestions ? !!typeQuestions[videoNumber] : false,
-            availableNumbers: typeQuestions ? Object.keys(typeQuestions).map(Number) : []
-          });
           response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
         }
       } else {
-        // 포스터 2가 아니거나 타입이 없으면 기본 질문
-        console.error('❌ 조건 불만족 - 기본 질문 사용:', { 
-          isPoster2, 
-          videoType,
-          videoTypeRaw,
-          selectedPoster,
-          selectedType,
-          posterStr,
-          turnCount,
-          conditionCheck: {
-            isPoster2Check: isPoster2,
-            videoTypeCheck: !!videoType,
-            isPeopleOrTaxi: videoType === 'people' || videoType === 'taxi'
-          }
-        });
+        // 포스터 2가 아니거나 타입이 없는 경우 기본 질문
         if (turnCount === 0) {
           response = "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?";
         } else {

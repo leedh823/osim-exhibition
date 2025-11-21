@@ -54,21 +54,8 @@ export default function AIChat() {
 
       const data = await response.json();
       
-      if (data.error) {
-        console.error('API 오류:', data.error);
-        // 오류 시 더미 메시지 사용
-        const dummyQuestions = [
-          "CCTV 속 보이는 인물은 지금 어떤 행동을 하고 있는거 같나요?",
-          "이 사람의 행동 패턴을 보면 어떤 상황에 처해 있다고 생각하나요?",
-          "이 인물의 다음 행동을 예측해본다면 무엇일까요?"
-        ];
-        
-        const newMessage = {
-          role: 'assistant',
-          content: dummyQuestions[currentTurn] || "분석을 시작하겠습니다..."
-        };
-        setChatMessages(prev => [...prev, newMessage]);
-      } else {
+      // content가 있으면 항상 사용 (API 키가 없어도 질문은 반환됨)
+      if (data.content) {
         const newMessage = {
           role: 'assistant',
           content: data.content
@@ -79,11 +66,23 @@ export default function AIChat() {
         if (data.analysis) {
           console.log('분석 데이터 저장:', data.analysis);
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
-          // 분석이 완료되면 3초 후 페이지 전환
+        }
+        
+        // 4번째 대답 후 (currentTurn === 4) 분석 시작 메시지가 표시되면 분석 페이지로 이동
+        if (currentTurn === 4 && (data.isAnalysis || data.content.includes('분석을 시작하겠습니다'))) {
+          // 분석 데이터가 없어도 분석 페이지로 이동 (API 키가 없을 수 있음)
           setTimeout(() => {
             router.push('/analysis');
-          }, 3000);
+          }, 2000); // 2초 후 이동
         }
+      } else if (data.error) {
+        // content가 없고 error만 있는 경우 (드물지만 방어적 처리)
+        console.error('API 오류:', data.error);
+        const errorMessage = {
+          role: 'assistant',
+          content: data.error || "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."
+        };
+        setChatMessages(prev => [...prev, errorMessage]);
       }
     } catch (error) {
       console.error('AI 메시지 처리 오류:', error);

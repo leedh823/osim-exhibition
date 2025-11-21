@@ -75,19 +75,10 @@ export async function POST(request: NextRequest) {
   try {
     const { messages, turnCount, selectedType, selectedPoster } = await request.json();
 
-    // API 키 확인
-    if (!process.env.OPENAI_API_KEY) {
-      console.error('OpenAI API 키가 설정되지 않았습니다.');
-      return NextResponse.json(
-        { error: 'AI 서비스가 설정되지 않았습니다.' },
-        { status: 500 }
-      );
-    }
-
     let systemPrompt = '';
     let response = '';
 
-    // 포스터 2인 경우 질문 데이터에서 선택
+    // 포스터 2인 경우 질문 데이터에서 선택 (API 키 체크 전에 실행)
     const isPoster2 = selectedPoster === '2' || selectedPoster === 2;
     const videoType = selectedType; // 'people' or 'taxi'
     const videoNumber = Math.min(turnCount + 1, 4); // 1-4 (각 질문마다 영상 번호)
@@ -148,8 +139,19 @@ export async function POST(request: NextRequest) {
       }
     } else if (turnCount === 4) {
       // 5턴 (4개 질문 완료): 분석 시작 알림
-      // 5턴 (4개 질문 완료): 분석 시작 알림
       response = "대답해주신 결과에 따라 CCTV 속 인물에 대한 분석을 시작하겠습니다";
+      
+      // API 키 확인 (분석 부분만 필요)
+      if (!process.env.OPENAI_API_KEY) {
+        console.error('OpenAI API 키가 설정되지 않았습니다. 분석을 건너뜁니다.');
+        // API 키가 없어도 분석 시작 메시지는 반환
+        return NextResponse.json({
+          content: response,
+          analysis: null,
+          isAnalysis: false,
+          error: 'AI 서비스가 설정되지 않아 분석을 생성할 수 없습니다.'
+        });
+      }
       
       // 분석 시작 메시지와 함께 분석 결과도 함께 반환
       const conversationHistory = messages.map((msg: ChatMessage) => `${msg.role}: ${msg.content}`).join('\n');

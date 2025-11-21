@@ -45,30 +45,17 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const targetG = isPoster3 ? 0 : 218;
     const targetB = isPoster3 ? 255 : 49;
     // 포스터 2와 동일한 조건
-    // 감지 조건 대폭 완화
-    const colorThreshold = isPoster3 ? 150 : 80; // 포스터 3: 파랑색 감지 범위 넓힘
-    const minBoxSize = 20; // 최소 박스 크기 (더 작은 박스도 감지)
-    const maxBoxSize = 2000; // 최대 박스 크기 (매우 넓은 범위)
-    const minBoxArea = 100; // 최소 박스 면적 (매우 작은 박스도 감지)
-    const maxBoxArea = 1000000; // 최대 박스 면적 (매우 넓은 범위)
-    
-    // 정사각형에 가까운 박스만 감지 (aspect ratio 체크)
-    const minAspectRatio = 0.6; // 최소 가로/세로 비율
-    const maxAspectRatio = 1.4; // 최대 가로/세로 비율
+    // 포스터 2와 동일한 조건
+    const colorThreshold = 80; // 포스터 2와 동일
+    const minBoxSize = 30; // 최소 박스 크기 (포스터 2와 동일)
 
     const colorName = isPoster3 ? '파랑색' : '노랑색';
-    console.log(`🔍 2개의 ${colorName} 박스 감지 시작 (하늘 제외, 호수 영역 특별 처리, 정사각형)...`, { 
+    console.log(`🔍 2개의 ${colorName} 박스 감지 시작...`, { 
       canvasWidth: canvas.width, 
       canvasHeight: canvas.height,
       isPoster3,
       targetColor: { r: targetR, g: targetG, b: targetB },
-      colorThreshold,
-      skyExcluded: `0 ~ ${Math.floor(canvas.height * 0.25)} (하늘 영역 제외)`,
-      scanStartY: Math.floor(canvas.height * 0.25),
-      lakeArea: `${Math.floor(canvas.height * 0.3)} ~ ${Math.floor(canvas.height * 0.85)}`,
-      lakeScanInterval: isPoster3 ? 6 : 8,
-      lakeColorThreshold: isPoster3 ? 180 : 100,
-      aspectRatioRange: `${minAspectRatio} ~ ${maxAspectRatio}`
+      colorThreshold
     });
 
     // 네 모서리 검증 함수
@@ -88,33 +75,19 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       return rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
     };
 
-    // 색상 픽셀 찾기 (성능 개선: 스캔 간격 넓히기, 전체 화면 스캔)
-    const scanInterval = isPoster3 ? 12 : 16; // 성능 개선: 스캔 간격 더 넓힘 (6->12, 8->16)
-    const skyEndY = Math.floor(canvas.height * 0.25); // 하늘 영역 제외 (화면 높이의 25% 이전은 스캔 안 함)
-    const lakeStartY = Math.floor(canvas.height * 0.3); // 호수 영역 시작 (화면 높이의 30%)
-    const lakeEndY = Math.floor(canvas.height * 0.85); // 호수 영역 끝 (화면 높이의 85%)
-    const lakeScanInterval = isPoster3 ? 6 : 8; // 호수 영역은 더 촘촘하게 스캔
-    const lakeColorThreshold = isPoster3 ? 180 : 100; // 호수 영역은 색상 감지 범위 더 넓히기
-    
-    // 하늘 영역 제외하고 스캔 (25% 이후부터 스캔)
-    for (let y = skyEndY; y < canvas.height - minBoxSize; y += scanInterval) {
-      // 호수 영역인지 확인
-      const isLakeArea = y >= lakeStartY && y < lakeEndY;
-      // 호수 영역이면 더 촘촘하게 스캔, 아니면 기본 간격
-      const currentScanInterval = isLakeArea ? lakeScanInterval : scanInterval;
-      const currentColorThreshold = isLakeArea ? lakeColorThreshold : colorThreshold;
-      
-      for (let x = 0; x < canvas.width - minBoxSize; x += currentScanInterval) {
+    // 색상 픽셀 찾기 (스캔 간격 넓힘)
+    for (let y = 0; y < canvas.height - minBoxSize; y += 4) {
+      for (let x = 0; x < canvas.width - minBoxSize; x += 4) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
         const g = data[pixelIndex + 1];
         const b = data[pixelIndex + 2];
 
-        // 색상 감지 (호수 영역은 더 넓은 범위)
+        // 색상 감지 (노랑색 또는 파랑색) - 포스터 2와 동일한 방식
         const rDiff = Math.abs(r - targetR);
         const gDiff = Math.abs(g - targetG);
         const bDiff = Math.abs(b - targetB);
-        const isColorMatch = rDiff < currentColorThreshold && gDiff < currentColorThreshold && bDiff < currentColorThreshold;
+        const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
         
         if (isColorMatch) {
           // 디버깅: 색상 픽셀 발견 시 로그
@@ -141,11 +114,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            // 포스터 2와 동일한 방식: RGB 차이 기반 감지 (호수 영역은 더 넓은 범위)
+            // 포스터 2와 동일한 방식: RGB 차이 기반 감지
             const rDiff = Math.abs(checkR - targetR);
             const gDiff = Math.abs(checkG - targetG);
             const bDiff = Math.abs(checkB - targetB);
-            const isColorMatch = rDiff < currentColorThreshold && gDiff < currentColorThreshold && bDiff < currentColorThreshold;
+            const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
             
             if (isColorMatch) {
               boxWidth = dx - x + 1;
@@ -161,11 +134,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             const checkG = data[checkIndex + 1];
             const checkB = data[checkIndex + 2];
             
-            // 포스터 2와 동일한 방식: RGB 차이 기반 감지 (호수 영역은 더 넓은 범위)
+            // 포스터 2와 동일한 방식: RGB 차이 기반 감지
             const rDiff = Math.abs(checkR - targetR);
             const gDiff = Math.abs(checkG - targetG);
             const bDiff = Math.abs(checkB - targetB);
-            const isColorMatch = rDiff < currentColorThreshold && gDiff < currentColorThreshold && bDiff < currentColorThreshold;
+            const isColorMatch = rDiff < colorThreshold && gDiff < colorThreshold && bDiff < colorThreshold;
             
             if (isColorMatch) {
               boxHeight = dy - y + 1;
@@ -174,32 +147,22 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
             }
           }
 
-          // 박스 크기 검증 (크기 범위 제한)
-          const boxArea = boxWidth * boxHeight;
-          const isSizeValid = boxWidth > minBoxSize && boxHeight > minBoxSize && 
-                             boxWidth < maxBoxSize && boxHeight < maxBoxSize;
-          const isAreaValid = boxArea >= minBoxArea && boxArea <= maxBoxArea;
-          
-          // 정사각형에 가까운 박스만 감지 (aspect ratio 체크)
-          const aspectRatio = boxWidth / boxHeight;
-          const isAspectRatioValid = aspectRatio >= minAspectRatio && aspectRatio <= maxAspectRatio;
-          
-          // 크기 검증 + 정사각형 비율 검증
-          if (boxWidth > minBoxSize && boxHeight > minBoxSize && isAspectRatioValid) {
+          // 박스 크기 검증 (포스터 2와 동일)
+          if (boxWidth > minBoxSize && boxHeight > minBoxSize) {
             // 좌표 기반 ID 생성 (같은 위치면 같은 ID)
             const boxId = `box-${Math.floor(x/20)}-${Math.floor(y/20)}`;
             
-            // 이미 같은 위치의 박스가 있는지 확인 (중복 방지 - 거리 증가)
+            // 이미 같은 위치의 박스가 있는지 확인 (중복 방지)
             const isDuplicate = boxes.some(existing => {
               const distance = Math.sqrt(
                 Math.pow(existing.x - x, 2) + Math.pow(existing.y - y, 2)
               );
-              // 100픽셀 이내면 같은 박스로 간주 (거리 증가)
-              return distance < 100;
+              // 50픽셀 이내면 같은 박스로 간주
+              return distance < 50;
             });
             
             if (!isDuplicate) {
-              console.log('📦 박스 크기 측정 완료 (정사각형):', { boxWidth, boxHeight, x, y, area: boxArea, aspectRatio });
+              console.log('📦 박스 크기 측정 완료:', { boxWidth, boxHeight, x, y });
               const newBox = {
                 id: boxId,
                 x: x,
@@ -211,22 +174,13 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
                 isMoving: true
               };
 
-              // 모든 박스 추가 (검증 최소화)
+              // 겹침 체크 없이 모든 박스 추가
               boxes.push(newBox);
               const emoji = isPoster3 ? '🔵' : '🟡';
-              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨 (정사각형):`, newBox);
+              console.log(`✅ ${colorName} 박스 ${boxes.length} 감지됨:`, newBox);
             } else {
               console.log('⚠️ 중복 박스 감지, 제외:', { x, y, boxWidth, boxHeight });
             }
-          } else {
-            const aspectRatio = boxWidth / boxHeight;
-            console.log('⚠️ 박스 검증 실패:', { 
-              boxWidth, 
-              boxHeight, 
-              minBoxSize, 
-              aspectRatio,
-              isAspectRatioValid: aspectRatio >= minAspectRatio && aspectRatio <= maxAspectRatio
-            });
           }
         }
       }

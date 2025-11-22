@@ -177,6 +177,7 @@ export async function POST(request: NextRequest) {
     // 질문 선택
     if (turnCount < 4) {
       // 0-3턴: 질문 선택
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let questionSet: any = null;
       let questionType: string = '';
       

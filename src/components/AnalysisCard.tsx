@@ -96,63 +96,68 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
           onMouseLeave={handleMouseUp}
           onClick={handleCardClick}
         >
-          {/* 카드 앞면 - thinking 이미지 */}
+          {/* 카드 앞면 - front.png 이미지 */}
           <div 
             className="absolute inset-0 w-full h-full rounded-xl shadow-2xl overflow-hidden"
             style={{ backfaceVisibility: 'hidden' }}
           >
             <Image
-              src="/thinking-person.png"
-              alt="당신의 시선은 당신에 대해 무엇을 말해줄까요?"
+              src="/analysis/front.png"
+              alt="Interpretive Focus Projective Viewer"
               fill
               className="object-cover"
             />
           </div>
 
-          {/* 카드 뒷면 - 분석 결과 */}
+          {/* 카드 뒷면 - back.png 이미지 + 분석 결과 텍스트 오버레이 */}
           <div 
-            className="absolute inset-0 w-full h-full bg-white rounded-xl shadow-2xl"
+            className="absolute inset-0 w-full h-full rounded-xl shadow-2xl overflow-hidden"
             style={{ 
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)'
             }}
           >
-            <div className="p-8 h-full overflow-y-auto">
-              <div className="text-[#6FA68B]" style={{ fontFamily: 'var(--font-nexon)' }}>
-                {/* 상단 제목 */}
-                <div className="mb-8">
-                  <h3 className="text-3xl font-normal mb-3" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
-                    AI Analysis Result
-                  </h3>
-                  <p className="text-xl font-normal mb-6" style={{ color: '#6FA68B' }}>분석 결과</p>
-                  <div className="border-b-2 mb-8" style={{ borderColor: '#6FA68B' }}></div>
-                </div>
+            {/* 배경 이미지 */}
+            <Image
+              src="/analysis/back.png"
+              alt="AI Reading Notes"
+              fill
+              className="object-cover"
+            />
+            
+            {/* 텍스트 오버레이 - 오른쪽 패널 영역 (이미지 위에 텍스트만) */}
+            <div className="absolute inset-0 flex">
+              {/* 왼쪽 영역 */}
+              <div className="flex-1"></div>
+              
+              {/* 오른쪽 패널 - 텍스트만 오버레이 (이미지의 AI Reading Notes 아래) */}
+              <div className="w-[40%] h-full flex flex-col">
+                {/* 상단 영역 (Interpretive Focus, Projective Viewer, Name, Recordings Date, AI Reading Notes 제목) */}
+                <div style={{ height: '60%' }}></div>
                 
-                {/* 추적된 인물 분석 */}
-                <div className="mb-8">
-                  <h4 className="text-xl font-normal mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
-                    Tracked Person Analysis
-                  </h4>
-                  <div className="text-base font-normal leading-relaxed pl-4 mb-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    {analysisData?.trackedPersonAnalysis || "Based on your observations, this person appears to be taking a break in front of a convenience store. Your detailed descriptions of their behavior and emotional state provide insights into their current situation and psychological state."}
+                {/* AI Reading Notes 제목 바로 아래 텍스트 영역 - 왼쪽 정렬 */}
+                <div className="pr-8 pt-2" style={{ marginLeft: '-290px' }}>
+                  {/* 한글 분석 텍스트 */}
+                  <div className="mb-5">
+                    <p 
+                      className="text-base leading-relaxed text-white"
+                      style={{ fontFamily: 'var(--font-nevermind)' }}
+                    >
+                      {analysisData?.viewerAnalysis || "당신의 시선은 감정의 파동을 먼저 읽어내는 방식입니다. 타인의 행동보다 분위기와 미묘한 감정을 먼저 포착하며, 그 흐름 속에서 의미를 찾으려는 경향이 뚜렷합니다."}
+                    </p>
                   </div>
-                  <p className="text-sm font-normal mb-2" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>추적된 인물 분석</p>
-                  <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    {analysisData?.trackedPersonAnalysis || "사용자가 관찰한 인물의 행동과 상황에 대한 분석이 여기에 표시됩니다. 사용자의 답변을 바탕으로 인물의 심리 상태와 현재 상황을 해석한 결과가 나타납니다."}
-                  </div>
-                </div>
 
-                {/* 관람자 분석 */}
-                <div className="mb-8">
-                  <h4 className="text-xl font-normal mb-4" style={{ fontFamily: 'var(--font-coolvetica)', color: '#6FA68B' }}>
-                    Viewer Analysis
-                  </h4>
-                  <div className="text-base font-normal leading-relaxed pl-4 mb-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    {analysisData?.viewerAnalysis || "Your responses reveal your perspective and emotional reactions to this situation. Your observations and interpretations demonstrate your observational skills and empathy towards the person in the video."}
-                  </div>
-                  <p className="text-sm font-normal mb-2" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>관람자 분석</p>
-                  <div className="text-base font-normal leading-relaxed pl-4" style={{ fontFamily: 'var(--font-nexon)', color: '#6FA68B' }}>
-                    {analysisData?.viewerAnalysis || "사용자의 답변을 통해 드러난 관람자의 관점과 감정을 분석한 결과가 여기에 표시됩니다. 사용자가 보여준 관찰력과 해석 능력을 바탕으로 관람자의 성향을 파악한 결과가 나타납니다."}
+                  {/* 영어 분석 텍스트 */}
+                  <div>
+                    <p 
+                      className="text-base leading-relaxed text-white"
+                      style={{ fontFamily: 'var(--font-nevermind)' }}
+                    >
+                      {analysisData?.viewerAnalysis ? 
+                        "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior." :
+                        "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior."
+                      }
+                    </p>
                   </div>
                 </div>
               </div>

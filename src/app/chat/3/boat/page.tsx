@@ -167,7 +167,7 @@ export default function ChatPoster3Boat() {
           playsInline
           controls={false}
         >
-          <source src="/2.mp4" type="video/mp4" />
+          <source src="/3.mp4" type="video/mp4" />
         </video>
       </div>
       

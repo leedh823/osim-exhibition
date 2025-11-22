@@ -16,6 +16,66 @@ function getOpenAIClient() {
   });
 }
 
+// 포스터 1 질문 데이터
+const poster1Questions = {
+  car: {
+    1: [
+      "그는 청소차의 뒷문을 자연스럽게 엽니다. 이 일을 얼마나 해온 사람처럼 보이나요?",
+      "조용한 거리 한복판에서 문을 열고 준비를 합니다. 이 거리가 오늘 작업의 시작일까요, 이미 여러 장소를 거친 뒤일까요? 왜 그렇게 생각했나요?",
+      "햇빛 아래 트럭 뒤에서 혼자 서 있는 모습입니다. 그는 지금 마음속으로 어떤 생각을 하고 있을까요?",
+      "문을 연 뒤 그는 다음 어떤 행동을 할까요?"
+    ],
+    2: [
+      "그는 차에 올라탑니다. 완전히 작업을 마친 걸까요, 아니면 다음 작업 장소로 이동하는 걸까요?",
+      "햇빛 좋은 거리에서 작업을 마친 그는, 이 순간 그는 어떤 생각을 하고 있을까요?",
+      "이동하는 차량 뒤에 서 있는 동안, 그는 다음 일을 대비하고 있을까요, 아니면 잠시 여유를 느끼고 있을까요?",
+      "그가 방금 지나온 구간에는 어떤 일들이 있었을 것 같나요?",
+      "이 일을 선택한 이유가 있다면, 어떤 이유일 것 같나요?"
+    ],
+    3: [
+      "두 사람은 지금 어떤 이야기를 주고받는 중이라고 느껴지나요?",
+      "동료와의 대화가 자연스러워 보입니다. 두 사람은 오래 함께 일해온 사이처럼 보이나요?",
+      "이 둘의 관계는 '평소처럼 편안한 동료'인가요, '업무 때문에 진지해진 순간'인가요?",
+      "이 상황에서 당신이라면 말을 건넬 것인가요, 아니면 조용히 길에 집중할 것인가요?",
+      "그의 표정에서 읽히는 감정은 무엇인가요 — 이해, 의문, 공감, 고민, 복잡? 왜 그렇게 생각했나요?"
+    ],
+    4: [
+      "두 사람이 이 기록을 함께 보고 있는 이유는 무엇이라고 생각하나요?",
+      "서로에게 기대고 있는 신뢰의 정도는 어느 정도로 보이나요?",
+      "당신 눈에는 두 사람 중 누가 더 주도적으로 보이나요? 왜 그렇게 느꼈나요?",
+      "이들이 처음 만난 동료일까요, 오래 함께 일한 팀일까요?",
+      "지금 작성하는 문서가 '시작점'일까요, '마무리'일까요? 왜 그렇게 보이나요?",
+      "두 사람 중 한 명이 실수를 했다면 누구라고 생각하나요? 그 이유는?",
+      "이 상황에서 당신이라면 어떤 역할을 맡았을 것 같나요 — 설명하는 사람인가요, 기록하는 사람인가요?"
+    ]
+  },
+  people: {
+    1: [
+      "이 순간을 그의 가족 또는 동료가 목격한다면, 어떤 말을 건넬까요?",
+      "방금 그가 줍고 있는 것은 어떤 것이었을까요?",
+      "이 길의 시간대는 언제라고 느껴지나요? 그 이유는 무엇인가요?",
+      "그가 오늘 하루 동안 가장 많이 되뇌었던 말 한마디가 있다면 어떤 표현일까요?",
+      "당신이라면 이 순간 이 인물에게 어떤 행동 혹은 말을 건네고 싶나요?"
+    ],
+    2: [
+      "이 인물이 검은 봉투를 들고 걸어오는 이 순간, 어떤 생각을 하고 있을 것 같나요?",
+      "몇 분 뒤 이 인물에게 새롭게 일어날 일을 상상해본다면 무엇인가요?",
+      "이 길로 들어서기 전에 그는 어떤 일을 마무리하고 있었을까요?",
+      "이 봉투를 내려놓거나 올려둔 뒤, 그는 어떤 행동을 이어갈 것 같나요?"
+    ],
+    3: [
+      "햇빛과 먼지가 만들어낸 분위기에서 어떤 정서가 느껴지나요 — 고요, 따뜻함, 외로움, 혹은 시작의 기운?",
+      "이 장면 바로 다음 컷을 상상한다면 어떤 모습일까요?"
+    ],
+    4: [
+      "그는 다른 작업을 시작하려고 하는 것일까요? 아님 작업의 정리를 하려고 하는 것일까요?",
+      "그가 마주하게 될 '다음 동작'은 무엇일지 어떻게 예상하나요?",
+      "지금 그의 마음을 한 문장으로 표현한다면 어떻게 말할 수 있을까요?",
+      "그의 속도로 보아, 그는 오늘 기분이 어떨 것 같나요?"
+    ]
+  }
+};
+
 // 포스터 2 질문 데이터
 const poster2Questions = {
   people: {
@@ -92,12 +152,15 @@ export async function POST(request: NextRequest) {
     // turnCount: 0, 1, 2, 3 → 각각 people/taxi 1, 2, 3, 4 질문
     const questionIndex = turnCount + 1; // 1, 2, 3, 4
     
-    // 포스터 2 체크 (문자열 '2' 또는 숫자 2 모두 허용)
-    const isPoster2 = String(selectedPoster) === '2' || selectedPoster === 2;
+    // 포스터 체크 (문자열 또는 숫자 모두 허용)
+    const posterStr = String(selectedPoster);
+    const isPoster1 = posterStr === '1' || selectedPoster === 1;
+    const isPoster2 = posterStr === '2' || selectedPoster === 2;
     
-    // 타입 체크 (people 또는 taxi)
+    // 타입 체크 (people, car, taxi)
     const typeStr = String(selectedType || '').toLowerCase().trim();
     const isPeople = typeStr === 'people';
+    const isCar = typeStr === 'car';
     const isTaxi = typeStr === 'taxi';
     
     console.log('🔍 질문 선택 시작:', {
@@ -114,10 +177,22 @@ export async function POST(request: NextRequest) {
     // 질문 선택
     if (turnCount < 4) {
       // 0-3턴: 질문 선택
-      if (isPoster2 && (isPeople || isTaxi)) {
-        // 포스터 2이고 people 또는 taxi인 경우
-        const questionType = isPeople ? 'people' : 'taxi';
-        const questionSet = poster2Questions[questionType];
+      let questionSet: any = null;
+      let questionType: string = '';
+      
+      // 포스터 1 질문 선택
+      if (isPoster1 && (isPeople || isCar)) {
+        questionType = isPeople ? 'people' : 'car';
+        questionSet = poster1Questions[questionType as 'people' | 'car'];
+      }
+      // 포스터 2 질문 선택
+      else if (isPoster2 && (isPeople || isTaxi)) {
+        questionType = isPeople ? 'people' : 'taxi';
+        questionSet = poster2Questions[questionType as 'people' | 'taxi'];
+      }
+      
+      if (questionSet && questionSet[questionIndex as 1 | 2 | 3 | 4]) {
+        const questions = questionSet[questionIndex as 1 | 2 | 3 | 4];
         
         console.log('📋 질문 세트 확인:', {
           questionType,
@@ -126,45 +201,35 @@ export async function POST(request: NextRequest) {
           hasQuestionIndex: questionSet ? !!questionSet[questionIndex as 1 | 2 | 3 | 4] : false
         });
         
-        if (questionSet && questionSet[questionIndex as 1 | 2 | 3 | 4]) {
-          const questions = questionSet[questionIndex as 1 | 2 | 3 | 4];
-          
-          console.log('📋 질문 배열:', {
+        console.log('📋 질문 배열:', {
+          questionType,
+          questionIndex,
+          questionsCount: Array.isArray(questions) ? questions.length : 0,
+          questions: Array.isArray(questions) ? questions : '없음'
+        });
+        
+        if (Array.isArray(questions) && questions.length > 0) {
+          // 랜덤으로 질문 선택
+          const randomIndex = Math.floor(Math.random() * questions.length);
+          response = questions[randomIndex];
+          console.log('✅ 질문 선택 완료:', {
             questionType,
             questionIndex,
-            questionsCount: Array.isArray(questions) ? questions.length : 0,
-            questions: Array.isArray(questions) ? questions : '없음'
+            randomIndex,
+            totalQuestions: questions.length,
+            selectedQuestion: response
           });
-          
-          if (Array.isArray(questions) && questions.length > 0) {
-            // 랜덤으로 질문 선택
-            const randomIndex = Math.floor(Math.random() * questions.length);
-            response = questions[randomIndex];
-            console.log('✅ 질문 선택 완료:', {
-              questionType,
-              questionIndex,
-              randomIndex,
-              totalQuestions: questions.length,
-              selectedQuestion: response
-            });
-          } else {
-            console.error('❌ 질문 배열이 비어있음:', { questionType, questionIndex, questions });
-            response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
-          }
         } else {
-          console.error('❌ 질문 데이터 없음:', {
-            questionType,
-            questionIndex,
-            hasQuestionSet: !!questionSet,
-            availableIndices: questionSet ? Object.keys(questionSet).map(Number) : []
-          });
+          console.error('❌ 질문 배열이 비어있음:', { questionType, questionIndex, questions });
           response = "이 영상 속 상황에 대해 어떻게 생각하시나요?";
         }
       } else {
-        // 포스터 2가 아니거나 타입이 없는 경우 기본 질문
+        // 질문 데이터가 없는 경우 기본 질문
         console.warn('⚠️ 조건 불만족 - 기본 질문 사용:', {
+          isPoster1,
           isPoster2,
           isPeople,
+          isCar,
           isTaxi,
           selectedPoster,
           selectedType,

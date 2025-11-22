@@ -167,7 +167,7 @@ export default function ChatPoster1People() {
           playsInline
           controls={false}
         >
-          <source src="/1.mp4" type="video/mp4" />
+          <source src="/poster%20video%201/people%201%20.mp4" type="video/mp4" />
         </video>
       </div>
       

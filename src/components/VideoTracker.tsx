@@ -79,8 +79,8 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     // 색상 픽셀 찾기 (스캔 간격: 포스터 2와 포스터 3 모두 2픽셀)
     const scanInterval = 2; // 포스터 2와 포스터 3 모두 2픽셀: 보트/자전거 박스 감지 개선을 위해 더 촘촘하게
     
-    // 포스터 3: 하늘 영역 제외 (화면 상단 30% 제외)
-    const skyExclusionHeight = isPoster3 ? canvas.height * 0.3 : 0;
+    // 포스터 3: 하늘 영역 제외 (화면 상단 45% 제외)
+    const skyExclusionHeight = isPoster3 ? canvas.height * 0.45 : 0;
     
     for (let y = skyExclusionHeight; y < canvas.height - minBoxSize; y += scanInterval) {
       for (let x = 0; x < canvas.width - minBoxSize; x += scanInterval) {

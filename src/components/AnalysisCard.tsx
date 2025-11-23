@@ -4,8 +4,16 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 
 interface AnalysisData {
-  trackedPersonAnalysis: string;
-  viewerAnalysis: string;
+  meaningMaking?: string;
+  empathicResonance?: string;
+  imaginativeCompletion?: string;
+  valueOrientation?: string;
+  situationalReasoning?: string;
+  interpersonalLens?: string;
+  selfProjection?: string;
+  // 하위 호환성을 위한 필드
+  trackedPersonAnalysis?: string;
+  viewerAnalysis?: string;
 }
 
 interface SelectedPerson {
@@ -137,13 +145,31 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                 
                 {/* AI Reading Notes 제목 바로 아래 텍스트 영역 - 왼쪽 정렬 */}
                 <div className="pr-8 pt-2" style={{ marginLeft: '-290px' }}>
-                  {/* 한글 분석 텍스트 */}
+                  {/* 한글 분석 텍스트 - 7가지 지표 종합 */}
                   <div className="mb-5">
                     <p 
                       className="text-base leading-relaxed text-white"
                       style={{ fontFamily: 'var(--font-nevermind)' }}
                     >
-                      {analysisData?.viewerAnalysis || "당신의 시선은 감정의 파동을 먼저 읽어내는 방식입니다. 타인의 행동보다 분위기와 미묘한 감정을 먼저 포착하며, 그 흐름 속에서 의미를 찾으려는 경향이 뚜렷합니다."}
+                      {(() => {
+                        // 새로운 7가지 지표가 있으면 종합하여 표시
+                        if (analysisData?.meaningMaking || analysisData?.empathicResonance || 
+                            analysisData?.imaginativeCompletion || analysisData?.valueOrientation ||
+                            analysisData?.situationalReasoning || analysisData?.interpersonalLens ||
+                            analysisData?.selfProjection) {
+                          const parts = [];
+                          if (analysisData.meaningMaking) parts.push(analysisData.meaningMaking);
+                          if (analysisData.empathicResonance) parts.push(analysisData.empathicResonance);
+                          if (analysisData.imaginativeCompletion) parts.push(analysisData.imaginativeCompletion);
+                          if (analysisData.valueOrientation) parts.push(analysisData.valueOrientation);
+                          if (analysisData.situationalReasoning) parts.push(analysisData.situationalReasoning);
+                          if (analysisData.interpersonalLens) parts.push(analysisData.interpersonalLens);
+                          if (analysisData.selfProjection) parts.push(analysisData.selfProjection);
+                          return parts.join(' ');
+                        }
+                        // 하위 호환성: 기존 viewerAnalysis 사용
+                        return analysisData?.viewerAnalysis || "당신의 시선은 감정의 파동을 먼저 읽어내는 방식입니다. 타인의 행동보다 분위기와 미묘한 감정을 먼저 포착하며, 그 흐름 속에서 의미를 찾으려는 경향이 뚜렷합니다.";
+                      })()}
                     </p>
                   </div>
 
@@ -153,10 +179,16 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                       className="text-base leading-relaxed text-white"
                       style={{ fontFamily: 'var(--font-nevermind)' }}
                     >
-                      {analysisData?.viewerAnalysis ? 
-                        "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior." :
-                        "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior."
-                      }
+                      {(() => {
+                        // 새로운 7가지 지표가 있으면 종합하여 표시
+                        if (analysisData?.meaningMaking || analysisData?.empathicResonance || 
+                            analysisData?.imaginativeCompletion || analysisData?.valueOrientation ||
+                            analysisData?.situationalReasoning || analysisData?.interpersonalLens ||
+                            analysisData?.selfProjection) {
+                          return "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior.";
+                        }
+                        return "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior.";
+                      })()}
                     </p>
                   </div>
                 </div>

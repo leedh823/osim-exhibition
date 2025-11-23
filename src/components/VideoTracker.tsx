@@ -258,13 +258,13 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       return; // 26초 이전이면 감지하지 않음
     }
     
-    // 포스터 2: 25초 이후부터만 감지
+    // 포스터 2: 20초 이후부터만 감지
     const isPoster2 = videoSrc.includes('/poster video 2/');
-    if (isPoster2 && video.currentTime < 25) {
-      console.log('⏳ 포스터 2: 25초 이전, 감지 대기 중...');
-      setDetectedObjectsWithTimestamp([]); // 25초 이전에는 박스 초기화
+    if (isPoster2 && video.currentTime < 20) {
+      console.log('⏳ 포스터 2: 20초 이전, 감지 대기 중...');
+      setDetectedObjectsWithTimestamp([]); // 20초 이전에는 박스 초기화
       setDetectedObjects([]);
-      return; // 25초 이전이면 감지하지 않음
+      return; // 20초 이전이면 감지하지 않음
     }
     
     // 포스터 3: 17초 이후부터만 감지
@@ -527,10 +527,15 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         ref={videoRef}
         className="w-full h-full object-cover"
         autoPlay
-        loop
         playsInline
         controls={false}
         onLoadedData={handleVideoLoaded}
+        onEnded={() => {
+          if (videoRef.current) {
+            videoRef.current.currentTime = 6;
+            videoRef.current.play();
+          }
+        }}
         onError={(e) => {
           console.error('비디오 로드 에러:', e);
           console.error('비디오 경로:', videoSrc);

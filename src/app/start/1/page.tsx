@@ -7,30 +7,23 @@ import { DetectedObject } from '@/utils/realObjectDetection';
 export default function PosterPage1() {
   const router = useRouter();
 
-  const handlePersonClick = (person: DetectedObject, allObjects: DetectedObject[]) => {
+  const handlePersonClick = (person: DetectedObject, allObjects: DetectedObject[], clickPosition: { screenX: number }) => {
     try {
       localStorage.setItem('selectedPerson', JSON.stringify(person));
       localStorage.setItem('selectedPoster', '1'); // 포스터 1 선택 표시
       
-      // 감지된 객체들을 x 좌표로 정렬 (왼쪽부터 오른쪽 순서)
-      const sortedObjects = [...allObjects].sort((a, b) => a.x - b.x);
+      // 화면 중앙(50%) 기준으로 판단
+      const screenWidth = window.innerWidth;
+      const isLeft = clickPosition.screenX < screenWidth / 2;
       
-      // 클릭된 객체가 정렬된 배열에서 몇 번째인지 찾기
-      const clickedIndex = sortedObjects.findIndex(obj => obj.id === person.id);
-      
-      // 왼쪽(인덱스 0) = people, 오른쪽(인덱스 1) = car
-      if (clickedIndex === 0) {
-        // 왼쪽 클릭 = people 영상
+      if (isLeft) {
+        // 왼쪽 영역 = people 영상
         localStorage.setItem('selectedType', 'people');
-        console.log('👥 People 영상 선택됨');
-      } else if (clickedIndex === 1) {
-        // 오른쪽 클릭 = car 영상
-        localStorage.setItem('selectedType', 'car');
-        console.log('🚗 Car 영상 선택됨');
+        console.log('👥 People 영상 선택됨 (왼쪽 영역)');
       } else {
-        // 기본값 (people)
-        localStorage.setItem('selectedType', 'people');
-        console.log('👥 기본값: People 영상');
+        // 오른쪽 영역 = car 영상
+        localStorage.setItem('selectedType', 'car');
+        console.log('🚗 Car 영상 선택됨 (오른쪽 영역)');
       }
       
       router.push('/enlarged');

@@ -5,7 +5,7 @@ import { realObjectDetector, DetectedObject } from '@/utils/realObjectDetection'
 
 interface VideoTrackerProps {
   videoSrc: string;
-  onPersonClick: (person: DetectedObject, allObjects: DetectedObject[]) => void;
+  onPersonClick: (person: DetectedObject, allObjects: DetectedObject[], clickPosition: { screenX: number }) => void;
   className?: string;
   selectedPerson?: DetectedObject | null;
   followPerson?: boolean;
@@ -484,8 +484,10 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         console.log('✅ 클릭된 박스:', clickedBox);
         console.log('🚀 다음 페이지로 이동합니다!');
         console.log('📞 onPersonClick 호출:', { clickedBox, allObjects: validObjects });
-        // 클릭된 객체와 함께 모든 감지된 객체들도 전달
-        onPersonClick(clickedBox, validObjects);
+        // 클릭된 객체와 함께 모든 감지된 객체들, 그리고 클릭 위치 정보 전달
+        onPersonClick(clickedBox, validObjects, {
+          screenX: event.clientX // 화면 기준 X 좌표
+        });
       } else {
         console.log('❌ 박스 영역 외부 클릭 - 무시');
         console.log('🔍 박스 위치 확인:', validObjects.map(obj => ({

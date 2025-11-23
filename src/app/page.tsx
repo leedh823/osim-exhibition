@@ -724,6 +724,12 @@ export default function Landing() {
             서로의 시선 사이에서
           </p>
         </div>
+        {/* Scroll to explore 텍스트 - 오른쪽 끝 */}
+        <div className="absolute bottom-6 md:bottom-8 right-6 md:right-8 z-10 pointer-events-none">
+          <p className="text-sm md:text-base text-white text-right" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
+            Scroll to explore
+          </p>
+        </div>
       </section>
 
       {/* Narratives (one section, data-driven blocks) */}

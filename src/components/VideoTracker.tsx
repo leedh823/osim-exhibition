@@ -78,7 +78,11 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
 
     // 색상 픽셀 찾기 (스캔 간격: 포스터 2와 포스터 3 모두 2픽셀)
     const scanInterval = 2; // 포스터 2와 포스터 3 모두 2픽셀: 보트/자전거 박스 감지 개선을 위해 더 촘촘하게
-    for (let y = 0; y < canvas.height - minBoxSize; y += scanInterval) {
+    
+    // 포스터 3: 하늘 영역 제외 (화면 상단 30% 제외)
+    const skyExclusionHeight = isPoster3 ? canvas.height * 0.3 : 0;
+    
+    for (let y = skyExclusionHeight; y < canvas.height - minBoxSize; y += scanInterval) {
       for (let x = 0; x < canvas.width - minBoxSize; x += scanInterval) {
         const pixelIndex = (y * canvas.width + x) * 4;
         const r = data[pixelIndex];
@@ -245,13 +249,22 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
     const video = videoRef.current;
     const now = Date.now();
     
-    // 포스터 2: 24초 이후부터만 감지
-    const isPoster2 = videoSrc.includes('/poster video 2/');
-    if (isPoster2 && video.currentTime < 24) {
-      console.log('⏳ 포스터 2: 24초 이전, 감지 대기 중...');
-      setDetectedObjectsWithTimestamp([]); // 24초 이전에는 박스 초기화
+    // 포스터 1: 26초 이후부터만 감지
+    const isPoster1 = videoSrc.includes('/poster video 1/');
+    if (isPoster1 && video.currentTime < 26) {
+      console.log('⏳ 포스터 1: 26초 이전, 감지 대기 중...');
+      setDetectedObjectsWithTimestamp([]); // 26초 이전에는 박스 초기화
       setDetectedObjects([]);
-      return; // 24초 이전이면 감지하지 않음
+      return; // 26초 이전이면 감지하지 않음
+    }
+    
+    // 포스터 2: 25초 이후부터만 감지
+    const isPoster2 = videoSrc.includes('/poster video 2/');
+    if (isPoster2 && video.currentTime < 25) {
+      console.log('⏳ 포스터 2: 25초 이전, 감지 대기 중...');
+      setDetectedObjectsWithTimestamp([]); // 25초 이전에는 박스 초기화
+      setDetectedObjects([]);
+      return; // 25초 이전이면 감지하지 않음
     }
     
     // 포스터 3: 17초 이후부터만 감지

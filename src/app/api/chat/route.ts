@@ -137,6 +137,57 @@ const poster2Questions = {
   }
 };
 
+// 포스터 3 질문 데이터
+const poster3Questions = {
+  bike: {
+    1: [
+      "인물이 이 시간대에 이곳을 자전거로 달리는 이유는 무엇이라고 생각하나요?",
+      "이 호수 주변은 이 인물에게 어떤 의미를 가진 공간일까요?",
+      "노을 지는 시간대에 자전거를 타는 이 인물의 감정은 어떨 거 같나요?"
+    ],
+    2: [
+      "그는 지금 '무엇'을 찍으려고 하는 것 같나요?",
+      "그는 사진을 취미로 즐기는 사람일까요, 아니면 기록을 중시하는 사람일까요?",
+      "그는 이 장소에 '사진을 찍기 위해' 온 걸까요, 아니면 촬영은 우연히 찾아온 순간일까요?",
+      "이 인물이 사진을 남기고 싶어 한 이유는 무엇일까요? 특별한 날일까요, 아니면 평범한 하루의 어떤 장면일까요?",
+      "혹시 그는 누군가의 모습을 찍고 있는 걸까요, 아니면 풍경을 찍으며 혼자만의 시간을 기록하고 있는 걸까요?"
+    ],
+    3: [
+      "인물이 손을 흔드는 표정에서 어떤 감정이 가장 먼저 느껴지나요?",
+      "인물이 손을 흔드는 대상은 어떤 사람일까요?",
+      "그는 어디에서 어디로 가는 중이었을까요?"
+    ],
+    4: [
+      "두 사람 사이의 관계는 무엇이라고 느껴지나요?",
+      "이 인물들이 이 장소에서 만나게 된 이유는 무엇일까요?",
+      "두 사람이 지금 나누고 있는 대화의 분위기는 어떤가요?"
+    ]
+  },
+  boat: {
+    1: [
+      "이 인물이 이 장소를 선택한 이유는 무엇일까요?",
+      "이 인물은 혼자 이곳에 온 것일까요, 아니면 누군가와 함께 왔다가 혼자 남은 것일까요?",
+      "노을 지는 시간대에 혼자 보트를 타는 이 인물의 감정은 어떨 거 같나요?"
+    ],
+    2: [
+      "인물이 손가락으로 가리키는 곳에는 무엇이 있다고 생각하나요?",
+      "그가 지금 \"누군가에게 보여주고 싶은 장면\"은 무엇이라고 생각하나요?",
+      "인물이 이 장면을 함께 보고 있다고 생각하는 사람은 누구일까요?",
+      "인물이 누군가에게 이 장면을 설명하려는 듯 보이나요? 그 대상은 누구일까요?"
+    ],
+    3: [
+      "이 두 사람은 어떤 관계로 보이나요—친구, 연인, 동료, 남매 중 무엇인가요?",
+      "이들이 함께 이곳을 걷게 된 이유는 무엇일까요?",
+      "둘의 분위기는 어떤 것 같나요?"
+    ],
+    4: [
+      "이 장소는 두 사람에게 어떤 의미를 가진 공간일까요",
+      "당신이 이 둘 중 한 사람이라면, 지금 어떤 생각을 하고 있을까요?",
+      "왜 두 사람은 이 장소에 서있을까요?"
+    ]
+  }
+};
+
 export async function POST(request: NextRequest) {
   try {
     const { messages, turnCount, selectedType, selectedPoster } = await request.json();
@@ -156,12 +207,15 @@ export async function POST(request: NextRequest) {
     const posterStr = String(selectedPoster);
     const isPoster1 = posterStr === '1' || selectedPoster === 1;
     const isPoster2 = posterStr === '2' || selectedPoster === 2;
+    const isPoster3 = posterStr === '3' || selectedPoster === 3;
     
-    // 타입 체크 (people, car, taxi)
+    // 타입 체크 (people, car, taxi, bike, boat)
     const typeStr = String(selectedType || '').toLowerCase().trim();
     const isPeople = typeStr === 'people';
     const isCar = typeStr === 'car';
     const isTaxi = typeStr === 'taxi';
+    const isBike = typeStr === 'bike';
+    const isBoat = typeStr === 'boat';
     
     console.log('🔍 질문 선택 시작:', {
       turnCount,
@@ -190,6 +244,11 @@ export async function POST(request: NextRequest) {
       else if (isPoster2 && (isPeople || isTaxi)) {
         questionType = isPeople ? 'people' : 'taxi';
         questionSet = poster2Questions[questionType as 'people' | 'taxi'];
+      }
+      // 포스터 3 질문 선택
+      else if (isPoster3 && (isBike || isBoat)) {
+        questionType = isBike ? 'bike' : 'boat';
+        questionSet = poster3Questions[questionType as 'bike' | 'boat'];
       }
       
       if (questionSet && questionSet[questionIndex as 1 | 2 | 3 | 4]) {

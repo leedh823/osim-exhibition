@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 
 export default function DownloadPage() {
-  const searchParams = useSearchParams();
-  const imageData = searchParams.get('data');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // URL에서 데이터 가져오기
+    const params = new URLSearchParams(window.location.search);
+    const imageData = params.get('data');
+    
     if (!imageData) {
       setError('이미지 데이터가 없습니다.');
       return;
@@ -46,7 +47,7 @@ export default function DownloadPage() {
       console.error('다운로드 오류:', err);
       setError('다운로드 중 오류가 발생했습니다.');
     }
-  }, [imageData]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">

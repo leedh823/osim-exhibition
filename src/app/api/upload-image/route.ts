@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,24 +10,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '이미지 파일이 없습니다.' }, { status: 400 });
     }
 
-    // 업로드 디렉토리 생성
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
     // 고유한 파일명 생성
     const timestamp = Date.now();
     const filename = `analysis-card-${timestamp}.png`;
-    const filepath = join(uploadDir, filename);
 
-    // 파일 저장
+    // 파일을 ArrayBuffer로 변환
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filepath, buffer);
 
-    // 파일 ID 반환 (타임스탬프 사용)
-    return NextResponse.json({ id: timestamp });
+    // Supabase Storage에 업로드
+    const { data, error } = await supabaseAdmin.storage
+      .from('analysis-images')
+      .upload(filename, buffer, {
+        contentType: 'image/png',
+        upsert: false
+      });
+
+    if (error) {
+      console.error('Supabase 업로드 오류:', error);
+      return NextResponse.json({ error: '이미지 업로드 실패' }, { status: 500 });
+    }
+
+    // 공개 URL 생성
+    const { data: urlData } = supabaseAdmin.storage
+      .from('analysis-images')
+      .getPublicUrl(filename);
+
+    return NextResponse.json({ 
+      id: timestamp,
+      url: urlData.publicUrl 
+    });
   } catch (error) {
     console.error('이미지 업로드 오류:', error);
     return NextResponse.json({ error: '이미지 업로드 실패' }, { status: 500 });

@@ -6,43 +6,38 @@ export default function DownloadPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // URL에서 데이터 가져오기
+    // URL에서 이미지 URL 가져오기
     const params = new URLSearchParams(window.location.search);
-    const imageData = params.get('data');
+    const imageUrl = params.get('url');
     
-    if (!imageData) {
-      setError('이미지 데이터가 없습니다.');
+    if (!imageUrl) {
+      setError('이미지 URL이 없습니다.');
       return;
     }
 
     try {
-      // base64 데이터 디코딩
-      const decodedData = decodeURIComponent(imageData);
-      
-      // base64 데이터를 blob으로 변환
-      const byteString = atob(decodedData.split(',')[1]);
-      const mimeString = decodedData.split(',')[0].split(':')[1].split(';')[0];
-      const ab = new ArrayBuffer(byteString.length);
-      const ia = new Uint8Array(ab);
-      for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-      }
-      const blob = new Blob([ab], { type: mimeString });
-      
-      // 다운로드
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `analysis-card-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      // 다운로드 후 2초 뒤에 메시지 표시
-      setTimeout(() => {
-        setError('다운로드가 완료되었습니다. 이 페이지를 닫아주세요.');
-      }, 2000);
+      // Supabase 공개 URL에서 이미지 다운로드
+      fetch(imageUrl)
+        .then(response => response.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `analysis-card-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          
+          // 다운로드 후 2초 뒤에 메시지 표시
+          setTimeout(() => {
+            setError('다운로드가 완료되었습니다. 이 페이지를 닫아주세요.');
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('다운로드 오류:', err);
+          setError('이미지를 불러올 수 없습니다.');
+        });
     } catch (err) {
       console.error('다운로드 오류:', err);
       setError('다운로드 중 오류가 발생했습니다.');

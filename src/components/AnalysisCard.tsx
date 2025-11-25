@@ -115,15 +115,37 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
         allowTaint: true
       });
 
-      // canvas를 base64로 변환하여 URL에 포함
-      const imageData = canvas.toDataURL('image/png');
-      
-      // base64 데이터를 URL 파라미터로 인코딩
-      const encodedData = encodeURIComponent(imageData);
-      const downloadLink = `${window.location.origin}/download?data=${encodedData}`;
-      
-      setDownloadUrl(downloadLink);
-      setShowQRCode(true);
+      // canvas를 blob으로 변환
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+
+        // FormData 생성
+        const formData = new FormData();
+        formData.append('image', blob, 'analysis-card.png');
+
+        try {
+          // 서버에 이미지 업로드 (Supabase Storage)
+          const response = await fetch('/api/upload-image', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // Supabase 공개 URL을 다운로드 페이지로 전달
+            const downloadLink = `${window.location.origin}/download?url=${encodeURIComponent(data.url)}`;
+            setDownloadUrl(downloadLink);
+            setShowQRCode(true);
+          } else {
+            const errorData = await response.json();
+            console.error('업로드 실패:', errorData);
+            alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+          }
+        } catch (error) {
+          console.error('이미지 업로드 오류:', error);
+          alert('이미지 업로드 중 오류가 발생했습니다.');
+        }
+      }, 'image/png');
     } catch (error) {
       console.error('이미지 캡처 오류:', error);
     }

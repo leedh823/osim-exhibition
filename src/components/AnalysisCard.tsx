@@ -95,90 +95,144 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
     setIsFlipped(!isFlipped);
   };
 
-  // 카드 이미지를 캡처하고 다운로드 링크 생성 (앞뒷면 모두)
+  // 카드 이미지를 캡처하고 다운로드 링크 생성 (앞뒷면 모두, 겹치고 각도 있게)
   const captureCardImage = async () => {
-    if (!cardRef.current) return;
-
     try {
-      const cardElement = cardRef.current;
-      const cardContainer = cardElement.closest('.perspective-1000') as HTMLElement;
+      // 앞면 이미지 파일 직접 로드
+      const frontImg = document.createElement('img') as HTMLImageElement;
+      frontImg.crossOrigin = 'anonymous';
       
-      if (!cardContainer) {
-        console.error('카드 컨테이너를 찾을 수 없습니다.');
+      // 뒷면 이미지 파일 로드
+      const backImg = document.createElement('img') as HTMLImageElement;
+      backImg.crossOrigin = 'anonymous';
+      
+      // 이미지 로드 대기
+      await Promise.all([
+        new Promise<void>((resolve, reject) => {
+          frontImg.onload = () => resolve();
+          frontImg.onerror = () => {
+            console.error('앞면 이미지 로드 실패:', frontImage);
+            reject(new Error('앞면 이미지를 불러올 수 없습니다.'));
+          };
+          frontImg.src = frontImage;
+        }),
+        new Promise<void>((resolve, reject) => {
+          backImg.onload = () => resolve();
+          backImg.onerror = () => {
+            console.error('뒷면 이미지 로드 실패:', backImage);
+            reject(new Error('뒷면 이미지를 불러올 수 없습니다.'));
+          };
+          backImg.src = backImage;
+        })
+      ]);
+
+      // 뒷면에 텍스트 오버레이 추가
+      const backCanvas = document.createElement('canvas');
+      backCanvas.width = backImg.width;
+      backCanvas.height = backImg.height;
+      const backCtx = backCanvas.getContext('2d');
+      if (!backCtx) {
+        console.error('뒷면 Canvas context를 생성할 수 없습니다.');
         return;
       }
+      
+      // 뒷면 배경 이미지 그리기
+      backCtx.drawImage(backImg, 0, 0);
+      
+      // 텍스트 오버레이 추가
+      const analysisText = analysisData?.analysis || '';
+      if (analysisText) {
+        // 폰트 설정
+        const fontSize = Math.max(14, backCanvas.width * 0.011); // 비율에 맞게 폰트 크기 조정
+        backCtx.fillStyle = 'white';
+        backCtx.font = `${fontSize}px NeverMindRoundedMono-Regular, monospace`;
+        backCtx.textAlign = 'left';
+        backCtx.textBaseline = 'top';
+        
+        // 텍스트 위치 설정 (오른쪽 패널 영역, marginLeft: -290px 기준)
+        const textX = backCanvas.width * 0.6 - (290 * (backCanvas.width / 1920)); // 비율에 맞게 조정
+        const textY = backCanvas.height * 0.6;
+        const maxWidth = backCanvas.width * 0.35;
+        const lineHeight = fontSize * 1.6;
+        
+        // 텍스트 줄바꿈 처리
+        const words = analysisText.split(' ');
+        let line = '';
+        let y = textY;
+        
+        words.forEach((word) => {
+          const testLine = line + word + ' ';
+          const metrics = backCtx.measureText(testLine);
+          if (metrics.width > maxWidth && line !== '') {
+            backCtx.fillText(line, textX, y);
+            line = word + ' ';
+            y += lineHeight;
+          } else {
+            line = testLine;
+          }
+        });
+        if (line) {
+          backCtx.fillText(line, textX, y);
+        }
+      }
 
-      // 원래 상태 저장
-      const originalTransform = cardElement.style.transform;
-      const originalIsFlipped = isFlipped;
-      const originalRotation = { ...rotation };
-
-      // 회전 제거 (평면으로 만들기)
-      setRotation({ x: 0, y: 0 });
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // 앞면 캡처
-      cardElement.style.transform = 'rotateX(0deg) rotateY(0deg)';
-      setIsFlipped(false);
-      await new Promise(resolve => setTimeout(resolve, 300)); // 렌더링 대기 시간 증가
-
-      const frontCanvas = await html2canvas(cardContainer, {
-        backgroundColor: '#000000',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-        windowWidth: cardContainer.offsetWidth,
-        windowHeight: cardContainer.offsetHeight
-      });
-
-      // 뒷면 캡처
-      cardElement.style.transform = 'rotateX(0deg) rotateY(180deg)';
-      setIsFlipped(true);
-      await new Promise(resolve => setTimeout(resolve, 300)); // 렌더링 대기 시간 증가
-
-      const backCanvas = await html2canvas(cardContainer, {
-        backgroundColor: '#000000',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-        windowWidth: cardContainer.offsetWidth,
-        windowHeight: cardContainer.offsetHeight
-      });
-
-      // 원래 상태로 복원
-      cardElement.style.transform = originalTransform;
-      setIsFlipped(originalIsFlipped);
-      setRotation(originalRotation);
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // 두 이미지를 나란히 합성
+      // 합성 캔버스 생성 (겹치고 각도 있게)
+      const cardWidth = frontImg.width;
+      const cardHeight = Math.max(frontImg.height, backCanvas.height);
+      const overlap = 100; // 겹치는 부분
+      const angle = -8; // 각도 (도)
+      const offsetY = 80; // 뒷면이 아래로 내려가는 정도
+      const padding = 100; // 여유 공간
+      
+      // 캔버스 크기 계산 (각도와 겹침 고려)
+      const totalWidth = cardWidth + cardWidth - overlap + padding * 2;
+      const totalHeight = cardHeight + offsetY + padding * 2;
+      
       const combinedCanvas = document.createElement('canvas');
-      const cardWidth = Math.max(frontCanvas.width, backCanvas.width);
-      const cardHeight = Math.max(frontCanvas.height, backCanvas.height);
-      const padding = 60; // 카드 사이 여백
-      const totalWidth = cardWidth * 2 + padding;
-      const totalHeight = cardHeight;
-
       combinedCanvas.width = totalWidth;
       combinedCanvas.height = totalHeight;
 
       const ctx = combinedCanvas.getContext('2d');
       if (!ctx) {
-        console.error('Canvas context를 생성할 수 없습니다.');
+        console.error('합성 Canvas context를 생성할 수 없습니다.');
         return;
       }
 
-      // 배경색 (검은색)
-      ctx.fillStyle = '#000000';
+      // 배경색 (어두운 회색)
+      ctx.fillStyle = '#2a2a2a';
       ctx.fillRect(0, 0, totalWidth, totalHeight);
 
-      // 앞면 그리기 (왼쪽)
-      ctx.drawImage(frontCanvas, 0, 0);
+      // 그림자 설정
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetX = 5;
+      ctx.shadowOffsetY = 5;
 
-      // 뒷면 그리기 (오른쪽)
-      ctx.drawImage(backCanvas, cardWidth + padding, 0);
+      // 앞면 그리기 (위쪽, 약간 회전)
+      const frontX = padding;
+      const frontY = padding;
+      ctx.save();
+      ctx.translate(frontX + cardWidth / 2, frontY + cardHeight / 2);
+      ctx.rotate(angle * Math.PI / 180);
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      ctx.shadowBlur = 15;
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      ctx.drawImage(frontImg, -cardWidth / 2, -cardHeight / 2);
+      ctx.restore();
+
+      // 뒷면 그리기 (아래쪽, 약간 왼쪽, 겹치게, 반대 방향 회전)
+      const backX = frontX + cardWidth - overlap;
+      const backY = frontY + offsetY;
+      ctx.save();
+      ctx.translate(backX + cardWidth / 2, backY + cardHeight / 2);
+      ctx.rotate(-angle * Math.PI / 180);
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      ctx.shadowBlur = 15;
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 3;
+      ctx.drawImage(backCanvas, -cardWidth / 2, -cardHeight / 2);
+      ctx.restore();
 
       // 합성된 이미지 업로드
       await uploadCanvas(combinedCanvas);

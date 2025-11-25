@@ -176,17 +176,17 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
         }
       }
 
-      // 합성 캔버스 생성 (겹치고 각도 있게)
+      // 합성 캔버스 생성 (세로로 겹치고 각도 있게)
       const cardWidth = frontImg.width;
       const cardHeight = Math.max(frontImg.height, backCanvas.height);
       const overlap = 100; // 겹치는 부분
       const angle = -8; // 각도 (도)
-      const offsetY = 80; // 뒷면이 아래로 내려가는 정도
+      const offsetX = 80; // 뒷면이 오른쪽으로 이동하는 정도
       const padding = 100; // 여유 공간
       
-      // 캔버스 크기 계산 (각도와 겹침 고려)
-      const totalWidth = cardWidth + cardWidth - overlap + padding * 2;
-      const totalHeight = cardHeight + offsetY + padding * 2;
+      // 캔버스 크기 계산 (세로 배치, 각도와 겹침 고려)
+      const totalWidth = cardWidth + offsetX + padding * 2;
+      const totalHeight = cardHeight + cardHeight - overlap + padding * 2;
       
       const combinedCanvas = document.createElement('canvas');
       combinedCanvas.width = totalWidth;
@@ -221,9 +221,9 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
       ctx.drawImage(frontImg, -cardWidth / 2, -cardHeight / 2);
       ctx.restore();
 
-      // 뒷면 그리기 (아래쪽, 약간 왼쪽, 겹치게, 반대 방향 회전)
-      const backX = frontX + cardWidth - overlap;
-      const backY = frontY + offsetY;
+      // 뒷면 그리기 (아래쪽, 약간 오른쪽, 겹치게, 반대 방향 회전)
+      const backX = frontX + offsetX;
+      const backY = frontY + cardHeight - overlap;
       ctx.save();
       ctx.translate(backX + cardWidth / 2, backY + cardHeight / 2);
       ctx.rotate(-angle * Math.PI / 180);

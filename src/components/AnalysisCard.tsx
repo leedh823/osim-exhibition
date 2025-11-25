@@ -95,60 +95,128 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
     setIsFlipped(!isFlipped);
   };
 
-  // 카드 이미지를 캡처하고 다운로드 링크 생성
+  // 카드 이미지를 캡처하고 다운로드 링크 생성 (앞뒷면 모두)
   const captureCardImage = async () => {
     if (!cardRef.current) return;
 
     try {
-      // 카드 요소의 부모 컨테이너 찾기 (perspective-1000 클래스)
-      const cardContainer = cardRef.current.closest('.perspective-1000') as HTMLElement;
-      const elementToCapture = cardContainer || cardRef.current.parentElement || cardRef.current;
+      const cardElement = cardRef.current;
+      const cardContainer = cardElement.closest('.perspective-1000') as HTMLElement;
       
-      if (!elementToCapture) return;
+      if (!cardContainer) return;
 
-      // html2canvas로 카드 이미지 캡처
-      const canvas = await html2canvas(elementToCapture, {
+      // 원래 상태 저장
+      const originalTransform = cardElement.style.transform;
+      const originalIsFlipped = isFlipped;
+      const originalRotation = { ...rotation };
+
+      // 회전 제거 (평면으로 만들기)
+      setRotation({ x: 0, y: 0 });
+
+      // 앞면 캡처
+      cardElement.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      setIsFlipped(false);
+      await new Promise(resolve => setTimeout(resolve, 200)); // 렌더링 대기
+
+      const frontCanvas = await html2canvas(cardContainer, {
         backgroundColor: '#000000',
-        scale: 2, // 고해상도
+        scale: 2,
         useCORS: true,
         logging: false,
-        allowTaint: true
+        allowTaint: true,
+        ignoreElements: (element) => {
+          // 뒷면 요소는 앞면 캡처 시 제외
+          return element.getAttribute('style')?.includes('rotateY(180deg)') || false;
+        }
       });
 
-      // canvas를 blob으로 변환
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
+      // 뒷면 캡처
+      cardElement.style.transform = 'rotateX(0deg) rotateY(180deg)';
+      setIsFlipped(true);
+      await new Promise(resolve => setTimeout(resolve, 200)); // 렌더링 대기
 
-        // FormData 생성
-        const formData = new FormData();
-        formData.append('image', blob, 'analysis-card.png');
-
-        try {
-          // 서버에 이미지 업로드 (Supabase Storage)
-          const response = await fetch('/api/upload-image', {
-            method: 'POST',
-            body: formData
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            // Supabase 공개 URL을 다운로드 페이지로 전달
-            const downloadLink = `${window.location.origin}/download?url=${encodeURIComponent(data.url)}`;
-            setDownloadUrl(downloadLink);
-            setShowQRCode(true);
-          } else {
-            const errorData = await response.json();
-            console.error('업로드 실패:', errorData);
-            alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
-          }
-        } catch (error) {
-          console.error('이미지 업로드 오류:', error);
-          alert('이미지 업로드 중 오류가 발생했습니다.');
+      const backCanvas = await html2canvas(cardContainer, {
+        backgroundColor: '#000000',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        allowTaint: true,
+        ignoreElements: (element) => {
+          // 앞면 요소는 뒷면 캡처 시 제외
+          return !element.getAttribute('style')?.includes('rotateY(180deg)') || false;
         }
-      }, 'image/png');
+      });
+
+      // 원래 상태로 복원
+      cardElement.style.transform = originalTransform;
+      setIsFlipped(originalIsFlipped);
+      setRotation(originalRotation);
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 두 이미지를 나란히 합성
+      const combinedCanvas = document.createElement('canvas');
+      const cardWidth = frontCanvas.width;
+      const cardHeight = frontCanvas.height;
+      const padding = 60; // 카드 사이 여백
+      const totalWidth = cardWidth * 2 + padding;
+      const totalHeight = cardHeight;
+
+      combinedCanvas.width = totalWidth;
+      combinedCanvas.height = totalHeight;
+
+      const ctx = combinedCanvas.getContext('2d');
+      if (!ctx) return;
+
+      // 배경색 (검은색)
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+      // 앞면 그리기 (왼쪽)
+      ctx.drawImage(frontCanvas, 0, 0);
+
+      // 뒷면 그리기 (오른쪽)
+      ctx.drawImage(backCanvas, cardWidth + padding, 0);
+
+      // 합성된 이미지 업로드
+      await uploadCanvas(combinedCanvas);
     } catch (error) {
       console.error('이미지 캡처 오류:', error);
+      alert('이미지 캡처 중 오류가 발생했습니다.');
     }
+  };
+
+  // Canvas를 업로드하는 헬퍼 함수
+  const uploadCanvas = async (canvas: HTMLCanvasElement) => {
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      // FormData 생성
+      const formData = new FormData();
+      formData.append('image', blob, 'analysis-card.png');
+
+      try {
+        // 서버에 이미지 업로드 (Supabase Storage)
+        const response = await fetch('/api/upload-image', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Supabase 공개 URL을 다운로드 페이지로 전달
+          const downloadLink = `${window.location.origin}/download?url=${encodeURIComponent(data.url)}`;
+          setDownloadUrl(downloadLink);
+          setShowQRCode(true);
+        } else {
+          const errorData = await response.json();
+          console.error('업로드 실패:', errorData);
+          alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+        }
+      } catch (error) {
+        console.error('이미지 업로드 오류:', error);
+        alert('이미지 업로드 중 오류가 발생했습니다.');
+      }
+    }, 'image/png');
   };
 
   // 인쇄 버튼 클릭 시 QR 코드 표시

@@ -299,8 +299,8 @@ export default function EnlargedVideo() {
           } else if (selectedPoster === '2') {
             maxIndex = 4; // people/taxi 각 4개
           } else if (selectedPoster === '3') {
-            // bike는 3개, boat는 4개
-            maxIndex = selectedType === 'bike' ? 3 : 4;
+            // bike와 boat 모두 4개
+            maxIndex = 4;
           }
           
           if (nextIndex <= maxIndex) {

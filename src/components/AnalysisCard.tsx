@@ -103,7 +103,10 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
       const cardElement = cardRef.current;
       const cardContainer = cardElement.closest('.perspective-1000') as HTMLElement;
       
-      if (!cardContainer) return;
+      if (!cardContainer) {
+        console.error('카드 컨테이너를 찾을 수 없습니다.');
+        return;
+      }
 
       // 원래 상태 저장
       const originalTransform = cardElement.style.transform;
@@ -112,11 +115,12 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
 
       // 회전 제거 (평면으로 만들기)
       setRotation({ x: 0, y: 0 });
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // 앞면 캡처
       cardElement.style.transform = 'rotateX(0deg) rotateY(0deg)';
       setIsFlipped(false);
-      await new Promise(resolve => setTimeout(resolve, 200)); // 렌더링 대기
+      await new Promise(resolve => setTimeout(resolve, 300)); // 렌더링 대기 시간 증가
 
       const frontCanvas = await html2canvas(cardContainer, {
         backgroundColor: '#000000',
@@ -124,16 +128,14 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
         useCORS: true,
         logging: false,
         allowTaint: true,
-        ignoreElements: (element) => {
-          // 뒷면 요소는 앞면 캡처 시 제외
-          return element.getAttribute('style')?.includes('rotateY(180deg)') || false;
-        }
+        windowWidth: cardContainer.offsetWidth,
+        windowHeight: cardContainer.offsetHeight
       });
 
       // 뒷면 캡처
       cardElement.style.transform = 'rotateX(0deg) rotateY(180deg)';
       setIsFlipped(true);
-      await new Promise(resolve => setTimeout(resolve, 200)); // 렌더링 대기
+      await new Promise(resolve => setTimeout(resolve, 300)); // 렌더링 대기 시간 증가
 
       const backCanvas = await html2canvas(cardContainer, {
         backgroundColor: '#000000',
@@ -141,10 +143,8 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
         useCORS: true,
         logging: false,
         allowTaint: true,
-        ignoreElements: (element) => {
-          // 앞면 요소는 뒷면 캡처 시 제외
-          return !element.getAttribute('style')?.includes('rotateY(180deg)') || false;
-        }
+        windowWidth: cardContainer.offsetWidth,
+        windowHeight: cardContainer.offsetHeight
       });
 
       // 원래 상태로 복원
@@ -155,8 +155,8 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
 
       // 두 이미지를 나란히 합성
       const combinedCanvas = document.createElement('canvas');
-      const cardWidth = frontCanvas.width;
-      const cardHeight = frontCanvas.height;
+      const cardWidth = Math.max(frontCanvas.width, backCanvas.width);
+      const cardHeight = Math.max(frontCanvas.height, backCanvas.height);
       const padding = 60; // 카드 사이 여백
       const totalWidth = cardWidth * 2 + padding;
       const totalHeight = cardHeight;
@@ -165,7 +165,10 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
       combinedCanvas.height = totalHeight;
 
       const ctx = combinedCanvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) {
+        console.error('Canvas context를 생성할 수 없습니다.');
+        return;
+      }
 
       // 배경색 (검은색)
       ctx.fillStyle = '#000000';
@@ -181,7 +184,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
       await uploadCanvas(combinedCanvas);
     } catch (error) {
       console.error('이미지 캡처 오류:', error);
-      alert('이미지 캡처 중 오류가 발생했습니다.');
+      alert(`이미지 캡처 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     }
   };
 

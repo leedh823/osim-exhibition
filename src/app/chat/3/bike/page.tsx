@@ -68,11 +68,12 @@ export default function ChatPoster3Bike() {
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
         }
         
-        // 4번째 대답 후 (currentTurn === 4) 분석 시작 메시지가 표시되면 분석 페이지로 이동
+        // 4번째 대답 후 (currentTurn === 4) 분석 시작 메시지가 표시되면 즉시 3초 타이머 시작
         if (currentTurn === 4 && (data.isAnalysis || data.content.includes('분석을 시작하겠습니다'))) {
           // 분석 데이터가 없어도 분석 페이지로 이동 (API 키가 없을 수 있음)
+          // 메시지가 표시되면 즉시 3초 타이머 시작
           setTimeout(() => {
-            router.push('/analysis');
+            window.location.href = '/analysis';
           }, 3000); // 3초 후 이동
         }
       } else if (data.error) {
@@ -179,7 +180,9 @@ export default function ChatPoster3Bike() {
                 msg.role === 'user' 
                   ? 'bg-blue-600 text-white' 
                   : 'bg-white/20 text-white backdrop-blur-sm'
-              }`}>
+              }`}
+              style={{ fontSize: 'clamp(14px, 1.2vw, 24px)' }}
+              >
                 {msg.content}
               </div>
             </div>
@@ -196,24 +199,26 @@ export default function ChatPoster3Bike() {
               className="flex-1 p-3 bg-white/20 text-white rounded-lg border border-white/30 focus:border-blue-400 focus:outline-none backdrop-blur-sm placeholder-white/60"
               placeholder="답변을 입력하세요..."
               disabled={currentTurn >= 5 || isLoading}
+              style={{ fontSize: 'clamp(14px, 1.2vw, 24px)' }}
             />
             <button 
               onClick={handleSendMessage}
               disabled={!userInput.trim() || currentTurn >= 5 || isLoading}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+              style={{ fontSize: 'clamp(14px, 1.2vw, 24px)' }}
             >
               {isLoading ? 'AI 응답 중...' : '전송'}
             </button>
           </div>
           
           {currentTurn >= 5 && (
-            <div className="text-center text-green-400 font-mono text-sm mt-2 animate-pulse">
+            <div className="text-center text-green-400 font-mono mt-2 animate-pulse" style={{ fontSize: 'clamp(12px, 1vw, 20px)' }}>
               분석 결과를 생성하고 있습니다...
             </div>
           )}
           
           {isLoading && (
-            <div className="text-center text-blue-400 font-mono text-sm mt-2 animate-pulse">
+            <div className="text-center text-blue-400 font-mono mt-2 animate-pulse" style={{ fontSize: 'clamp(12px, 1vw, 20px)' }}>
               AI가 생각하고 있습니다...
             </div>
           )}

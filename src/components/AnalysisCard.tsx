@@ -4,6 +4,8 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 
 interface AnalysisData {
+  analysis?: string; // 7가지 지표 종합 분석 결과
+  // 하위 호환성을 위한 필드
   meaningMaking?: string;
   empathicResonance?: string;
   imaginativeCompletion?: string;
@@ -11,7 +13,6 @@ interface AnalysisData {
   situationalReasoning?: string;
   interpersonalLens?: string;
   selfProjection?: string;
-  // 하위 호환성을 위한 필드
   trackedPersonAnalysis?: string;
   viewerAnalysis?: string;
 }
@@ -145,14 +146,18 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                 
                 {/* AI Reading Notes 제목 바로 아래 텍스트 영역 - 왼쪽 정렬 */}
                 <div className="pr-8 pt-2" style={{ marginLeft: '-290px' }}>
-                  {/* 한글 분석 텍스트 - 7가지 지표 종합 */}
+                  {/* 한글 분석 텍스트 - 7가지 지표 종합 분석 */}
                   <div className="mb-5">
                     <p 
-                      className="text-base leading-relaxed text-white"
-                      style={{ fontFamily: 'var(--font-nevermind)' }}
+                      className="text-lg leading-relaxed text-white whitespace-pre-line"
+                      style={{ fontFamily: 'var(--font-nevermind)', fontSize: 'clamp(14px, 1.1vw, 24px)' }}
                     >
                       {(() => {
-                        // 새로운 7가지 지표가 있으면 종합하여 표시
+                        // 새로운 통합 분석 결과가 있으면 사용
+                        if (analysisData?.analysis) {
+                          return analysisData.analysis;
+                        }
+                        // 7가지 개별 지표가 있으면 종합하여 표시
                         if (analysisData?.meaningMaking || analysisData?.empathicResonance || 
                             analysisData?.imaginativeCompletion || analysisData?.valueOrientation ||
                             analysisData?.situationalReasoning || analysisData?.interpersonalLens ||
@@ -176,16 +181,13 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                   {/* 영어 분석 텍스트 */}
                   <div>
                     <p 
-                      className="text-base leading-relaxed text-white"
-                      style={{ fontFamily: 'var(--font-nevermind)' }}
+                      className="text-lg leading-relaxed text-white whitespace-pre-line"
+                      style={{ fontFamily: 'var(--font-nevermind)', fontSize: 'clamp(14px, 1.1vw, 24px)' }}
                     >
                       {(() => {
-                        // 새로운 7가지 지표가 있으면 종합하여 표시
-                        if (analysisData?.meaningMaking || analysisData?.empathicResonance || 
-                            analysisData?.imaginativeCompletion || analysisData?.valueOrientation ||
-                            analysisData?.situationalReasoning || analysisData?.interpersonalLens ||
-                            analysisData?.selfProjection) {
-                          return "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior.";
+                        // 새로운 통합 분석 결과가 있으면 영어 번역 표시
+                        if (analysisData?.analysis) {
+                          return "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior. You interpret situations through emotional empathy rather than logical analysis, naturally projecting your own experiences. Your sensitivity to interpersonal relationships and imaginative interpretation of situations reveal a thoughtful approach to understanding others.";
                         }
                         return "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior.";
                       })()}
@@ -202,8 +204,8 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
         <button
           onClick={handlePrint}
-          className="bg-[#6FA68B] hover:bg-[#5a8a73] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center text-lg"
-          style={{ fontFamily: 'var(--font-coolvetica)' }}
+          className="bg-[#6FA68B] hover:bg-[#5a8a73] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
+          style={{ fontFamily: 'var(--font-coolvetica)', fontSize: 'clamp(14px, 1.2vw, 28px)' }}
         >
           Print Analysis Results
         </button>

@@ -713,20 +713,20 @@ export default function Landing() {
         {/* Hero Text Overlay */}
         <div className="absolute top-8 md:top-12 left-6 md:left-8 z-10 pointer-events-none">
           <div className="relative">
-            <h1 className="text-6xl md:text-8xl lg:text-9xl text-white tracking-wide uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900 }}>
+            <h1 className="text-white tracking-wide uppercase whitespace-nowrap" style={{ fontFamily: 'var(--font-butler)', fontWeight: 900, fontSize: 'clamp(48px, 8vw, 180px)' }}>
               RE:COGNITION
             </h1>
           </div>
         </div>
         <div className="absolute top-[80px] md:top-[100px] right-6 md:right-8 z-10 pointer-events-none flex items-center">
           <div className="w-16 md:w-24 h-[1px] bg-white mr-4"></div>
-          <p className="text-lg md:text-xl lg:text-2xl text-white text-right" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
+          <p className="text-white text-right" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: 'clamp(16px, 1.5vw, 28px)' }}>
             서로의 시선 사이에서
           </p>
         </div>
         {/* Scroll to explore 텍스트 - 오른쪽 끝 */}
         <div className="absolute bottom-6 md:bottom-8 right-6 md:right-8 z-10 pointer-events-none">
-          <p className="text-sm md:text-base text-white text-right" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300 }}>
+          <p className="text-white text-right" style={{ fontFamily: 'var(--font-nexon)', fontWeight: 300, fontSize: 'clamp(12px, 1vw, 18px)' }}>
             Scroll to explore
           </p>
         </div>

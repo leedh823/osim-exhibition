@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { QRCodeSVG } from 'qrcode.react';
+import html2canvas from 'html2canvas';
 
 interface AnalysisData {
   analysis?: string; // 7가지 지표 종합 분석 결과
@@ -30,14 +33,34 @@ interface SelectedPerson {
 interface AnalysisCardProps {
   analysisData: AnalysisData;
   selectedPerson: SelectedPerson | null;
+  selectedPoster?: string | null;
 }
 
-const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
+const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoster }) => {
+  const router = useRouter();
   const [isFlipped, setIsFlipped] = useState(false);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  
+  // 앞면 이미지 랜덤 선택 (한 번만)
+  const [frontImage] = useState(() => {
+    const frontImages = ['/analysis/카드 앞 2.png', '/analysis/카드 앞 3.png', '/analysis/카드 앞 4.png'];
+    const randomIndex = Math.floor(Math.random() * frontImages.length);
+    return frontImages[randomIndex];
+  });
+  
+  // 뒷면 이미지 선택 (포스터에 따라)
+  const backImage = selectedPoster === '1' 
+    ? '/analysis/poster1 back.png'
+    : selectedPoster === '2'
+    ? '/analysis/poster2 back.png'
+    : selectedPoster === '3'
+    ? '/analysis/poster3 back.png'
+    : '/analysis/back.png'; // 기본값
 
   // 드래그 시작
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -72,13 +95,105 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
     setIsFlipped(!isFlipped);
   };
 
-  // 인쇄 기능
+  // 카드 이미지를 캡처하고 다운로드 링크 생성
+  const captureCardImage = async () => {
+    if (!cardRef.current) return;
+
+    try {
+      // 카드 요소의 부모 컨테이너 찾기 (perspective-1000 클래스)
+      const cardContainer = cardRef.current.closest('.perspective-1000') as HTMLElement;
+      const elementToCapture = cardContainer || cardRef.current.parentElement || cardRef.current;
+      
+      if (!elementToCapture) return;
+
+      // html2canvas로 카드 이미지 캡처
+      const canvas = await html2canvas(elementToCapture, {
+        backgroundColor: '#000000',
+        scale: 2, // 고해상도
+        useCORS: true,
+        logging: false,
+        allowTaint: true
+      });
+
+      // canvas를 blob으로 변환
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+
+        // FormData 생성
+        const formData = new FormData();
+        formData.append('image', blob, 'analysis-card.png');
+
+        try {
+          // 서버에 이미지 업로드
+          const response = await fetch('/api/upload-image', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const downloadLink = `${window.location.origin}/download/${data.id}`;
+            setDownloadUrl(downloadLink);
+            setShowQRCode(true);
+          } else {
+            // 서버 업로드 실패 시 blob URL 사용
+            const blobUrl = URL.createObjectURL(blob);
+            setDownloadUrl(blobUrl);
+            setShowQRCode(true);
+          }
+        } catch (error) {
+          console.error('이미지 업로드 오류:', error);
+          // 업로드 실패 시 blob URL 사용
+          const blobUrl = URL.createObjectURL(blob);
+          setDownloadUrl(blobUrl);
+          setShowQRCode(true);
+        }
+      }, 'image/png');
+    } catch (error) {
+      console.error('이미지 캡처 오류:', error);
+    }
+  };
+
+  // 인쇄 버튼 클릭 시 QR 코드 표시
   const handlePrint = () => {
-    window.print();
+    captureCardImage();
   };
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center overflow-hidden">
+      {/* QR 코드 모달 */}
+      {showQRCode && downloadUrl && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => {
+            setShowQRCode(false);
+            router.push('/');
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg p-8 flex flex-col items-center gap-4 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* X 버튼 */}
+            <button
+              onClick={() => {
+                setShowQRCode(false);
+                router.push('/');
+              }}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold w-8 h-8 flex items-center justify-center"
+            >
+              ×
+            </button>
+            <h2 className="text-2xl font-bold text-black">QR 코드를 스캔하여 이미지 다운로드</h2>
+            <div className="bg-white p-4 rounded-lg">
+              <QRCodeSVG value={downloadUrl} size={256} />
+            </div>
+            <p className="text-sm text-gray-600 text-center max-w-xs">
+              QR 코드를 스캔하면 분석 카드 이미지를 다운로드할 수 있습니다.
+            </p>
+          </div>
+        </div>
+      )}
       {/* CCTV 배경 효과 */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800" />
       <div className="absolute inset-0 bg-black/50" />
@@ -105,13 +220,13 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
           onMouseLeave={handleMouseUp}
           onClick={handleCardClick}
         >
-          {/* 카드 앞면 - front.png 이미지 */}
+          {/* 카드 앞면 - 랜덤 이미지 (카드 앞 2, 3, 4) */}
           <div 
             className="absolute inset-0 w-full h-full rounded-xl shadow-2xl overflow-hidden"
             style={{ backfaceVisibility: 'hidden' }}
           >
             <Image
-              src="/analysis/front.png"
+              src={frontImage}
               alt="Interpretive Focus Projective Viewer"
               fill
               className="object-cover"
@@ -126,9 +241,9 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
               transform: 'rotateY(180deg)'
             }}
           >
-            {/* 배경 이미지 */}
+            {/* 배경 이미지 - 포스터에 따라 선택 */}
             <Image
-              src="/analysis/back.png"
+              src={backImage}
               alt="AI Reading Notes"
               fill
               className="object-cover"
@@ -147,7 +262,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                 {/* AI Reading Notes 제목 바로 아래 텍스트 영역 - 왼쪽 정렬 */}
                 <div className="pr-8 pt-2" style={{ marginLeft: '-290px' }}>
                   {/* 한글 분석 텍스트 - 7가지 지표 종합 분석 */}
-                  <div className="mb-5">
+                  <div>
                     <p 
                       className="text-lg leading-relaxed text-white whitespace-pre-line"
                       style={{ fontFamily: 'var(--font-nevermind)', fontSize: 'clamp(14px, 1.1vw, 24px)' }}
@@ -177,22 +292,6 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
                       })()}
                     </p>
                   </div>
-
-                  {/* 영어 분석 텍스트 */}
-                  <div>
-                    <p 
-                      className="text-lg leading-relaxed text-white whitespace-pre-line"
-                      style={{ fontFamily: 'var(--font-nevermind)', fontSize: 'clamp(14px, 1.1vw, 24px)' }}
-                    >
-                      {(() => {
-                        // 새로운 통합 분석 결과가 있으면 영어 번역 표시
-                        if (analysisData?.analysis) {
-                          return "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior. You interpret situations through emotional empathy rather than logical analysis, naturally projecting your own experiences. Your sensitivity to interpersonal relationships and imaginative interpretation of situations reveal a thoughtful approach to understanding others.";
-                        }
-                        return "Your gaze captures emotional waves before observable actions. You focus more on atmosphere and subtle feelings than on behavior.";
-                      })()}
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -200,14 +299,14 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData }) => {
         </div>
       </div>
 
-      {/* 인쇄 버튼 */}
+      {/* 이미지 다운받기 버튼 */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
         <button
           onClick={handlePrint}
           className="bg-[#6FA68B] hover:bg-[#5a8a73] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
           style={{ fontFamily: 'var(--font-coolvetica)', fontSize: 'clamp(14px, 1.2vw, 28px)' }}
         >
-          Print Analysis Results
+          이미지 다운받기
         </button>
       </div>
     </div>

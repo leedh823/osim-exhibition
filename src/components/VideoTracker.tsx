@@ -258,13 +258,13 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
       return; // 26초 이전이면 감지하지 않음
     }
     
-    // 포스터 2: 20초 이후부터만 감지
+    // 포스터 2: 22초 이후부터만 감지
     const isPoster2 = videoSrc.includes('/poster video 2/');
-    if (isPoster2 && video.currentTime < 20) {
-      console.log('⏳ 포스터 2: 20초 이전, 감지 대기 중...');
-      setDetectedObjectsWithTimestamp([]); // 20초 이전에는 박스 초기화
+    if (isPoster2 && video.currentTime < 22) {
+      console.log('⏳ 포스터 2: 22초 이전, 감지 대기 중...');
+      setDetectedObjectsWithTimestamp([]); // 22초 이전에는 박스 초기화
       setDetectedObjects([]);
-      return; // 20초 이전이면 감지하지 않음
+      return; // 22초 이전이면 감지하지 않음
     }
     
     // 포스터 3: 17초 이후부터만 감지

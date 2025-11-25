@@ -18,6 +18,7 @@ export default function Analysis() {
     isMoving: boolean;
     speed?: number;
   } | null>(null);
+  const [selectedPoster, setSelectedPoster] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // 분석 결과 로드
@@ -25,6 +26,7 @@ export default function Analysis() {
     // localStorage에서 분석 데이터 로드
     const storedAnalysis = localStorage.getItem('analysisData');
     const storedPerson = localStorage.getItem('selectedPerson');
+    const storedPoster = localStorage.getItem('selectedPoster');
     
     if (storedAnalysis) {
       try {
@@ -54,6 +56,10 @@ export default function Analysis() {
         console.error('선택된 인물 데이터 파싱 오류:', error);
       }
     }
+
+    if (storedPoster) {
+      setSelectedPoster(storedPoster);
+    }
   }, []);
 
   const handleLoadingComplete = () => {
@@ -75,7 +81,8 @@ export default function Analysis() {
   return (
     <AnalysisCard 
       analysisData={analysisResults} 
-      selectedPerson={selectedPerson} 
+      selectedPerson={selectedPerson}
+      selectedPoster={selectedPoster}
     />
   );
 }

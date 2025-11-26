@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // 빌드 최적화
-  swcMinify: true,
   // 컴파일러 최적화
   compiler: {
     removeConsole: false, // 디버깅을 위해 console.log 유지
@@ -15,7 +13,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/poster video :path*',
+        source: '/poster video 1/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -24,7 +22,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/:path*.mp4',
+        source: '/poster video 2/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -33,7 +31,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/:path*.png',
+        source: '/poster video 3/:path*',
         headers: [
           {
             key: 'Cache-Control',
@@ -42,7 +40,25 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/:path*.jpg',
+        source: '/:all*(mp4)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:all*(png)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:all*(jpg)',
         headers: [
           {
             key: 'Cache-Control',

@@ -216,6 +216,7 @@ export default function AIChat() {
           loop 
           playsInline
           controls={false}
+          preload="auto"
         >
           <source src="/2.mp4" type="video/mp4" />
         </video>

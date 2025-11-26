@@ -167,6 +167,7 @@ export default function ChatPoster1Car() {
           loop 
           playsInline
           controls={false}
+          preload="auto"
         >
           <source src="/1.mp4" type="video/mp4" />
         </video>

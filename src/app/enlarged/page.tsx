@@ -338,6 +338,7 @@ export default function EnlargedVideo() {
           loop
           playsInline
           controls={false}
+          preload="auto"
           onError={(e) => {
             console.error('비디오 로드 에러:', e);
             console.error('비디오 경로:', videoSrc);

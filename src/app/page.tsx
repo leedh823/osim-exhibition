@@ -700,6 +700,8 @@ export default function Landing() {
           src="/image/2.png"
           alt="hero"
           className="parallax max-w-none opacity-90 will-change-transform"
+          loading="eager"
+          fetchPriority="high"
           style={{
             width: '110vw',
             height: '130vh',
@@ -762,6 +764,8 @@ export default function Landing() {
                       src={b.image} 
                       alt={b.tooltip}
                       className="w-auto h-auto relative"
+                      loading="lazy"
+                      decoding="async"
                       style={{ 
                         display: 'block',
                         width: b.maxW ? `${b.maxW}px` : '200px',
@@ -893,6 +897,8 @@ export default function Landing() {
                     src={posterData[posterNumber - 1].src}
                     alt={posterData[posterNumber - 1].alt}
                     className="w-full h-auto rounded-lg shadow-lg pointer-events-none"
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 </div>
               );

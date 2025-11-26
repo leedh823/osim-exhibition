@@ -167,6 +167,7 @@ export default function ChatPoster2Taxi() {
           loop 
           playsInline
           controls={false}
+          preload="auto"
         >
           <source src="/2.mp4" type="video/mp4" />
         </video>

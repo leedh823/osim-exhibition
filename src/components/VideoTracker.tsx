@@ -529,6 +529,7 @@ const VideoTracker = memo(function VideoTracker({ videoSrc, onPersonClick, class
         autoPlay
         playsInline
         controls={false}
+        preload="auto"
         onLoadedData={handleVideoLoaded}
         onEnded={() => {
           if (videoRef.current) {

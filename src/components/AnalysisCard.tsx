@@ -130,20 +130,159 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
       setRotation({ x: 0, y: 0 });
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // 뒷면 캡처 (카드를 뒤집은 상태에서)
-      cardElement.style.transform = 'rotateX(0deg) rotateY(180deg)';
-      setIsFlipped(true);
-      await new Promise(resolve => setTimeout(resolve, 300)); // 렌더링 대기
-
-      const backCanvas = await html2canvas(cardContainer, {
-        backgroundColor: '#000000',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-        windowWidth: cardContainer.offsetWidth,
-        windowHeight: cardContainer.offsetHeight
+      // 뒷면 이미지 파일 직접 로드
+      const backImg = document.createElement('img') as HTMLImageElement;
+      backImg.crossOrigin = 'anonymous';
+      
+      await new Promise<void>((resolve, reject) => {
+        backImg.onload = () => resolve();
+        backImg.onerror = () => {
+          console.error('뒷면 이미지 로드 실패:', backImage);
+          reject(new Error('뒷면 이미지를 불러올 수 없습니다.'));
+        };
+        backImg.src = backImage;
       });
+
+      // 뒷면 캔버스 생성 (배경 이미지 + 텍스트 오버레이)
+      const backCanvas = document.createElement('canvas');
+      backCanvas.width = backImg.width;
+      backCanvas.height = backImg.height;
+      const backCtx = backCanvas.getContext('2d');
+      
+      if (!backCtx) {
+        console.error('뒷면 Canvas context를 생성할 수 없습니다.');
+        return;
+      }
+
+      // 배경 이미지 그리기
+      backCtx.drawImage(backImg, 0, 0);
+
+      // 텍스트 오버레이 그리기
+      const analysisText = (() => {
+        if (analysisData?.analysis) {
+          return analysisData.analysis;
+        }
+        if (analysisData?.meaningMaking || analysisData?.empathicResonance || 
+            analysisData?.imaginativeCompletion || analysisData?.valueOrientation ||
+            analysisData?.situationalReasoning || analysisData?.interpersonalLens ||
+            analysisData?.selfProjection) {
+          const parts = [];
+          if (analysisData.meaningMaking) parts.push(analysisData.meaningMaking);
+          if (analysisData.empathicResonance) parts.push(analysisData.empathicResonance);
+          if (analysisData.imaginativeCompletion) parts.push(analysisData.imaginativeCompletion);
+          if (analysisData.valueOrientation) parts.push(analysisData.valueOrientation);
+          if (analysisData.situationalReasoning) parts.push(analysisData.situationalReasoning);
+          if (analysisData.interpersonalLens) parts.push(analysisData.interpersonalLens);
+          if (analysisData.selfProjection) parts.push(analysisData.selfProjection);
+          return parts.join(' ');
+        }
+        return analysisData?.viewerAnalysis || "당신의 시선은 감정의 파동을 먼저 읽어내는 방식입니다. 타인의 행동보다 분위기와 미묘한 감정을 먼저 포착하며, 그 흐름 속에서 의미를 찾으려는 경향이 뚜렷합니다.";
+      })();
+
+      if (analysisText) {
+        // 텍스트 영역 설정 (오른쪽 40%, 상단 60% 아래)
+        const cardWidth = backImg.width;
+        const cardHeight = backImg.height;
+        const textAreaX = cardWidth * 0.6; // 왼쪽 60% 이후부터
+        const textAreaY = cardHeight * 0.6; // 상단 60% 이후부터
+        const textAreaWidth = cardWidth * 0.4 - 40; // 오른쪽 40% 영역 (패딩 제외)
+        const textAreaHeight = cardHeight * 0.4 - 20; // 하단 40% 영역 (패딩 제외)
+        
+        // 폰트 설정 (화면과 동일한 크기 계산)
+        // 화면에서는 clamp(14px, 1.1vw, 24px) 사용
+        // 카드 너비 기준으로 계산 (일반적으로 80vw)
+        const viewportWidth = window.innerWidth;
+        const cardViewportWidth = viewportWidth * 0.8; // 80vw
+        const fontSizeVw = cardViewportWidth * 0.011; // 1.1vw
+        const baseFontSize = Math.max(14, Math.min(24, fontSizeVw));
+        
+        // 폰트 로드 대기 (커스텀 폰트 사용 시)
+        await document.fonts.ready;
+        
+        backCtx.fillStyle = '#FFFFFF';
+        // 커스텀 폰트 시도, 실패 시 sans-serif
+        backCtx.font = `${baseFontSize}px "NeverMindRoundedMono", monospace, sans-serif`;
+        backCtx.textAlign = 'left';
+        backCtx.textBaseline = 'top';
+        
+        // 텍스트 줄바꿈 처리 (한글 단어 단위)
+        const lines: string[] = [];
+        const paragraphs = analysisText.split('\n\n').filter(p => p.trim()); // 문단 구분
+        
+        paragraphs.forEach((paragraph, paraIdx) => {
+          if (paraIdx > 0) {
+            lines.push(''); // 문단 사이 빈 줄
+          }
+          
+          // 문장 단위로 분리 (마침표, 물음표, 느낌표 기준)
+          const sentences = paragraph.split(/([.!?。！？]\s*)/).filter(s => s.trim());
+          
+          sentences.forEach((sentence) => {
+            if (!sentence.trim()) return;
+            
+            let remainingText = sentence.trim();
+            
+            while (remainingText.length > 0) {
+              let line = '';
+              let charIndex = 0;
+              
+              // 한 줄에 들어갈 텍스트 찾기
+              while (charIndex < remainingText.length) {
+                const testChar = remainingText[charIndex];
+                const testLine = line + testChar;
+                const metrics = backCtx.measureText(testLine);
+                
+                if (metrics.width > textAreaWidth && line.length > 0) {
+                  break; // 현재 줄이 가득 참
+                }
+                
+                line = testLine;
+                charIndex++;
+              }
+              
+              // 줄바꿈이 필요한 경우, 단어 중간이 아닌 위치에서 끊기
+              if (charIndex < remainingText.length && line.length > 0) {
+                // 공백이나 구두점을 찾아서 자연스러운 위치에서 끊기
+                let breakPoint = line.length;
+                for (let i = line.length - 1; i >= Math.max(0, line.length - 10); i--) {
+                  const char = line[i];
+                  if (/[\s,，.。!！?？]/.test(char)) {
+                    breakPoint = i + 1;
+                    break;
+                  }
+                }
+                line = line.substring(0, breakPoint).trim();
+                remainingText = remainingText.substring(breakPoint).trim();
+              } else {
+                remainingText = '';
+              }
+              
+              if (line) {
+                lines.push(line);
+              }
+            }
+          });
+        });
+        
+        // 텍스트 그리기
+        const lineHeight = baseFontSize * 1.6;
+        let y = textAreaY;
+        
+        lines.forEach((line) => {
+          if (line === '') {
+            y += lineHeight * 0.5; // 빈 줄은 간격만 추가
+            return;
+          }
+          
+          if (y + lineHeight > cardHeight - 20) {
+            return; // 영역을 벗어나면 중단
+          }
+          
+          // 텍스트 그리기 (약간 왼쪽으로 이동하여 화면과 동일한 위치)
+          backCtx.fillText(line, textAreaX - 290, y);
+          y += lineHeight;
+        });
+      }
 
       // 원래 상태로 복원
       cardElement.style.transform = originalTransform;

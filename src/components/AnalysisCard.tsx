@@ -277,7 +277,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
                 setShowQRCode(false);
                 router.push('/');
               }}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold w-8 h-8 flex items-center justify-center"
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold w-8 h-8 flex items-center justify-center"
             >
               ×
             </button>
@@ -285,8 +285,8 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
             <div className="bg-white p-4 rounded-lg">
               <QRCodeSVG value={downloadUrl} size={256} />
             </div>
-            <p className="text-sm text-gray-600 text-center max-w-xs">
-              QR 코드를 스캔하면 분석 카드 이미지를 다운로드할 수 있습니다.
+            <p className="text-sm text-gray-600 text-center max-w-xs whitespace-pre-line">
+              QR 코드를 스캔하면 분석 카드{'\n'}이미지를 다운로드할 수 있습니다.
             </p>
           </div>
         </div>

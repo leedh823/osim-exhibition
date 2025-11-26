@@ -373,9 +373,11 @@ ${conversationHistory}
 - 대인 관계에 대한 감수성
 - 자기 경험의 투사 방식
 
+중요: 분석 텍스트를 작성할 때 문장이 매끄럽게 읽을 수 있도록 자연스러운 줄바꿈을 사용하세요. 각 문장이 완전한 의미를 가지도록 하되, 문단을 나눌 때는 빈 줄(\n\n)을 사용하여 가독성을 높이세요. 문장이 너무 길어지지 않도록 적절히 줄바꿈하여 읽기 쉽게 작성하세요.
+
 다음 JSON 형식으로 응답해주세요:
 {
-  "analysis": "7가지 지표를 종합한 통합 분석 결과 (한국어, 3줄 정도, 200-300자)"
+  "analysis": "7가지 지표를 종합한 통합 분석 결과 (한국어, 3줄 정도, 200-300자, 자연스러운 줄바꿈 포함)"
 }`;
 
       const openai = getOpenAIClient();
@@ -407,8 +409,20 @@ ${conversationHistory}
         
         try {
           // JSON 파싱 시도
-          const analysisData = JSON.parse(analysisText);
+          const parsedData = JSON.parse(analysisText);
           console.log('✅ 분석 데이터 JSON 파싱 성공');
+          
+          // analysis 필드 추출 (객체인 경우 analysis 속성에서, 문자열인 경우 직접 사용)
+          const analysisTextValue = typeof parsedData === 'object' && parsedData !== null && 'analysis' in parsedData
+            ? parsedData.analysis
+            : typeof parsedData === 'string'
+            ? parsedData
+            : analysisText;
+          
+          // 줄바꿈이 포함된 분석 텍스트를 객체로 감싸서 반환
+          const analysisData = {
+            analysis: analysisTextValue
+          };
           
           return NextResponse.json({
             content: response,

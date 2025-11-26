@@ -245,36 +245,66 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
 
   // Canvas를 업로드하는 헬퍼 함수
   const uploadCanvas = async (canvas: HTMLCanvasElement) => {
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
+    try {
+      // toBlob을 Promise로 변환
+      const blob = await new Promise<Blob | null>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Canvas를 Blob으로 변환하는데 실패했습니다.'));
+          }
+        }, 'image/png');
+      });
+
+      if (!blob) {
+        throw new Error('Blob 생성 실패');
+      }
+
+      console.log('Blob 생성 성공, 크기:', blob.size, 'bytes');
 
       // FormData 생성
       const formData = new FormData();
       formData.append('image', blob, 'analysis-card.png');
 
-      try {
-        // 서버에 이미지 업로드 (Supabase Storage)
-        const response = await fetch('/api/upload-image', {
-          method: 'POST',
-          body: formData
-        });
+      console.log('이미지 업로드 시작...');
+      
+      // 서버에 이미지 업로드 (Supabase Storage)
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          // Supabase 공개 URL을 다운로드 페이지로 전달
-          const downloadLink = `${window.location.origin}/download?url=${encodeURIComponent(data.url)}`;
-          setDownloadUrl(downloadLink);
-          setShowQRCode(true);
-        } else {
-          const errorData = await response.json();
-          console.error('업로드 실패:', errorData);
-          alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      console.log('업로드 응답 상태:', response.status, response.statusText);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('업로드 성공, URL:', data.url);
+        
+        // Supabase 공개 URL을 다운로드 페이지로 전달
+        const downloadLink = `${window.location.origin}/download?url=${encodeURIComponent(data.url)}`;
+        console.log('다운로드 링크 생성:', downloadLink);
+        
+        setDownloadUrl(downloadLink);
+        setShowQRCode(true);
+        console.log('QR 코드 표시 설정 완료');
+      } else {
+        const errorText = await response.text();
+        console.error('업로드 실패:', response.status, errorText);
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { message: errorText };
         }
-      } catch (error) {
-        console.error('이미지 업로드 오류:', error);
-        alert('이미지 업로드 중 오류가 발생했습니다.');
+        
+        alert(`이미지 업로드에 실패했습니다: ${errorData.message || '알 수 없는 오류'}`);
       }
-    }, 'image/png');
+    } catch (error) {
+      console.error('이미지 업로드 오류:', error);
+      alert(`이미지 업로드 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+    }
   };
 
   // 인쇄 버튼 클릭 시 QR 코드 표시

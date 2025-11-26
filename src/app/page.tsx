@@ -354,7 +354,6 @@ export default function Landing() {
 
       // Exhibition section: Pin 고정 + 순차 등장 애니메이션
       const exhibitSection = document.querySelector<HTMLElement>('#exhibit');
-      const exhibitGrid = document.querySelector<HTMLElement>('#exhibit-grid');
       const exhibitChatInput = document.querySelector<HTMLElement>('#exhibit-chat-input');
       const exhibitChatText = document.querySelector<HTMLElement>('#exhibit-chat-text');
 
@@ -428,7 +427,7 @@ export default function Landing() {
           }
         });
 
-        // 2. 채팅 UI 등장 + 배경 격자 무늬 점점 등장 (동시에, 0.5부터)
+        // 2. 채팅 UI 등장 (0.5부터)
         if (exhibitChatInput) {
           exhibitTl.to(exhibitChatInput, 
             { 
@@ -440,53 +439,6 @@ export default function Landing() {
           );
         }
 
-        // 격자 배경 원형으로 확장되면서 나타남 (2단계와 3단계에서 연속 확장)
-        if (exhibitGrid) {
-          // clipPath를 직접 업데이트하여 원형으로 확장
-          // 2단계: opacity와 clipPath 동시에 시작
-          const gridAnimation = { progress: 0 };
-          
-          // opacity와 clipPath 애니메이션을 하나로 통합
-          exhibitTl.to(exhibitGrid, { 
-            opacity: 1,
-            duration: 0.3,
-            ease: 'power2.out' 
-          }, 0.5);
-          
-          // 2단계: 절반까지 확장 (0.5부터 시작)
-          exhibitTl.to(gridAnimation, {
-            progress: 0.5,
-            duration: 0.8,
-            ease: 'power2.inOut',
-            onUpdate: function() {
-              if (exhibitGrid) {
-                // 화면 전체를 확실히 채우기 위해 150%까지 확장
-                const radius = 150 * gridAnimation.progress + '%';
-                exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
-              }
-            },
-            onStart: function() {
-              // 애니메이션 시작 시 초기 clipPath 설정
-              if (exhibitGrid) {
-                exhibitGrid.style.clipPath = 'circle(0% at 50% 50%)';
-              }
-            }
-          }, 0.5);
-          
-          // 3단계: 나머지 확장 (1.3부터 시작, 같은 객체 사용)
-          exhibitTl.to(gridAnimation, {
-            progress: 1,
-            duration: 1.2,
-            ease: 'power2.inOut',
-            onUpdate: function() {
-              if (exhibitGrid) {
-                // 화면 전체를 확실히 채우기 위해 150%까지 확장
-                const radius = 150 * gridAnimation.progress + '%';
-                exhibitGrid.style.clipPath = `circle(${radius} at 50% 50%)`;
-              }
-            }
-          }, 1.3);
-        }
 
         // 채팅 UI 안 영어 텍스트 단어별로 등장 (3단계와 동시 시작)
         if (exhibitChatText) {
@@ -807,25 +759,6 @@ export default function Landing() {
 
       {/* Exhibition Title (전시 이름) */}
       <section id="exhibit" className="relative z-[1101] min-h-[100vh] bg-black text-white flex items-center justify-center px-8">
-        {/* 원형 페이드 격자 배경 패턴 */}
-        <div id="exhibit-grid" className="absolute inset-0 opacity-0 pointer-events-none" style={{ clipPath: 'circle(0% at 50% 50%)', '--grid-radius': '0%' } as React.CSSProperties}>
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <radialGradient id="grid-fade" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.4" />
-                <stop offset="50%" stopColor="white" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="white" stopOpacity="0" />
-              </radialGradient>
-              <pattern id="exhibit-line-grid" width="30" height="30" patternUnits="userSpaceOnUse">
-                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="white" strokeWidth="1" strokeOpacity="0.5" />
-              </pattern>
-              <mask id="grid-mask">
-                <rect width="100%" height="100%" fill="url(#grid-fade)" />
-              </mask>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#exhibit-line-grid)" mask="url(#grid-mask)" />
-          </svg>
-        </div>
 
         <div className="relative z-10 w-full max-w-6xl mx-auto h-full flex flex-col">
           {/* 상단 검색 바 - 화면 최상단 */}
@@ -915,10 +848,24 @@ export default function Landing() {
           {/* START 버튼 - 박스 아래 */}
           <button
             id="regenerate-button"
-            className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-all duration-300 hover:scale-110 hover:shadow-lg z-30"
-            style={{ top: 'calc(47.5% + 31vh + 20px)', opacity: 0, transform: 'translateX(-50%) translateY(20px)' }}
+            className="absolute left-1/2 px-8 py-4 bg-yellow-200 text-black font-bold rounded-full text-lg transition-all duration-300 z-30"
+            style={{ 
+              top: 'calc(47.5% + 31vh + 20px)', 
+              opacity: 0, 
+              transform: 'translateX(-50%) translateY(20px)',
+            }}
             type="button"
             onClick={handleRegenerateClick}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateX(-50%) translateY(20px) scale(1.15)';
+              e.currentTarget.style.boxShadow = '0 10px 30px rgba(255, 255, 0, 0.5)';
+              e.currentTarget.style.backgroundColor = '#FFD700';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateX(-50%) translateY(20px)';
+              e.currentTarget.style.boxShadow = '';
+              e.currentTarget.style.backgroundColor = '#FEF08A';
+            }}
           >
             START
           </button>

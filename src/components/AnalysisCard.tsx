@@ -362,7 +362,13 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
                   <div>
                     <p 
                       className="text-lg leading-relaxed text-white whitespace-pre-line"
-                      style={{ fontFamily: 'var(--font-nevermind)', fontSize: 'clamp(14px, 1.1vw, 24px)' }}
+                      style={{ 
+                        fontFamily: 'var(--font-nevermind)', 
+                        fontSize: 'clamp(14px, 1.1vw, 24px)',
+                        wordBreak: 'keep-all',
+                        overflowWrap: 'break-word',
+                        wordWrap: 'break-word'
+                      }}
                     >
                       {(() => {
                         // 새로운 통합 분석 결과가 있으면 사용

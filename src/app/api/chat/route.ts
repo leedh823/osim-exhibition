@@ -461,7 +461,19 @@ export async function POST(request: NextRequest) {
           stack: apiError instanceof Error ? apiError.stack : undefined
         });
         
-        // API 호출 실패 시 에러를 상위로 전달하여 실제 에러 메시지 반환
+        // 401 에러 (API 키 문제)인 경우 명확한 메시지 반환
+        const errorMessage = apiError instanceof Error ? apiError.message : String(apiError);
+        if (errorMessage.includes('401') || errorMessage.includes('Incorrect API key') || errorMessage.includes('Invalid API key')) {
+          console.error('🔑 API 키 오류 감지: Vercel 환경 변수를 확인하세요.');
+          return NextResponse.json({
+            content: response,
+            analysis: null,
+            isAnalysis: true,
+            error: 'OpenAI API 키가 올바르지 않습니다. Vercel 환경 변수를 확인해주세요.'
+          }, { status: 401 });
+        }
+        
+        // 기타 API 에러는 상위로 전달
         throw apiError;
       }
     } else {

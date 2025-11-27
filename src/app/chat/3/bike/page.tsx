@@ -68,13 +68,11 @@ export default function ChatPoster3Bike() {
           localStorage.setItem('analysisData', JSON.stringify(data.analysis));
         }
         
-        // 4번째 대답 후 분석 시작 메시지가 표시되면 즉시 3초 타이머 시작
-        if (data.isAnalysis || data.content.includes('분석을 시작하겠습니다')) {
-          console.log('분석 시작 메시지 확인, 3초 후 분석 페이지로 이동');
+        // 4번째 대답 후 (currentTurn === 4) 분석 시작 메시지가 표시되면 즉시 3초 타이머 시작
+        if (currentTurn === 4 && (data.isAnalysis || data.content.includes('분석을 시작하겠습니다'))) {
           // 분석 데이터가 없어도 분석 페이지로 이동 (API 키가 없을 수 있음)
           // 메시지가 표시되면 즉시 3초 타이머 시작
           setTimeout(() => {
-            console.log('분석 페이지로 이동');
             window.location.href = '/analysis';
           }, 3000); // 3초 후 이동
         }

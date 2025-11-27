@@ -306,11 +306,11 @@ export async function POST(request: NextRequest) {
       // API 키 확인 (분석 부분만 필요 - 질문 생성에는 AI 사용 안 함)
       if (!process.env.OPENAI_API_KEY) {
         console.error('❌ OpenAI API 키가 설정되지 않았습니다. 분석을 건너뜁니다.');
-        // API 키가 없어도 분석 시작 메시지는 반환하고 isAnalysis: true로 설정하여 페이지 이동 가능하게 함
+        // API 키가 없어도 분석 시작 메시지는 반환
         return NextResponse.json({
           content: response,
           analysis: null,
-          isAnalysis: true, // 페이지 이동을 위해 true로 설정
+          isAnalysis: false,
           error: 'AI 서비스가 설정되지 않아 분석을 생성할 수 없습니다.'
         });
       }

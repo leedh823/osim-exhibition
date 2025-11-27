@@ -400,6 +400,9 @@ ${conversationHistory}
 
       console.log('🤖 OpenAI API 호출 시작');
       console.log('📝 대화 내용:', conversationHistory);
+      console.log('📊 메시지 개수:', messages.length);
+      console.log('📋 메시지 상세:', JSON.stringify(messages, null, 2));
+      
       try {
         // 실제 대화 내용을 messages 배열에 포함
         const apiMessages = messages.map((msg: ChatMessage) => ({
@@ -407,20 +410,41 @@ ${conversationHistory}
           content: msg.content
         }));
 
+        console.log('📤 API에 전달할 메시지:', JSON.stringify(apiMessages, null, 2));
+        console.log('📏 API 메시지 개수:', apiMessages.length);
+        console.log('🔑 API 키 존재 여부:', !!process.env.OPENAI_API_KEY);
+        console.log('🔑 API 키 앞 10자:', process.env.OPENAI_API_KEY?.substring(0, 10) || '없음');
+
+        const requestMessages = [
+          { role: "system", content: systemPrompt },
+          ...apiMessages,
+          { role: "user", content: "위 대화 내용을 바탕으로 7가지 분석 지표를 종합하여 분석 결과를 생성해주세요." }
+        ];
+        
+        console.log('📨 최종 요청 메시지 구조:', {
+          systemPromptLength: systemPrompt.length,
+          userMessagesCount: apiMessages.filter((m: { role: string }) => m.role === 'user').length,
+          assistantMessagesCount: apiMessages.filter((m: { role: string }) => m.role === 'assistant').length,
+          totalMessages: requestMessages.length
+        });
+
         const completion = await openai.chat.completions.create({
           model: "gpt-4",
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...apiMessages,
-            { role: "user", content: "위 대화 내용을 바탕으로 7가지 분석 지표를 종합하여 분석 결과를 생성해주세요." }
-          ],
+          messages: requestMessages,
           max_tokens: 2000,
           temperature: 0.8,
         });
 
         console.log('✅ OpenAI API 호출 성공');
+        console.log('📊 API 응답 상세:', {
+          model: completion.model,
+          choicesCount: completion.choices.length,
+          usage: completion.usage,
+          finishReason: completion.choices[0]?.finish_reason
+        });
         const analysisText = completion.choices[0]?.message?.content || '';
-        console.log('📄 분석 결과 받음:', analysisText ? `${analysisText.substring(0, 50)}...` : '없음');
+        console.log('📄 분석 결과 받음 (전체):', analysisText);
+        console.log('📄 분석 결과 길이:', analysisText.length);
         
         try {
           // JSON 파싱 시도

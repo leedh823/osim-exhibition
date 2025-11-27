@@ -344,9 +344,23 @@ export async function POST(request: NextRequest) {
   "analysis": "여기에 분석 결과를 작성하세요"
 }`;
 
+      // API 키 상세 확인
+      const apiKey = process.env.OPENAI_API_KEY;
+      console.log('🔍 API 키 상세 확인:', {
+        exists: !!apiKey,
+        length: apiKey?.length || 0,
+        startsWithSk: apiKey?.startsWith('sk-') || false,
+        first10: apiKey?.substring(0, 10) || '없음',
+        last4: apiKey?.substring(apiKey.length - 4) || '없음'
+      });
+      
       const openai = getOpenAIClient();
       if (!openai) {
         console.error('❌ OpenAI 클라이언트 생성 실패 - API 키 없음');
+        console.error('🔍 환경 변수 확인:', {
+          OPENAI_API_KEY: apiKey ? `${apiKey.substring(0, 10)}...` : '없음',
+          allEnvKeys: Object.keys(process.env).filter(k => k.includes('OPENAI') || k.includes('API'))
+        });
         // API 키가 없어도 분석 시작 메시지는 반환하고 isAnalysis: true로 설정하여 페이지 이동 가능하게 함
         return NextResponse.json({
           content: response,
@@ -461,15 +475,30 @@ export async function POST(request: NextRequest) {
           stack: apiError instanceof Error ? apiError.stack : undefined
         });
         
+        // API 키 정보 다시 로깅
+        const apiKey = process.env.OPENAI_API_KEY;
+        console.error('🔍 에러 발생 시 API 키 상태:', {
+          exists: !!apiKey,
+          length: apiKey?.length || 0,
+          startsWithSk: apiKey?.startsWith('sk-') || false,
+          first10: apiKey?.substring(0, 10) || '없음'
+        });
+        
         // 401 에러 (API 키 문제)인 경우 명확한 메시지 반환
         const errorMessage = apiError instanceof Error ? apiError.message : String(apiError);
-        if (errorMessage.includes('401') || errorMessage.includes('Incorrect API key') || errorMessage.includes('Invalid API key')) {
+        if (errorMessage.includes('401') || errorMessage.includes('Incorrect API key') || errorMessage.includes('Invalid API key') || errorMessage.includes('Unauthorized')) {
           console.error('🔑 API 키 오류 감지: Vercel 환경 변수를 확인하세요.');
+          console.error('🔍 현재 API 키 정보:', {
+            exists: !!apiKey,
+            length: apiKey?.length || 0,
+            format: apiKey?.startsWith('sk-') ? '올바른 형식' : '잘못된 형식',
+            preview: apiKey ? `${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}` : '없음'
+          });
           return NextResponse.json({
             content: response,
             analysis: null,
             isAnalysis: true,
-            error: 'OpenAI API 키가 올바르지 않습니다. Vercel 환경 변수를 확인해주세요.'
+            error: `OpenAI API 키 오류: ${errorMessage}. Vercel 환경 변수를 확인하고 재배포하세요.`
           }, { status: 401 });
         }
         

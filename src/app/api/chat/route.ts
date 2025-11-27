@@ -416,6 +416,16 @@ export async function POST(request: NextRequest) {
           totalMessages: requestMessages.length
         });
 
+        // API 호출 전 최종 확인
+        const finalApiKey = process.env.OPENAI_API_KEY;
+        console.log('🔍 API 호출 직전 최종 확인:', {
+          keyExists: !!finalApiKey,
+          keyLength: finalApiKey?.length || 0,
+          keyStartsWith: finalApiKey?.startsWith('sk-') || false,
+          keyPreview: finalApiKey ? `${finalApiKey.substring(0, 10)}...${finalApiKey.substring(finalApiKey.length - 6)}` : '없음',
+          keyFormat: finalApiKey?.match(/^sk-[a-zA-Z0-9]+$/) ? '올바른 형식' : '잘못된 형식 또는 특수문자 포함'
+        });
+
         const completion = await openai.chat.completions.create({
           model: "gpt-4",
           messages: requestMessages,

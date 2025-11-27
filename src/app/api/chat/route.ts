@@ -181,6 +181,16 @@ const poster3Questions = {
 
 export async function POST(request: NextRequest) {
   try {
+    // 가장 먼저 환경 변수 확인
+    const apiKey = process.env.OPENAI_API_KEY;
+    console.log('🚀 API 라우트 시작 - 환경 변수 확인:', {
+      OPENAI_API_KEY_exists: !!apiKey,
+      OPENAI_API_KEY_length: apiKey?.length || 0,
+      OPENAI_API_KEY_startsWith: apiKey?.startsWith('sk-') || false,
+      OPENAI_API_KEY_preview: apiKey ? `${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}` : '없음',
+      allEnvKeys: Object.keys(process.env).filter(k => k.includes('OPENAI') || k.includes('API')).join(', ')
+    });
+    
     const { messages, turnCount, selectedType, selectedPoster } = await request.json();
 
     // API 키 확인 (디버깅용)

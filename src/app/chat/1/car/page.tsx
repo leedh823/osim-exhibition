@@ -169,7 +169,7 @@ export default function ChatPoster1Car() {
           controls={false}
           preload="auto"
         >
-          <source src="/1.mp4" type="video/mp4" />
+          <source src={`/poster video 1/car ${currentTurn + 1}.mp4`} type="video/mp4" />
         </video>
       </div>
       

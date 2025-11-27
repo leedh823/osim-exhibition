@@ -413,7 +413,7 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
                 <div style={{ height: '60%' }}></div>
                 
                 {/* AI Reading Notes 제목 바로 아래 텍스트 영역 - 왼쪽 정렬 */}
-                <div className="pr-8 pt-2" style={{ marginLeft: '-500px' }}>
+                <div className="pr-8 pt-2" style={{ marginLeft: '-290px' }}>
                   {/* 한글 분석 텍스트 - 7가지 지표 종합 분석 */}
                   <div>
                     <p 

@@ -20,19 +20,19 @@ export default function DownloadPage() {
       fetch(imageUrl)
         .then(response => response.blob())
         .then(blob => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `analysis-card-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      // 다운로드 후 2초 뒤에 메시지 표시
-      setTimeout(() => {
-        setError('다운로드가 완료되었습니다. 이 페이지를 닫아주세요.');
-      }, 2000);
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `analysis-card-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          
+          // 다운로드 후 2초 뒤에 메시지 표시
+          setTimeout(() => {
+            setError('다운로드가 완료되었습니다. 이 페이지를 닫아주세요.');
+          }, 2000);
         })
         .catch(err => {
           console.error('다운로드 오류:', err);

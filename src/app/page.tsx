@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,6 +12,16 @@ export default function Landing() {
   const router = useRouter();
   const [posterOrder, setPosterOrder] = useState<number[]>([1, 2, 3]); // [왼쪽, 가운데, 오른쪽]
   const posterRefs = useRef<(HTMLDivElement | null)[]>([]);
+  
+  // 처음 화면 진입 시 이전 데이터 초기화
+  useEffect(() => {
+    // localStorage 초기화
+    localStorage.removeItem('analysisData');
+    localStorage.removeItem('selectedPoster');
+    localStorage.removeItem('selectedPerson');
+    localStorage.removeItem('chatMessages');
+    console.log('✅ 처음 화면 진입: 이전 데이터 초기화 완료');
+  }, []);
   
   // 포스터 클릭 핸들러 - 포스터 순서 회전
   const handlePosterClick = (clickedIndex: number) => {

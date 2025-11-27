@@ -6,13 +6,52 @@ interface ChatMessage {
   content: string;
 }
 
-// OpenAI 인스턴스를 지연 초기화 (빌드 시점 에러 방지)
-function getOpenAIClient() {
-  if (!process.env.OPENAI_API_KEY) {
+// API 키 정리 함수 (공백, 줄바꿈, 특수문자 제거)
+function cleanApiKey(key: string | undefined): string | null {
+  if (!key) return null;
+  
+  // 앞뒤 공백 제거
+  let cleaned = key.trim();
+  
+  // 줄바꿈, 캐리지 리턴 제거
+  cleaned = cleaned.replace(/\r\n/g, '').replace(/\n/g, '').replace(/\r/g, '');
+  
+  // 모든 공백 제거
+  cleaned = cleaned.replace(/\s/g, '');
+  
+  // ASCII 범위를 벗어나는 문자 제거 (0-255 범위만 허용)
+  cleaned = cleaned.split('').filter(char => {
+    const code = char.charCodeAt(0);
+    return code >= 0 && code <= 255;
+  }).join('');
+  
+  // sk-로 시작하는지 확인
+  if (!cleaned.startsWith('sk-')) {
+    console.error('⚠️ API 키가 sk-로 시작하지 않습니다:', cleaned.substring(0, 10));
     return null;
   }
+  
+  return cleaned;
+}
+
+// OpenAI 인스턴스를 지연 초기화 (빌드 시점 에러 방지)
+function getOpenAIClient() {
+  const rawKey = process.env.OPENAI_API_KEY;
+  const cleanedKey = cleanApiKey(rawKey);
+  
+  if (!cleanedKey) {
+    console.error('❌ API 키가 유효하지 않습니다. 원본 키:', rawKey ? `${rawKey.substring(0, 10)}...` : '없음');
+    return null;
+  }
+  
+  console.log('✅ API 키 정리 완료:', {
+    originalLength: rawKey?.length || 0,
+    cleanedLength: cleanedKey.length,
+    preview: `${cleanedKey.substring(0, 10)}...${cleanedKey.substring(cleanedKey.length - 4)}`
+  });
+  
   return new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: cleanedKey,
   });
 }
 

@@ -52,7 +52,14 @@ export default function ChatPoster3Boat() {
         }),
       });
 
+      // HTTP 응답 상태 확인
+      if (!response.ok) {
+        console.error('❌ HTTP 에러:', response.status, response.statusText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
+      console.log('📥 API 응답 데이터:', data);
       
       // content가 있으면 항상 사용 (API 키가 없어도 질문은 반환됨)
       if (data.content) {
@@ -78,9 +85,9 @@ export default function ChatPoster3Boat() {
             window.location.href = '/analysis';
           }, 3000); // 3초 후 이동
         }
-      } else if (data.error) {
-        // content가 없고 error만 있는 경우 (드물지만 방어적 처리)
-        console.error('API 오류:', data.error);
+      } else {
+        // content가 없는 경우 (에러 또는 예상치 못한 응답)
+        console.error('⚠️ API 응답에 content가 없습니다:', data);
         const errorMessage = {
           role: 'assistant',
           content: data.error || "죄송합니다. AI 서비스에 일시적인 문제가 있습니다. 잠시 후 다시 시도해주세요."

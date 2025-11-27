@@ -162,12 +162,17 @@ export default function ChatPoster1Car() {
     <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative">
       <div className="absolute top-0 left-0 w-full h-full">
         <video 
+          key={`car-${currentTurn}`}
           className="w-full h-full object-cover"
           autoPlay 
           loop 
           playsInline
           controls={false}
           preload="auto"
+          onError={(e) => {
+            console.error('비디오 로드 오류:', e.currentTarget.error);
+            console.error('비디오 소스:', e.currentTarget.src);
+          }}
         >
           <source src={`/poster video 1/car ${currentTurn + 1}.mp4`} type="video/mp4" />
         </video>

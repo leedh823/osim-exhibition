@@ -162,14 +162,22 @@ export default function ChatPoster1People() {
     <div className="w-full h-screen bg-black aspect-[16/9] mx-auto relative">
       <div className="absolute top-0 left-0 w-full h-full">
         <video 
+          key={`people-${currentTurn}`}
           className="w-full h-full object-cover"
           autoPlay 
           loop 
           playsInline
           controls={false}
           preload="auto"
+          onError={(e) => {
+            console.error('비디오 로드 오류:', e.currentTarget.error);
+            console.error('비디오 소스:', e.currentTarget.src);
+          }}
         >
-          <source src={`/poster video 1/people ${currentTurn + 1} .mp4`} type="video/mp4" />
+          <source src={currentTurn === 0 
+            ? `/poster video 1/people 1 .mp4`
+            : `/poster video 1/people ${currentTurn + 1}.mp4`
+          } type="video/mp4" />
         </video>
       </div>
       

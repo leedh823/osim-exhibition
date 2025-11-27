@@ -425,34 +425,31 @@ export async function POST(request: NextRequest) {
       console.log('📋 메시지 상세:', JSON.stringify(messages, null, 2));
       
       try {
-        // 실제 대화 내용을 messages 배열에 포함
-        const apiMessages = messages.map((msg: ChatMessage) => ({
-          role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
-          content: msg.content
-        }));
+        // 사용자 답변만 필터링 (질문은 제외)
+        const userAnswers = messages
+          .filter((msg: ChatMessage) => msg.role === 'user')
+          .map((msg: ChatMessage) => ({
+            role: 'user' as const,
+            content: msg.content
+          }));
 
-        console.log('📤 API에 전달할 메시지:', JSON.stringify(apiMessages, null, 2));
-        console.log('📏 API 메시지 개수:', apiMessages.length);
+        console.log('📤 사용자 답변만 필터링:', JSON.stringify(userAnswers, null, 2));
+        console.log('📏 사용자 답변 개수:', userAnswers.length);
         console.log('🔑 API 키 존재 여부:', !!process.env.OPENAI_API_KEY);
         console.log('🔑 API 키 앞 10자:', process.env.OPENAI_API_KEY?.substring(0, 10) || '없음');
 
-        // system prompt에 대화 내용을 포함하지 않고, messages 배열에만 의존
+        // 사용자 답변만 전달하여 분석
         const requestMessages = [
           { role: "system", content: systemPrompt },
-          ...apiMessages
+          ...userAnswers,
+          { role: "user", content: "위 사용자 답변들을 바탕으로 7가지 분석 지표를 종합하여 분석 결과를 생성해주세요." }
         ];
-        
-        console.log('📨 최종 요청 메시지 (처음 3개):', requestMessages.slice(0, 3).map(m => ({
-          role: m.role,
-          contentLength: m.content.length,
-          contentPreview: m.content.substring(0, 100) + '...'
-        })));
         
         console.log('📨 최종 요청 메시지 구조:', {
           systemPromptLength: systemPrompt.length,
-          userMessagesCount: apiMessages.filter((m: { role: string }) => m.role === 'user').length,
-          assistantMessagesCount: apiMessages.filter((m: { role: string }) => m.role === 'assistant').length,
-          totalMessages: requestMessages.length
+          userAnswersCount: userAnswers.length,
+          totalMessages: requestMessages.length,
+          userAnswersPreview: userAnswers.map((m: { role: 'user'; content: string }) => m.content.substring(0, 50) + '...')
         });
 
         // API 호출 전 최종 확인

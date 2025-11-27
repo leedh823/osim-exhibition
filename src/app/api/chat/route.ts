@@ -496,19 +496,25 @@ export async function POST(request: NextRequest) {
         
         // 401 에러 (API 키 문제)인 경우 명확한 메시지 반환
         const errorMessage = apiError instanceof Error ? apiError.message : String(apiError);
-        if (errorMessage.includes('401') || errorMessage.includes('Incorrect API key') || errorMessage.includes('Invalid API key') || errorMessage.includes('Unauthorized')) {
-          console.error('🔑 API 키 오류 감지: Vercel 환경 변수를 확인하세요.');
+        if (errorMessage.includes('401') || errorMessage.includes('Incorrect API key') || errorMessage.includes('Invalid API key') || errorMessage.includes('Unauthorized') || errorMessage.includes('invalid_api_key')) {
+          console.error('🔑 API 키 오류 감지: OpenAI가 API 키를 거부했습니다.');
           console.error('🔍 현재 API 키 정보:', {
             exists: !!apiKey,
             length: apiKey?.length || 0,
             format: apiKey?.startsWith('sk-') ? '올바른 형식' : '잘못된 형식',
-            preview: apiKey ? `${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}` : '없음'
+            preview: apiKey ? `${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}` : '없음',
+            fullKey: apiKey // 디버깅용 (실제 운영에서는 제거해야 함)
           });
+          console.error('⚠️ 해결 방법:');
+          console.error('1. OpenAI 대시보드(https://platform.openai.com/api-keys)에서 새 API 키 생성');
+          console.error('2. 전체 키를 복사 (공백 없이)');
+          console.error('3. Vercel 환경 변수에서 기존 키 삭제 후 새 키 추가');
+          console.error('4. 재배포');
           return NextResponse.json({
             content: response,
             analysis: null,
             isAnalysis: true,
-            error: `OpenAI API 키 오류: ${errorMessage}. Vercel 환경 변수를 확인하고 재배포하세요.`
+            error: `OpenAI API 키가 올바르지 않습니다. 새 API 키를 생성하여 Vercel 환경 변수에 다시 설정해주세요. (에러: ${errorMessage})`
           }, { status: 401 });
         }
         

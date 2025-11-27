@@ -446,42 +446,49 @@ ${conversationHistory}
         console.log('📄 분석 결과 받음 (전체):', analysisText);
         console.log('📄 분석 결과 길이:', analysisText.length);
         
+        // 분석 텍스트가 없으면 에러
+        if (!analysisText || analysisText.trim().length === 0) {
+          console.error('❌ 분석 결과가 비어있습니다.');
+          throw new Error('OpenAI API가 빈 응답을 반환했습니다.');
+        }
+        
+        let analysisTextValue = '';
+        
         try {
           // JSON 파싱 시도
           const parsedData = JSON.parse(analysisText);
           console.log('✅ 분석 데이터 JSON 파싱 성공');
           
           // analysis 필드 추출 (객체인 경우 analysis 속성에서, 문자열인 경우 직접 사용)
-          const analysisTextValue = typeof parsedData === 'object' && parsedData !== null && 'analysis' in parsedData
+          analysisTextValue = typeof parsedData === 'object' && parsedData !== null && 'analysis' in parsedData
             ? parsedData.analysis
             : typeof parsedData === 'string'
             ? parsedData
             : analysisText;
-          
-          // 줄바꿈이 포함된 분석 텍스트를 객체로 감싸서 반환
-          const analysisData = {
-            analysis: analysisTextValue
-          };
-          
-          return NextResponse.json({
-            content: response,
-            analysis: analysisData,
-            isAnalysis: true
-          });
         } catch (parseError) {
-          console.error('❌ JSON 파싱 실패:', parseError);
-          // JSON 파싱 실패 시 기본 분석 데이터 사용
-          const analysisData = {
-            analysis: "당신의 시선은 감정의 파동을 먼저 읽어내는 방식입니다. 타인의 행동보다 분위기와 미묘한 감정을 먼저 포착하며, 그 흐름 속에서 의미를 찾으려는 경향이 뚜렷합니다. 상황을 논리적으로 분석하기보다는 감정적 공감을 통해 이해하려 하며, 자신의 경험을 자연스럽게 투사합니다. 대인 관계에 대한 세심한 관찰력을 보여주며, 상상력을 통해 상황을 확장하여 해석하는 경향이 있습니다."
-          };
-          
-          console.log('⚠️ 기본 분석 데이터 사용');
-          return NextResponse.json({
-            content: response,
-            analysis: analysisData,
-            isAnalysis: true
-          });
+          console.warn('⚠️ JSON 파싱 실패, 일반 텍스트로 처리:', parseError);
+          // JSON 파싱 실패 시에도 실제 API 응답을 사용 (기본값 사용 안 함)
+          analysisTextValue = analysisText;
         }
+        
+        // 분석 텍스트가 여전히 비어있으면 에러
+        if (!analysisTextValue || analysisTextValue.trim().length === 0) {
+          console.error('❌ 최종 분석 텍스트가 비어있습니다.');
+          throw new Error('분석 텍스트를 추출할 수 없습니다.');
+        }
+        
+        console.log('✅ 최종 분석 텍스트:', analysisTextValue.substring(0, 100) + '...');
+        
+        // 줄바꿈이 포함된 분석 텍스트를 객체로 감싸서 반환
+        const analysisData = {
+          analysis: analysisTextValue
+        };
+        
+        return NextResponse.json({
+          content: response,
+          analysis: analysisData,
+          isAnalysis: true
+        });
       } catch (apiError) {
         console.error('❌ OpenAI API 호출 실패:', apiError);
         console.error('API 오류 상세:', {

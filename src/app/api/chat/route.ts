@@ -399,12 +399,20 @@ ${conversationHistory}
       }
 
       console.log('🤖 OpenAI API 호출 시작');
+      console.log('📝 대화 내용:', conversationHistory);
       try {
+        // 실제 대화 내용을 messages 배열에 포함
+        const apiMessages = messages.map((msg: ChatMessage) => ({
+          role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
+          content: msg.content
+        }));
+
         const completion = await openai.chat.completions.create({
           model: "gpt-4",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: "분석 결과를 생성해주세요." }
+            ...apiMessages,
+            { role: "user", content: "위 대화 내용을 바탕으로 7가지 분석 지표를 종합하여 분석 결과를 생성해주세요." }
           ],
           max_tokens: 2000,
           temperature: 0.8,

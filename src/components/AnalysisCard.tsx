@@ -3,8 +3,6 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { QRCodeSVG } from 'qrcode.react';
-import html2canvas from 'html2canvas';
 
 interface AnalysisData {
   analysis?: string; // 7가지 지표 종합 분석 결과
@@ -42,8 +40,6 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [showQRCode, setShowQRCode] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   
   // 앞면 이미지 랜덤 선택 (한 번만)
@@ -95,258 +91,20 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
     setIsFlipped(!isFlipped);
   };
 
-  // 카드 이미지를 캡처하고 다운로드 링크 생성 (앞뒷면 모두, 겹치고 각도 있게)
-  const captureCardImage = async () => {
-    if (!cardRef.current) return;
-
-    try {
-      const cardElement = cardRef.current;
-      const cardContainer = cardElement.closest('.perspective-1000') as HTMLElement;
-      
-      if (!cardContainer) {
-        console.error('카드 컨테이너를 찾을 수 없습니다.');
-        return;
-      }
-
-      // 앞면 이미지 파일 직접 로드
-      const frontImg = document.createElement('img') as HTMLImageElement;
-      frontImg.crossOrigin = 'anonymous';
-      
-      await new Promise<void>((resolve, reject) => {
-        frontImg.onload = () => resolve();
-        frontImg.onerror = () => {
-          console.error('앞면 이미지 로드 실패:', frontImage);
-          reject(new Error('앞면 이미지를 불러올 수 없습니다.'));
-        };
-        frontImg.src = frontImage;
-      });
-
-      // 원래 상태 저장
-      const originalTransform = cardElement.style.transform;
-      const originalIsFlipped = isFlipped;
-      const originalRotation = { ...rotation };
-
-      // 회전 제거 (평면으로 만들기)
-      setRotation({ x: 0, y: 0 });
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // 뒷면 요소 찾기 (카드 뒷면 div)
-      const backFaceElement = cardElement.querySelector('[style*="rotateY(180deg)"]') as HTMLElement;
-      if (!backFaceElement) {
-        console.error('뒷면 요소를 찾을 수 없습니다.');
-        return;
-      }
-
-      // 뒷면을 보이도록 임시로 설정
-      const originalBackfaceVisibility = backFaceElement.style.backfaceVisibility;
-      backFaceElement.style.backfaceVisibility = 'visible';
-      cardElement.style.transform = 'rotateY(180deg)';
-      setIsFlipped(true);
-      
-      // 모든 이미지와 폰트가 로드될 때까지 대기
-      await document.fonts.ready;
-      await new Promise(resolve => setTimeout(resolve, 600)); // 렌더링 대기 시간 증가
-      
-      // 뒷면 캡처 (화면 그대로)
-      const backCanvas = await html2canvas(backFaceElement, {
-        backgroundColor: '#000000',
-        scale: 3, // 해상도 높이기 (2 -> 3)
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-        windowWidth: backFaceElement.offsetWidth,
-        windowHeight: backFaceElement.offsetHeight,
-        removeContainer: false,
-        onclone: (clonedDoc) => {
-          // 클론된 문서에서 뒷면 요소 찾아서 스타일 조정
-          const clonedBackFace = clonedDoc.querySelector('[style*="rotateY(180deg)"]') as HTMLElement;
-          if (clonedBackFace) {
-            clonedBackFace.style.transform = 'none';
-            clonedBackFace.style.backfaceVisibility = 'visible';
-            clonedBackFace.style.position = 'relative';
-          }
-        }
-      });
-
-      // 뒷면 스타일 원래대로 복원
-      backFaceElement.style.backfaceVisibility = originalBackfaceVisibility;
-
-      // 원래 상태로 복원
-      cardElement.style.transform = originalTransform;
-      setIsFlipped(originalIsFlipped);
-      setRotation(originalRotation);
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // 합성 캔버스 생성 (세로로 겹치고 각도 있게)
-      const cardWidth = frontImg.width;
-      const cardHeight = Math.max(frontImg.height, backCanvas.height);
-      const overlap = 100; // 겹치는 부분
-      const angle = -8; // 각도 (도)
-      const offsetX = 80; // 뒷면이 오른쪽으로 이동하는 정도
-      const padding = 100; // 여유 공간
-      
-      // 캔버스 크기 계산 (세로 배치, 각도와 겹침 고려)
-      const totalWidth = cardWidth + offsetX + padding * 2;
-      const totalHeight = cardHeight + cardHeight - overlap + padding * 2;
-      
-      const combinedCanvas = document.createElement('canvas');
-      combinedCanvas.width = totalWidth;
-      combinedCanvas.height = totalHeight;
-
-      const ctx = combinedCanvas.getContext('2d');
-      if (!ctx) {
-        console.error('합성 Canvas context를 생성할 수 없습니다.');
-        return;
-      }
-
-      // 배경색 (어두운 회색)
-      ctx.fillStyle = '#2a2a2a';
-      ctx.fillRect(0, 0, totalWidth, totalHeight);
-
-      // 그림자 설정
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-      ctx.shadowBlur = 20;
-      ctx.shadowOffsetX = 5;
-      ctx.shadowOffsetY = 5;
-
-      // 앞면 그리기 (위쪽, 약간 회전)
-      const frontX = padding;
-      const frontY = padding;
-      ctx.save();
-      ctx.translate(frontX + cardWidth / 2, frontY + cardHeight / 2);
-      ctx.rotate(angle * Math.PI / 180);
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-      ctx.shadowBlur = 15;
-      ctx.shadowOffsetX = 3;
-      ctx.shadowOffsetY = 3;
-      ctx.drawImage(frontImg, -cardWidth / 2, -cardHeight / 2);
-      ctx.restore();
-
-      // 뒷면 그리기 (아래쪽, 약간 오른쪽, 겹치게, 반대 방향 회전)
-      const backX = frontX + offsetX;
-      const backY = frontY + cardHeight - overlap;
-      ctx.save();
-      ctx.translate(backX + cardWidth / 2, backY + cardHeight / 2);
-      ctx.rotate(-angle * Math.PI / 180);
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-      ctx.shadowBlur = 15;
-      ctx.shadowOffsetX = 3;
-      ctx.shadowOffsetY = 3;
-      ctx.drawImage(backCanvas, -cardWidth / 2, -cardHeight / 2);
-      ctx.restore();
-
-      // 합성된 이미지 업로드
-      await uploadCanvas(combinedCanvas);
-    } catch (error) {
-      console.error('이미지 캡처 오류:', error);
-      alert(`이미지 캡처 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
-    }
-  };
-
-  // Canvas를 업로드하는 헬퍼 함수
-  const uploadCanvas = async (canvas: HTMLCanvasElement) => {
-    try {
-      // toBlob을 Promise로 변환
-      const blob = await new Promise<Blob | null>((resolve, reject) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Canvas를 Blob으로 변환하는데 실패했습니다.'));
-          }
-        }, 'image/png');
-      });
-
-      if (!blob) {
-        throw new Error('Blob 생성 실패');
-      }
-
-      console.log('Blob 생성 성공, 크기:', blob.size, 'bytes');
-
-      // FormData 생성
-      const formData = new FormData();
-      formData.append('image', blob, 'analysis-card.png');
-
-      console.log('이미지 업로드 시작...');
-      
-      // 서버에 이미지 업로드 (Supabase Storage)
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData
-      });
-
-      console.log('업로드 응답 상태:', response.status, response.statusText);
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('업로드 성공, URL:', data.url);
-        
-        // Supabase 공개 URL을 다운로드 페이지로 전달
-        const downloadLink = `${window.location.origin}/download?url=${encodeURIComponent(data.url)}`;
-        console.log('다운로드 링크 생성:', downloadLink);
-        
-        setDownloadUrl(downloadLink);
-        setShowQRCode(true);
-        console.log('QR 코드 표시 설정 완료');
-      } else {
-        const errorText = await response.text();
-        console.error('업로드 실패:', response.status, errorText);
-        
-        let errorData;
-        try {
-          errorData = JSON.parse(errorText);
-        } catch {
-          errorData = { message: errorText };
-        }
-        
-        alert(`이미지 업로드에 실패했습니다: ${errorData.message || '알 수 없는 오류'}`);
-      }
-    } catch (error) {
-      console.error('이미지 업로드 오류:', error);
-      alert(`이미지 업로드 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
-    }
-  };
-
-  // 인쇄 버튼 클릭 시 QR 코드 표시
-  const handlePrint = () => {
-    captureCardImage();
+  // 처음 화면으로 이동 및 초기화
+  const handleGoHome = () => {
+    // localStorage 초기화
+    localStorage.removeItem('analysisData');
+    localStorage.removeItem('selectedPoster');
+    localStorage.removeItem('selectedPerson');
+    localStorage.removeItem('chatMessages');
+    
+    // 처음 화면으로 이동
+    router.push('/');
   };
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center overflow-hidden">
-      {/* QR 코드 모달 */}
-      {showQRCode && downloadUrl && (
-        <div 
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-          onClick={() => {
-            setShowQRCode(false);
-            router.push('/');
-          }}
-        >
-          <div 
-            className="bg-white rounded-lg p-8 flex flex-col items-center gap-4 relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* X 버튼 */}
-            <button
-              onClick={() => {
-                setShowQRCode(false);
-                router.push('/');
-              }}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold w-8 h-8 flex items-center justify-center"
-            >
-              ×
-            </button>
-            <h2 className="text-2xl font-bold text-black">QR 코드를 스캔하여 이미지 다운로드</h2>
-            <div className="bg-white p-4 rounded-lg">
-              <QRCodeSVG value={downloadUrl} size={256} />
-            </div>
-            <p className="text-sm text-gray-600 text-center max-w-xs whitespace-pre-line">
-              QR 코드를 스캔하면 분석 카드{'\n'}이미지를 다운로드할 수 있습니다.
-            </p>
-          </div>
-        </div>
-      )}
       {/* CCTV 배경 효과 */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800" />
       <div className="absolute inset-0 bg-black/50" />
@@ -458,14 +216,14 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ analysisData, selectedPoste
         </div>
       </div>
 
-      {/* 이미지 다운받기 버튼 */}
+      {/* 처음 화면 가기 버튼 */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
         <button
-          onClick={handlePrint}
+          onClick={handleGoHome}
           className="bg-[#6FA68B] hover:bg-[#5a8a73] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
           style={{ fontFamily: 'var(--font-coolvetica)', fontSize: 'clamp(14px, 1.2vw, 28px)' }}
         >
-          이미지 다운받기
+          처음 화면 가기
         </button>
       </div>
     </div>

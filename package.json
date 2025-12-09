@@ -15,7 +15,7 @@
     "@tensorflow/tfjs": "^4.22.0",
     "gsap": "^3.13.0",
     "html2canvas": "^1.4.1",
-    "next": "15.5.4",
+    "next": "15.5.7",
     "openai": "^6.6.0",
     "qrcode.react": "^4.2.0",
     "react": "19.1.0",

@@ -1,4 +1,27 @@
-<!-- e955a33e-0c8e-4772-ac2b-4ac89a5c49fa a2c06cb2-2959-4ae4-a246-34262dfcf27e -->
+---
+name: Advanced Tracking Exhibition Development Plan
+overview: ""
+todos:
+  - id: 795be298-7ed3-428d-812b-74a13ca64064
+    content: 레이아웃을 세로형(9:16)에서 가로형(16:9)으로 변경, 3단계 좌우 50% 분할 구조 구현
+    status: completed
+  - id: b64aa6a4-5bfc-4ba4-90f5-723a84805054
+    content: OpenAI API 연동, /api/chat 라우트 생성, 5턴 대화 및 실시간 분석 구현
+    status: pending
+  - id: a38a38f1-1a60-4799-92d1-d8af7697c7cf
+    content: 3D 카드 flip 애니메이션, 앞면 디자인 + 뒷면 분석 텍스트, window.print() 인쇄 기능
+    status: pending
+  - id: 69aee53f-f503-4298-a4b6-5d5479e8711b
+    content: ONNX.js/TensorFlow.js로 YOLOv8 객체 탐지 구현, Canvas overlay로 바운딩 박스 렌더링
+    status: pending
+  - id: a8f299c9-4063-4422-8026-52ecac70f11c
+    content: 전체 플로우 통합, 성능 최적화, 에러 핸들링, Vercel 배포
+    status: pending
+  - id: 4da5dd20-b099-4f84-8f25-0dbdb0c8f385
+    content: 키오스크 모드, 전체화면 자동 실행, 세션 관리, 현장 테스트
+    status: pending
+---
+
 # Advanced Tracking Exhibition Development Plan
 
 ## 프로젝트 개요
@@ -324,12 +347,3 @@ OPENAI_API_KEY=sk-...
 **리스크 4**: 일정 지연
 
 - **대응**: Phase 2 (AI 객체 탐지) 생략 가능, 정적 영역으로 대체
-
-### To-dos
-
-- [x] 레이아웃을 세로형(9:16)에서 가로형(16:9)으로 변경, 3단계 좌우 50% 분할 구조 구현
-- [ ] OpenAI API 연동, /api/chat 라우트 생성, 5턴 대화 및 실시간 분석 구현
-- [ ] 3D 카드 flip 애니메이션, 앞면 디자인 + 뒷면 분석 텍스트, window.print() 인쇄 기능
-- [ ] ONNX.js/TensorFlow.js로 YOLOv8 객체 탐지 구현, Canvas overlay로 바운딩 박스 렌더링
-- [ ] 전체 플로우 통합, 성능 최적화, 에러 핸들링, Vercel 배포
-- [ ] 키오스크 모드, 전체화면 자동 실행, 세션 관리, 현장 테스트
